@@ -85,6 +85,117 @@
 
     #gameCanvas { flex: 1; width: 100%; display: block; background: #f0f6ff; cursor: crosshair; touch-action: none; }
 
+    /* ---- About page (full-bleed playground) ---- */
+    main.about-mode { padding: 0; align-items: stretch; justify-content: stretch; }
+    .page.about-page { max-width: none; width: 100%; height: 100%; display: none; }
+    .page.about-page.active { display: block; position: relative; overflow: hidden; }
+
+    .about-top {
+      position: absolute;
+      top: 3rem;
+      left: 3.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .about-name {
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      font-weight: 800;
+      color: #111;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      user-select: none;
+    }
+    .about-name .drop-o { display: inline-block; }
+
+    .drop-btn {
+      font: inherit;
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 0.45rem 1.1rem;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+      background: #e2e2e2;
+      color: #444;
+      cursor: pointer;
+      align-self: flex-start;
+      margin-top: 0.4rem;
+    }
+    .drop-btn:hover { background: #d4d4d4; }
+
+    /* falling letter */
+    .flying-o {
+      position: absolute;
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      font-weight: 800;
+      color: #c0392b;
+      line-height: 1;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* simply-styled basketball hoop on the right side */
+    .hoop {
+      position: absolute;
+      right: 0;
+      top: 38%;
+      width: 130px;
+      height: 120px;
+      pointer-events: none;
+    }
+    .hoop .backboard {
+      position: absolute;
+      right: 0; top: 0;
+      width: 12px; height: 90px;
+      background: #ddd;
+      border: 2px solid #999;
+      border-radius: 3px;
+    }
+    .hoop .rim {
+      position: absolute;
+      right: 12px; top: 46px;
+      width: 90px; height: 16px;
+      border: 4px solid #e8732c;
+      border-radius: 50%;
+      background: transparent;
+    }
+    .hoop .net {
+      position: absolute;
+      right: 18px; top: 58px;
+      width: 78px; height: 46px;
+      border-left: 2px solid #ccc;
+      border-right: 2px solid #ccc;
+      background:
+        repeating-linear-gradient(60deg, transparent 0 9px, #ccc 9px 10px),
+        repeating-linear-gradient(-60deg, transparent 0 9px, #ccc 9px 10px);
+      clip-path: polygon(0 0, 100% 0, 82% 100%, 18% 100%);
+      opacity: 0.7;
+    }
+
+    .about-bio {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 3.5rem;
+      right: 3.5rem;
+      max-width: 620px;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #444;
+    }
+
+    .secret-link { display: none; }
+    .secret-link.revealed { display: block; color: #b8860b; }
+    .secret-link.revealed:hover, .secret-link.revealed.active { color: #8a6500; }
+
+    #secret pre {
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 0.8rem;
+      line-height: 1.2;
+      color: #b8860b;
+      margin-bottom: 1rem;
+      white-space: pre;
+    }
+
     .page h2 {
       font-size: 1.6rem;
       margin-bottom: 0.75rem;
@@ -105,12 +216,23 @@
     <a href="#" class="nav-link" data-page="projects">Projects</a>
     <a href="#" class="nav-link" data-page="contact">Contact</a>
     <a href="#" class="nav-link" data-page="game">Game</a>
+    <a href="#" class="nav-link secret-link" data-page="secret">??? Secret</a>
   </aside>
 
   <main>
-    <div id="about" class="page active">
-      <h2>About</h2>
-      <p>I'm Alex Gold, a builder who loves working at the intersection of technology and design. When I'm not writing code, you'll find me exploring the outdoors or reading about the future of energy.</p>
+    <div id="about" class="page about-page active">
+      <div class="about-top">
+        <h1 class="about-name">Alex G<span id="dropO" class="drop-o">o</span>ld</h1>
+        <button id="dropBtn" class="drop-btn">drop</button>
+      </div>
+
+      <div class="hoop" id="hoop">
+        <div class="backboard"></div>
+        <div class="rim" id="rim"></div>
+        <div class="net"></div>
+      </div>
+
+      <p class="about-bio">I'm Alex Gold, a builder who loves working at the intersection of technology and design. When I'm not writing code, you'll find me exploring the outdoors or reading about the future of energy. (Psst — try dropping the "o" into the hoop.)</p>
     </div>
 
     <div id="tesla" class="page">
@@ -137,6 +259,24 @@
       </div>
       <canvas id="gameCanvas"></canvas>
     </div>
+
+    <div id="secret" class="page">
+      <h2>You found the secret.</h2>
+      <pre>
+   .-"""""""-.
+  /  SWISH!!  \
+ |  .-.   .-.  |
+ |  '-'   '-'  |     nothing but net
+ |     ___     |
+  \   '---'   /        _____
+   '-.......-'        |     |
+        |  |     ___  |  o  |  &lt;- you sank it
+       _|  |_  .'   '.|_____|
+      |______||  GG   |
+              '._____.'
+      </pre>
+      <p>Most visitors never make this shot. You did. As a reward, here's a secret: this whole site is one hand-written HTML file, physics and all. Thanks for playing around.</p>
+    </div>
   </main>
 
   <script>
@@ -144,16 +284,19 @@
     const pages = document.querySelectorAll('.page');
     const mainEl = document.querySelector('main');
 
+    function activate(page) {
+      links.forEach(l => l.classList.toggle('active', l.dataset.page === page));
+      pages.forEach(p => p.classList.toggle('active', p.id === page));
+      mainEl.classList.toggle('game-mode', page === 'game');
+      mainEl.classList.toggle('about-mode', page === 'about');
+      if (page === 'game') initGame();
+      if (page === 'about') resetO();
+    }
+
     links.forEach(link => {
       link.addEventListener('click', e => {
         e.preventDefault();
-        links.forEach(l => l.classList.remove('active'));
-        pages.forEach(p => p.classList.remove('active'));
-        link.classList.add('active');
-        document.getElementById(link.dataset.page).classList.add('active');
-        const isGame = link.dataset.page === 'game';
-        mainEl.classList.toggle('game-mode', isGame);
-        if (isGame) initGame();
+        activate(link.dataset.page);
       });
     });
 
@@ -333,6 +476,110 @@
     window.addEventListener('resize', () => {
       if (mainEl.classList.contains('game-mode')) { sizeCanvas(); draw(); }
     });
+
+    // ---- About page: drop the "o" into the hoop ----
+    const aboutPage = document.getElementById('about');
+    const dropO = document.getElementById('dropO');
+    const dropBtn = document.getElementById('dropBtn');
+    const hoopEl = document.getElementById('hoop');
+    const rimEl = document.getElementById('rim');
+    const secretLink = document.querySelector('.secret-link');
+    let flyingO = null, oRaf = null;
+
+    function resetO() {
+      if (oRaf) cancelAnimationFrame(oRaf);
+      oRaf = null;
+      if (flyingO) { flyingO.remove(); flyingO = null; }
+      dropO.style.visibility = 'visible';
+    }
+
+    function rectIn(el, container) {
+      const r = el.getBoundingClientRect();
+      const c = container.getBoundingClientRect();
+      return { x: r.left - c.left, y: r.top - c.top, w: r.width, h: r.height };
+    }
+
+    function unlockSecret(navigate) {
+      localStorage.setItem('secretUnlocked', '1');
+      secretLink.classList.add('revealed');
+      secretLink.textContent = '★ Secret';
+      if (navigate) setTimeout(() => activate('secret'), 700);
+    }
+
+    if (localStorage.getItem('secretUnlocked') === '1') {
+      secretLink.classList.add('revealed');
+      secretLink.textContent = '★ Secret';
+    }
+
+    function launchO() {
+      resetO();
+      const start = rectIn(dropO, aboutPage);
+      const rim = rectIn(rimEl, aboutPage);
+      dropO.style.visibility = 'hidden';   // keep the gap in "G ld" without reflow
+
+      flyingO = document.createElement('span');
+      flyingO.className = 'flying-o';
+      flyingO.textContent = 'o';
+      aboutPage.appendChild(flyingO);
+
+      const size = start.w;
+      let x = start.x, y = start.y;
+      // target: a touch above the rim's front opening, with slight variance for a real "shot"
+      const targetX = rim.x + rim.w * 0.45 + (Math.random() - 0.5) * 40;
+      const targetY = rim.y - 6 + (Math.random() - 0.5) * 18;
+      const g = 0.55;
+      const T = 60 + Math.random() * 14;        // flight time in frames
+      let vx = (targetX - x) / T;
+      let vy = (targetY - y - 0.5 * g * T * T) / T;
+
+      const bounds = { w: aboutPage.clientWidth, h: aboutPage.clientHeight };
+      const rimCx = rim.x + rim.w / 2, rimCy = rim.y + rim.h / 2;
+      let scored = false;
+
+      function tick() {
+        vy += g;
+        x += vx;
+        y += vy;
+
+        // score: center passes through the rim opening moving downward
+        const cx = x + size / 2, cy = y + size / 2;
+        if (!scored && vy > 0 &&
+            cx > rim.x + 6 && cx < rim.x + rim.w - 6 &&
+            cy > rim.y && cy < rim.y + rim.h + 10) {
+          scored = true;
+          vx *= 0.2;                      // drop straight through the net
+          flyingO.style.color = '#e8732c';
+        }
+
+        // floor / walls bounce (skip once it has scored — let it fall through)
+        if (!scored) {
+          if (y + size > bounds.h) { y = bounds.h - size; vy *= -0.55; vx *= 0.7; }
+          if (x < 0) { x = 0; vx *= -0.6; }
+          if (x + size > bounds.w) { x = bounds.w - size; vx *= -0.6; }
+        }
+
+        flyingO.style.left = x + 'px';
+        flyingO.style.top = y + 'px';
+
+        if (scored && cy > rimCy + 40) {
+          flyingO.remove(); flyingO = null;
+          unlockSecret(true);
+          oRaf = null;
+          return;
+        }
+
+        // came to rest on the floor (a miss) — stop so the user can retry
+        const resting = y + size >= bounds.h - 0.5 && Math.abs(vy) < 1.2 && Math.abs(vx) < 0.4;
+        if (resting || y > bounds.h + 200) { oRaf = null; return; }
+        oRaf = requestAnimationFrame(tick);
+      }
+      oRaf = requestAnimationFrame(tick);
+    }
+
+    dropBtn.addEventListener('click', launchO);
+
+    // apply the initial active page (About) and its mode
+    activate('about');
   </script>
 </body>
 </html>
