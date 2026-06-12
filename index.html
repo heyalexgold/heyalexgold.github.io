@@ -17,7 +17,6 @@
     aside {
       width: 200px;
       background: #f4f4f4;
-      border-right: 1px solid #ddd;
       display: flex;
       flex-direction: column;
       padding: 2rem 1.5rem;
@@ -72,16 +71,15 @@
     .game-toolbar button {
       font: inherit;
       font-size: 0.9rem;
-      padding: 0.4rem 0.9rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background: #fff;
+      padding: 0;
+      border: none;
+      background: none;
+      color: #999;
       cursor: pointer;
     }
-    .game-toolbar button:hover { background: #f0f0f0; }
-    .game-toolbar button.primary { background: #111; color: #fff; border-color: #111; }
-    .game-toolbar button.primary:hover { background: #333; }
-    .game-toolbar .hint { font-size: 0.8rem; color: #888; margin-left: auto; }
+    .game-toolbar button:hover { color: #555; }
+    .game-toolbar button.primary { color: #333; font-weight: 600; }
+    .game-toolbar .hint { font-size: 0.8rem; color: #aaa; margin-left: auto; }
 
     #gameCanvas { flex: 1; width: 100%; display: block; background: #f0f6ff; cursor: crosshair; touch-action: none; }
 
@@ -122,21 +120,18 @@
 
     .drop-btn {
       font: inherit;
-      font-weight: 600;
-      font-size: 0.85rem;
-      padding: 0.45rem 1.1rem;
-      border: 1px solid #bbb;
-      border-radius: 6px;
-      background: #e2e2e2;
-      color: #444;
+      font-size: 0.95rem;
+      padding: 0;
+      border: none;
+      background: none;
+      color: #999;
       cursor: pointer;
-      align-self: flex-start;
-      margin-top: 0.4rem;
     }
-    .drop-btn:hover { background: #d4d4d4; }
+    .drop-btn:hover { color: #555; }
+    #resetDropBtn { font-size: 1.15rem; line-height: 1; }
 
-    .drop-btn.ghost { background: #efefef; color: #888; }
-    .drop-btn.ghost:hover { background: #e6e6e6; }
+    .drop-btn.ghost { color: #bbb; }
+    .drop-btn.ghost:hover { color: #777; }
 
     .about-bio {
       position: absolute;
@@ -193,6 +188,7 @@
       <div class="about-top">
         <h1 class="about-name">Alex G<span id="dropO" class="drop-o">o</span>ld</h1>
         <button id="dropBtn" class="drop-btn">drop</button>
+        <button id="resetDropBtn" class="drop-btn ghost" title="reset the o">&#8634;</button>
         <button id="clearPathBtn" class="drop-btn ghost">clear path</button>
       </div>
 
@@ -467,11 +463,11 @@
 
     function computeBasket() {
       const W = aCanvas.width, H = aCanvas.height;
-      const ow = 64;                                  // opening width
-      const x2 = W - 90, x1 = x2 - ow;
-      const top = Math.round(Math.min(H * 0.5, H - 220));
-      const depth = 70, inset = 9;
-      basket = { x1, x2, top, depth, inset, bottom: top + depth };
+      const ow = 58;                                  // opening width
+      const x2 = W - 22, x1 = x2 - ow;                // tucked into the right corner
+      const depth = 62, inset = 8;
+      const bottom = H - 10, top = bottom - depth;    // sitting at the very bottom
+      basket = { x1, x2, top, depth, inset, bottom };
     }
 
     function sizeAbout() {
@@ -559,10 +555,10 @@
       aStep();
       aDraw();
       const b = ball, H = aCanvas.height;
-      if (b.scored && b.y > basket.bottom + 14) {   // fully sunk
-        ball = null; aAnimating = false; aRaf = null;
-        dropO.style.visibility = 'visible';         // the "o" is back in the name
-        aDraw(); revealSecret();
+      if (b.scored && b.y + b.R >= basket.bottom - 2) {   // settled in the bin
+        b.y = basket.bottom - b.R - 2; b.vx = 0; b.vy = 0;
+        aAnimating = false; aRaf = null;
+        aDraw(); revealSecret();           // o stays in the bin until reset
         return;
       }
       const resting = !b.scored && b.y + b.R >= H - 0.5 &&
@@ -607,7 +603,7 @@
       actx.rotate(b.angle);
       const lw = Math.max(3, b.R * 0.42);
       const rr = b.R - lw / 2;
-      actx.strokeStyle = b.scored ? '#9aa3ad' : '#c0392b';
+      actx.strokeStyle = '#111';
       actx.lineWidth = lw;
       actx.beginPath(); actx.arc(0, 0, rr, 0, Math.PI * 2); actx.stroke();
       actx.fillStyle = actx.strokeStyle;     // marker dot reveals spin
@@ -628,6 +624,12 @@
     }
 
     document.getElementById('dropBtn').addEventListener('click', dropBall);
+    document.getElementById('resetDropBtn').addEventListener('click', () => {
+      if (aRaf) cancelAnimationFrame(aRaf);
+      aRaf = null; aAnimating = false; ball = null;
+      dropO.style.visibility = 'visible';            // o returns to the name
+      aDraw();
+    });
     document.getElementById('clearPathBtn').addEventListener('click', () => {
       aLines = []; aDraw();
     });
