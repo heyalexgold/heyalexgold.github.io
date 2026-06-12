@@ -5,18 +5,113 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alex Gold</title>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
+      display: flex;
+      height: 100vh;
+      font-family: sans-serif;
+      color: #222;
+    }
+
+    aside {
+      width: 200px;
+      background: #f4f4f4;
+      border-right: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1.5rem;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+
+    aside h1 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #111;
+    }
+
+    aside a {
+      text-decoration: none;
+      color: #555;
+      font-size: 0.95rem;
+      padding: 0.4rem 0;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    aside a:hover, aside a.active {
+      color: #000;
+      font-weight: 600;
+    }
+
+    main {
+      flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: sans-serif;
-      font-size: 2rem;
+      padding: 2rem;
+    }
+
+    .page { display: none; max-width: 500px; }
+    .page.active { display: block; }
+
+    .page h2 {
+      font-size: 1.6rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .page p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #444;
     }
   </style>
 </head>
 <body>
-  <p>Alex Gold</p>
+  <aside>
+    <h1>Alex Gold</h1>
+    <a href="#" class="nav-link active" data-page="about">About</a>
+    <a href="#" class="nav-link" data-page="tesla">Tesla</a>
+    <a href="#" class="nav-link" data-page="projects">Projects</a>
+    <a href="#" class="nav-link" data-page="contact">Contact</a>
+  </aside>
+
+  <main>
+    <div id="about" class="page active">
+      <h2>About</h2>
+      <p>I'm Alex Gold, a builder who loves working at the intersection of technology and design. When I'm not writing code, you'll find me exploring the outdoors or reading about the future of energy.</p>
+    </div>
+
+    <div id="tesla" class="page">
+      <h2>Tesla</h2>
+      <p>I've been a Tesla owner and enthusiast since 2019, fascinated by the company's push to accelerate the world's transition to sustainable energy. From Autopilot to the Supercharger network, the technology never stops being impressive.</p>
+    </div>
+
+    <div id="projects" class="page">
+      <h2>Projects</h2>
+      <p>I've shipped projects ranging from data pipelines to consumer-facing web apps, always with a focus on simplicity and impact. This site is one of them — small, fast, and built from scratch.</p>
+    </div>
+
+    <div id="contact" class="page">
+      <h2>Contact</h2>
+      <p>I'm always open to interesting conversations and collaborations — feel free to reach out via email or LinkedIn. The best ideas usually start with a short message.</p>
+    </div>
+  </main>
+
+  <script>
+    const links = document.querySelectorAll('.nav-link');
+    const pages = document.querySelectorAll('.page');
+
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        links.forEach(l => l.classList.remove('active'));
+        pages.forEach(p => p.classList.remove('active'));
+        link.classList.add('active');
+        document.getElementById(link.dataset.page).classList.add('active');
+      });
+    });
+  </script>
 </body>
 </html>
