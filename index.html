@@ -90,16 +90,28 @@
     .page.about-page { max-width: none; width: 100%; height: 100%; display: none; }
     .page.about-page.active { display: block; position: relative; overflow: hidden; }
 
+    #aboutCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
     .about-top {
       position: absolute;
-      top: 3rem;
+      top: 2.5rem;
       left: 3.5rem;
+      z-index: 2;
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.75rem;
+      pointer-events: none;
     }
+    .about-top button { pointer-events: auto; }
     .about-name {
-      font-size: clamp(2.5rem, 8vw, 5rem);
+      font-size: 2.75rem;
       font-weight: 800;
       color: #111;
       letter-spacing: -0.02em;
@@ -123,66 +135,8 @@
     }
     .drop-btn:hover { background: #d4d4d4; }
 
-    /* the dropped "o" — a perfectly round ball that rolls */
-    .flying-o {
-      position: absolute;
-      box-sizing: border-box;
-      border-radius: 50%;
-      border-style: solid;
-      border-color: #c0392b;
-      background: transparent;
-      pointer-events: none;
-      z-index: 5;
-      will-change: transform;
-    }
-    .flying-o .mark {
-      position: absolute;
-      top: -7%;
-      left: 50%;
-      width: 16%;
-      height: 16%;
-      margin-left: -8%;
-      background: #c0392b;
-      border-radius: 50%;
-    }
-
-    /* simply-styled basketball hoop on the right side */
-    .hoop {
-      position: absolute;
-      right: 0;
-      top: 38%;
-      width: 130px;
-      height: 120px;
-      pointer-events: none;
-    }
-    .hoop .backboard {
-      position: absolute;
-      right: 0; top: 0;
-      width: 12px; height: 90px;
-      background: #ddd;
-      border: 2px solid #999;
-      border-radius: 3px;
-    }
-    .hoop .rim {
-      position: absolute;
-      right: 12px; top: 46px;
-      width: 90px; height: 16px;
-      border: 4px solid #e8732c;
-      border-radius: 50%;
-      background: transparent;
-    }
-    .hoop .net {
-      position: absolute;
-      right: 18px; top: 58px;
-      width: 78px; height: 46px;
-      border-left: 2px solid #ccc;
-      border-right: 2px solid #ccc;
-      background:
-        repeating-linear-gradient(60deg, transparent 0 9px, #ccc 9px 10px),
-        repeating-linear-gradient(-60deg, transparent 0 9px, #ccc 9px 10px);
-      clip-path: polygon(0 0, 100% 0, 82% 100%, 18% 100%);
-      opacity: 0.7;
-    }
+    .drop-btn.ghost { background: #efefef; color: #888; }
+    .drop-btn.ghost:hover { background: #e6e6e6; }
 
     .about-bio {
       position: absolute;
@@ -193,6 +147,8 @@
       font-size: 1rem;
       line-height: 1.6;
       color: #444;
+      z-index: 2;
+      pointer-events: none;
     }
 
     .secret-link { display: none; }
@@ -233,18 +189,14 @@
 
   <main>
     <div id="about" class="page about-page active">
+      <canvas id="aboutCanvas"></canvas>
       <div class="about-top">
         <h1 class="about-name">Alex G<span id="dropO" class="drop-o">o</span>ld</h1>
         <button id="dropBtn" class="drop-btn">drop</button>
+        <button id="clearPathBtn" class="drop-btn ghost">clear path</button>
       </div>
 
-      <div class="hoop" id="hoop">
-        <div class="backboard"></div>
-        <div class="rim" id="rim"></div>
-        <div class="net"></div>
-      </div>
-
-      <p class="about-bio">I'm Alex Gold, a builder who loves working at the intersection of technology and design. When I'm not writing code, you'll find me exploring the outdoors or reading about the future of energy. (Psst — try dropping the "o" into the hoop.)</p>
+      <p class="about-bio">I'm Alex Gold, a builder who loves working at the intersection of technology and design. When I'm not writing code, you'll find me exploring the outdoors or reading about the future of energy. (Psst — draw a path, then hit drop to roll the "o" into the bin.)</p>
     </div>
 
     <div id="tesla" class="page">
@@ -302,7 +254,7 @@
       mainEl.classList.toggle('game-mode', page === 'game');
       mainEl.classList.toggle('about-mode', page === 'about');
       if (page === 'game') initGame();
-      if (page === 'about') resetO();
+      if (page === 'about') resetAbout();
     }
 
     links.forEach(link => {
@@ -489,21 +441,16 @@
       if (mainEl.classList.contains('game-mode')) { sizeCanvas(); draw(); }
     });
 
-    // ---- About page: drop the "o" into the hoop ----
+    // ---- About page: draw a path, drop the "o" into the bin ----
     const aboutPage = document.getElementById('about');
     const dropO = document.getElementById('dropO');
-    const dropBtn = document.getElementById('dropBtn');
-    const hoopEl = document.getElementById('hoop');
-    const rimEl = document.getElementById('rim');
     const secretLink = document.querySelector('.secret-link');
-    let flyingO = null, oRaf = null;
+    const aCanvas = document.getElementById('aboutCanvas');
+    const actx = aCanvas.getContext('2d');
 
-    function resetO() {
-      if (oRaf) cancelAnimationFrame(oRaf);
-      oRaf = null;
-      if (flyingO) { flyingO.remove(); flyingO = null; }
-      dropO.style.visibility = 'visible';
-    }
+    let aLines = [];          // user-drawn path segments
+    let aDrawing = false, aLast = null;
+    let ball = null, aRaf = null, aAnimating = false, basket = null;
 
     function rectIn(el, container) {
       const r = el.getBoundingClientRect();
@@ -511,114 +458,182 @@
       return { x: r.left - c.left, y: r.top - c.top, w: r.width, h: r.height };
     }
 
-    function unlockSecret(navigate) {
+    function revealSecret() {        // reveal the sidebar link only — no navigation
       localStorage.setItem('secretUnlocked', '1');
       secretLink.classList.add('revealed');
       secretLink.textContent = '★ Secret';
-      if (navigate) setTimeout(() => activate('secret'), 700);
+    }
+    if (localStorage.getItem('secretUnlocked') === '1') revealSecret();
+
+    function computeBasket() {
+      const W = aCanvas.width, H = aCanvas.height;
+      const ow = 64;                                  // opening width
+      const x2 = W - 90, x1 = x2 - ow;
+      const top = Math.round(Math.min(H * 0.5, H - 220));
+      const depth = 70, inset = 9;
+      basket = { x1, x2, top, depth, inset, bottom: top + depth };
     }
 
-    if (localStorage.getItem('secretUnlocked') === '1') {
-      secretLink.classList.add('revealed');
-      secretLink.textContent = '★ Secret';
+    function sizeAbout() {
+      const r = aCanvas.getBoundingClientRect();
+      aCanvas.width = r.width;
+      aCanvas.height = r.height;
+      computeBasket();
     }
 
-    function launchO() {
-      resetO();
-      const start = rectIn(dropO, aboutPage);
-      const rim = rectIn(rimEl, aboutPage);
-      dropO.style.visibility = 'hidden';   // keep the gap in "G ld" without reflow
+    function resetAbout() {
+      if (aRaf) cancelAnimationFrame(aRaf);
+      aRaf = null; aAnimating = false; ball = null;
+      dropO.style.visibility = 'visible';
+      requestAnimationFrame(() => { sizeAbout(); aDraw(); });
+    }
 
-      // a perfectly round ball sized to the letter
-      const size = Math.round(start.h * 0.62);
-      const R = size / 2;
-      flyingO = document.createElement('div');
-      flyingO.className = 'flying-o';
-      flyingO.style.width = size + 'px';
-      flyingO.style.height = size + 'px';
-      flyingO.style.borderWidth = Math.max(4, Math.round(size * 0.2)) + 'px';
-      flyingO.appendChild(Object.assign(document.createElement('div'), { className: 'mark' }));
-      aboutPage.appendChild(flyingO);
+    function aPoint(e) {
+      const r = aCanvas.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+    aCanvas.addEventListener('pointerdown', e => {
+      if (aAnimating) return;
+      aDrawing = true; aLast = aPoint(e);
+      aCanvas.setPointerCapture(e.pointerId);
+    });
+    aCanvas.addEventListener('pointermove', e => {
+      if (!aDrawing) return;
+      const p = aPoint(e);
+      const dx = p.x - aLast.x, dy = p.y - aLast.y;
+      if (dx * dx + dy * dy > 25) {
+        aLines.push({ x1: aLast.x, y1: aLast.y, x2: p.x, y2: p.y });
+        aLast = p; aDraw();
+      }
+    });
+    aCanvas.addEventListener('pointerup', () => { aDrawing = false; });
+    aCanvas.addEventListener('pointerleave', () => { aDrawing = false; });
 
-      const W = aboutPage.clientWidth, H = aboutPage.clientHeight;
-      // position is the ball's CENTER; start centered on where the "o" was
-      let cx = start.x + start.w / 2;
-      let cy = start.y + start.h * 0.6;
+    const A_REST = 0.3, A_ROLL = 0.985;   // bounciness + rolling retention
 
-      // aim a toss at the rim opening (same gravity as the ride) with a little variance
-      const targetX = rim.x + rim.w * 0.45 + (Math.random() - 0.5) * 36;
-      const targetY = rim.y - 4 + (Math.random() - 0.5) * 16;
-      const g = GRAVITY;                  // reuse the game's gravity
-      const dx = targetX - cx;
-      const hs = 6.2 + Math.random() * 1.2;       // horizontal speed → gentle arc, not a tall lob
-      const T = Math.max(24, dx / hs);
-      let vx = dx / T;
-      let vy = (targetY - cy - 0.5 * g * T * T) / T;
+    function dropBall() {
+      if (aRaf) cancelAnimationFrame(aRaf);
+      const s = rectIn(dropO, aboutPage);
+      dropO.style.visibility = 'hidden';      // leave the gap in "G ld"
+      const R = Math.max(11, Math.round(s.h * 0.3));
+      ball = { x: s.x + s.w / 2, y: s.y + s.h * 0.6, vx: 0, vy: 0, angle: 0, R, scored: false };
+      aAnimating = true;
+      aLoop();
+    }
 
-      // solid surfaces the ball collides + rolls against (same segment math as the bike)
-      const boardX = rim.x + rim.w + 2;
-      const segs = [
-        { x1: 0, y1: H, x2: W, y2: H },                       // floor
-        { x1: 0, y1: 0, x2: 0, y2: H },                       // left wall
-        { x1: W, y1: 0, x2: W, y2: H },                       // right wall
-        { x1: boardX, y1: rim.y - 70, x2: boardX, y2: rim.y + 30 } // backboard
-      ];
-      const REST = 0.5;                   // bounciness
-      const ROLL = 0.985;                 // tangential retention (rolling)
+    function aStep() {
+      const W = aCanvas.width, H = aCanvas.height, b = ball;
+      b.vy += GRAVITY;            // straight-down gravity (no launch)
+      b.x += b.vx; b.y += b.vy;
+      b.angle += b.vx / b.R;      // roll
 
-      const rimCy = rim.y + rim.h / 2;
-      let angle = 0, scored = false;
+      // score: fall into the bin opening from above
+      if (!b.scored && b.vy > 0 &&
+          b.x > basket.x1 - b.R * 0.5 && b.x < basket.x2 + b.R * 0.5 &&
+          b.y > basket.top - 3 && b.y < basket.top + basket.depth * 0.75) {
+        b.scored = true;
+        b.vx *= 0.3;                      // settle into the bin
+      }
 
-      function tick() {
-        vy += g;
-        cx += vx;
-        cy += vy;
-        angle += vx / R;                  // roll: spin proportional to travel
-
-        // score: center passes through the rim opening moving downward
-        if (!scored && vy > 0 &&
-            cx > rim.x + 6 && cx < rim.x + rim.w - 6 &&
-            cy > rim.y && cy < rim.y + rim.h + 12) {
-          scored = true;
-          vx *= 0.2;                      // drop straight through the net
-          flyingO.style.borderColor = '#e8732c';
-        }
-
-        // collide + roll against every surface (skip once scored so it falls through)
-        if (!scored) {
-          for (const s of segs) {
-            const c = closestOnSeg(cx, cy, s);
-            if (c.dist < R && c.dist > 0.0001) {
-              const nx = (cx - c.cx) / c.dist, ny = (cy - c.cy) / c.dist;
-              const push = R - c.dist;
-              cx += nx * push; cy += ny * push;
-              const vn = vx * nx + vy * ny;
-              if (vn < 0) { vx -= (1 + REST) * vn * nx; vy -= (1 + REST) * vn * ny; }
-              vx *= ROLL; vy *= ROLL;
-            }
+      if (!b.scored) {
+        const segs = aLines.concat([
+          { x1: 0, y1: H, x2: W, y2: H },   // floor
+          { x1: 0, y1: 0, x2: 0, y2: H },   // left wall
+          { x1: W, y1: 0, x2: W, y2: H }    // right wall
+        ]);
+        for (const seg of segs) {
+          const c = closestOnSeg(b.x, b.y, seg);
+          if (c.dist < b.R && c.dist > 0.0001) {
+            const nx = (b.x - c.cx) / c.dist, ny = (b.y - c.cy) / c.dist;
+            const push = b.R - c.dist;
+            b.x += nx * push; b.y += ny * push;
+            const vn = b.vx * nx + b.vy * ny;
+            if (vn < 0) { b.vx -= (1 + A_REST) * vn * nx; b.vy -= (1 + A_REST) * vn * ny; }
+            b.vx *= A_ROLL; b.vy *= A_ROLL;
           }
         }
-
-        flyingO.style.left = (cx - R) + 'px';
-        flyingO.style.top = (cy - R) + 'px';
-        flyingO.style.transform = 'rotate(' + angle + 'rad)';
-
-        if (scored && cy > rimCy + 50) {
-          flyingO.remove(); flyingO = null;
-          unlockSecret(true);
-          oRaf = null;
-          return;
-        }
-
-        // came to rest on the floor (a miss) — stop so the user can retry
-        const resting = cy + R >= H - 0.5 && Math.abs(vy) < 1.1 && Math.abs(vx) < 0.35;
-        if (resting || cy > H + 200) { oRaf = null; return; }
-        oRaf = requestAnimationFrame(tick);
       }
-      oRaf = requestAnimationFrame(tick);
     }
 
-    dropBtn.addEventListener('click', launchO);
+    function aLoop() {
+      aStep();
+      aDraw();
+      const b = ball, H = aCanvas.height;
+      if (b.scored && b.y > basket.bottom + 14) {   // fully sunk
+        ball = null; aAnimating = false; aRaf = null;
+        dropO.style.visibility = 'visible';         // the "o" is back in the name
+        aDraw(); revealSecret();
+        return;
+      }
+      const resting = !b.scored && b.y + b.R >= H - 0.5 &&
+                      Math.abs(b.vy) < 1 && Math.abs(b.vx) < 0.3;
+      if (resting || b.y > H + 300) { aAnimating = false; aRaf = null; return; }
+      aRaf = requestAnimationFrame(aLoop);
+    }
+
+    function drawBasket() {
+      const { x1, x2, top, bottom, inset } = basket;
+      actx.save();
+      actx.strokeStyle = '#b8bec6';
+      actx.lineWidth = 2;
+      actx.lineCap = 'round';
+      // body (slightly tapered bin)
+      actx.beginPath();
+      actx.moveTo(x1, top);
+      actx.lineTo(x1 + inset, bottom);
+      actx.lineTo(x2 - inset, bottom);
+      actx.lineTo(x2, top);
+      actx.stroke();
+      // rim
+      actx.beginPath();
+      actx.ellipse((x1 + x2) / 2, top, (x2 - x1) / 2, 5, 0, 0, Math.PI * 2);
+      actx.stroke();
+      // a couple of faint ribs
+      actx.globalAlpha = 0.6;
+      for (let i = 1; i <= 2; i++) {
+        const f = i / 3;
+        actx.beginPath();
+        actx.moveTo(x1 + (x2 - x1) * f, top + 4);
+        actx.lineTo((x1 + inset) + ((x2 - inset) - (x1 + inset)) * f, bottom);
+        actx.stroke();
+      }
+      actx.restore();
+    }
+
+    function drawBall() {
+      const b = ball;
+      actx.save();
+      actx.translate(b.x, b.y);
+      actx.rotate(b.angle);
+      const lw = Math.max(3, b.R * 0.42);
+      const rr = b.R - lw / 2;
+      actx.strokeStyle = b.scored ? '#9aa3ad' : '#c0392b';
+      actx.lineWidth = lw;
+      actx.beginPath(); actx.arc(0, 0, rr, 0, Math.PI * 2); actx.stroke();
+      actx.fillStyle = actx.strokeStyle;     // marker dot reveals spin
+      actx.beginPath(); actx.arc(0, -rr, b.R * 0.18, 0, Math.PI * 2); actx.fill();
+      actx.restore();
+    }
+
+    function aDraw() {
+      actx.clearRect(0, 0, aCanvas.width, aCanvas.height);
+      if (basket) drawBasket();
+      actx.strokeStyle = '#9aa3ad';
+      actx.lineWidth = 3;
+      actx.lineCap = 'round';
+      actx.beginPath();
+      for (const s of aLines) { actx.moveTo(s.x1, s.y1); actx.lineTo(s.x2, s.y2); }
+      actx.stroke();
+      if (ball) drawBall();
+    }
+
+    document.getElementById('dropBtn').addEventListener('click', dropBall);
+    document.getElementById('clearPathBtn').addEventListener('click', () => {
+      aLines = []; aDraw();
+    });
+    window.addEventListener('resize', () => {
+      if (mainEl.classList.contains('about-mode')) { sizeAbout(); aDraw(); }
+    });
 
     // apply the initial active page (About) and its mode
     activate('about');
