@@ -123,15 +123,27 @@
     }
     .drop-btn:hover { background: #d4d4d4; }
 
-    /* falling letter */
+    /* the dropped "o" — a perfectly round ball that rolls */
     .flying-o {
       position: absolute;
-      font-size: clamp(2.5rem, 8vw, 5rem);
-      font-weight: 800;
-      color: #c0392b;
-      line-height: 1;
+      box-sizing: border-box;
+      border-radius: 50%;
+      border-style: solid;
+      border-color: #c0392b;
+      background: transparent;
       pointer-events: none;
       z-index: 5;
+      will-change: transform;
+    }
+    .flying-o .mark {
+      position: absolute;
+      top: -7%;
+      left: 50%;
+      width: 16%;
+      height: 16%;
+      margin-left: -8%;
+      background: #c0392b;
+      border-radius: 50%;
     }
 
     /* simply-styled basketball hoop on the right side */
@@ -517,51 +529,81 @@
       const rim = rectIn(rimEl, aboutPage);
       dropO.style.visibility = 'hidden';   // keep the gap in "G ld" without reflow
 
-      flyingO = document.createElement('span');
+      // a perfectly round ball sized to the letter
+      const size = Math.round(start.h * 0.62);
+      const R = size / 2;
+      flyingO = document.createElement('div');
       flyingO.className = 'flying-o';
-      flyingO.textContent = 'o';
+      flyingO.style.width = size + 'px';
+      flyingO.style.height = size + 'px';
+      flyingO.style.borderWidth = Math.max(4, Math.round(size * 0.2)) + 'px';
+      flyingO.appendChild(Object.assign(document.createElement('div'), { className: 'mark' }));
       aboutPage.appendChild(flyingO);
 
-      const size = start.w;
-      let x = start.x, y = start.y;
-      // target: a touch above the rim's front opening, with slight variance for a real "shot"
-      const targetX = rim.x + rim.w * 0.45 + (Math.random() - 0.5) * 40;
-      const targetY = rim.y - 6 + (Math.random() - 0.5) * 18;
-      const g = 0.55;
-      const T = 60 + Math.random() * 14;        // flight time in frames
-      let vx = (targetX - x) / T;
-      let vy = (targetY - y - 0.5 * g * T * T) / T;
+      const W = aboutPage.clientWidth, H = aboutPage.clientHeight;
+      // position is the ball's CENTER; start centered on where the "o" was
+      let cx = start.x + start.w / 2;
+      let cy = start.y + start.h * 0.6;
 
-      const bounds = { w: aboutPage.clientWidth, h: aboutPage.clientHeight };
-      const rimCx = rim.x + rim.w / 2, rimCy = rim.y + rim.h / 2;
-      let scored = false;
+      // aim a toss at the rim opening (same gravity as the ride) with a little variance
+      const targetX = rim.x + rim.w * 0.45 + (Math.random() - 0.5) * 36;
+      const targetY = rim.y - 4 + (Math.random() - 0.5) * 16;
+      const g = GRAVITY;                  // reuse the game's gravity
+      const dx = targetX - cx;
+      const hs = 6.2 + Math.random() * 1.2;       // horizontal speed → gentle arc, not a tall lob
+      const T = Math.max(24, dx / hs);
+      let vx = dx / T;
+      let vy = (targetY - cy - 0.5 * g * T * T) / T;
+
+      // solid surfaces the ball collides + rolls against (same segment math as the bike)
+      const boardX = rim.x + rim.w + 2;
+      const segs = [
+        { x1: 0, y1: H, x2: W, y2: H },                       // floor
+        { x1: 0, y1: 0, x2: 0, y2: H },                       // left wall
+        { x1: W, y1: 0, x2: W, y2: H },                       // right wall
+        { x1: boardX, y1: rim.y - 70, x2: boardX, y2: rim.y + 30 } // backboard
+      ];
+      const REST = 0.5;                   // bounciness
+      const ROLL = 0.985;                 // tangential retention (rolling)
+
+      const rimCy = rim.y + rim.h / 2;
+      let angle = 0, scored = false;
 
       function tick() {
         vy += g;
-        x += vx;
-        y += vy;
+        cx += vx;
+        cy += vy;
+        angle += vx / R;                  // roll: spin proportional to travel
 
         // score: center passes through the rim opening moving downward
-        const cx = x + size / 2, cy = y + size / 2;
         if (!scored && vy > 0 &&
             cx > rim.x + 6 && cx < rim.x + rim.w - 6 &&
-            cy > rim.y && cy < rim.y + rim.h + 10) {
+            cy > rim.y && cy < rim.y + rim.h + 12) {
           scored = true;
           vx *= 0.2;                      // drop straight through the net
-          flyingO.style.color = '#e8732c';
+          flyingO.style.borderColor = '#e8732c';
         }
 
-        // floor / walls bounce (skip once it has scored — let it fall through)
+        // collide + roll against every surface (skip once scored so it falls through)
         if (!scored) {
-          if (y + size > bounds.h) { y = bounds.h - size; vy *= -0.55; vx *= 0.7; }
-          if (x < 0) { x = 0; vx *= -0.6; }
-          if (x + size > bounds.w) { x = bounds.w - size; vx *= -0.6; }
+          for (const s of segs) {
+            const c = closestOnSeg(cx, cy, s);
+            if (c.dist < R && c.dist > 0.0001) {
+              const nx = (cx - c.cx) / c.dist, ny = (cy - c.cy) / c.dist;
+              const push = R - c.dist;
+              cx += nx * push; cy += ny * push;
+              const vn = vx * nx + vy * ny;
+              if (vn < 0) { vx -= (1 + REST) * vn * nx; vy -= (1 + REST) * vn * ny; }
+              vx *= ROLL; vy *= ROLL;
+            }
+          }
         }
 
-        flyingO.style.left = x + 'px';
-        flyingO.style.top = y + 'px';
+        flyingO.style.left = (cx - R) + 'px';
+        flyingO.style.top = (cy - R) + 'px';
+        flyingO.style.transform = 'rotate(' + angle + 'rad)';
 
-        if (scored && cy > rimCy + 40) {
+        if (scored && cy > rimCy + 50) {
           flyingO.remove(); flyingO = null;
           unlockSecret(true);
           oRaf = null;
@@ -569,8 +611,8 @@
         }
 
         // came to rest on the floor (a miss) — stop so the user can retry
-        const resting = y + size >= bounds.h - 0.5 && Math.abs(vy) < 1.2 && Math.abs(vx) < 0.4;
-        if (resting || y > bounds.h + 200) { oRaf = null; return; }
+        const resting = cy + R >= H - 0.5 && Math.abs(vy) < 1.1 && Math.abs(vx) < 0.35;
+        if (resting || cy > H + 200) { oRaf = null; return; }
         oRaf = requestAnimationFrame(tick);
       }
       oRaf = requestAnimationFrame(tick);
