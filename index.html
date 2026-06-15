@@ -10,13 +10,13 @@
     body {
       display: flex;
       height: 100vh;
-      font-family: sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       color: #222;
     }
 
     aside {
       width: 200px;
-      background: #f4f4f4;
+      background: #fff;
       display: flex;
       flex-direction: column;
       padding: 2rem 1.5rem;
@@ -32,15 +32,14 @@
 
     aside a {
       text-decoration: none;
-      color: #555;
+      color: #888;
       font-size: 0.95rem;
       padding: 0.4rem 0;
-      border-radius: 4px;
       cursor: pointer;
     }
 
     aside a:hover, aside a.active {
-      color: #000;
+      color: #c0392b;
       font-weight: 600;
     }
 
@@ -176,8 +175,8 @@
     <h1>Alex Gold</h1>
     <a href="#" class="nav-link active" data-page="about">About</a>
     <a href="#" class="nav-link" data-page="tesla">Tesla</a>
-    <a href="#" class="nav-link" data-page="projects">Projects</a>
-    <a href="#" class="nav-link" data-page="contact">Contact</a>
+    <a href="#" class="nav-link" data-page="fsae">FSAE</a>
+    <a href="#" class="nav-link" data-page="turntable">Turntable</a>
     <a href="#" class="nav-link" data-page="game">Game</a>
     <a href="#" class="nav-link secret-link" data-page="secret">??? Secret</a>
   </aside>
@@ -192,22 +191,24 @@
         <button id="clearPathBtn" class="drop-btn ghost">clear path</button>
       </div>
 
-      <p class="about-bio">I'm Alex Gold, a builder who loves working at the intersection of technology and design. When I'm not writing code, you'll find me exploring the outdoors or reading about the future of energy. (Psst — draw a path, then hit drop to roll the "o" into the bin.)</p>
+      <p class="about-bio">I'm an engineer who loves to spin CAD, hates suppliers, and doesn't mind frying a resistor. I studied mechanical engineering at BYU (class of 2024), with a focus on high voltage electronics, mechatronics, and battery chemistry — and I currently work at Tesla in Palo Alto as a mechanical design engineer on the high voltage distribution team. Above all else, I just want to build. (Psst — draw a path, then hit drop to roll the "o" into the bin.)</p>
     </div>
 
     <div id="tesla" class="page">
       <h2>Tesla</h2>
-      <p>I've been a Tesla owner and enthusiast since 2019, fascinated by the company's push to accelerate the world's transition to sustainable energy. From Autopilot to the Supercharger network, the technology never stops being impressive.</p>
+      <p>I work on new programs at Tesla — from high-level planning and cross-team integration, to detailed part design, reliability spec generation and validation, and ramping at hyper scale. I'm the design owner of the high voltage charge port on Cybercab, an intricate system with electrical, mechanical, and thermal requirements, integrated sensors and an actuator, built using new manufacturing techniques.</p>
+      <p style="margin-top:1rem;">The system was handed to me in the prototype phase. I led a small team through a complete design overhaul to prepare it for hyper-scale production, with a focus on reliability and manufacturing simplicity — working closely with both the upstream supplier and the downstream manufacturing team. The design shipped into full production with very low failure rates.</p>
     </div>
 
-    <div id="projects" class="page">
-      <h2>Projects</h2>
-      <p>I've shipped projects ranging from data pipelines to consumer-facing web apps, always with a focus on simplicity and impact. This site is one of them — small, fast, and built from scratch.</p>
+    <div id="fsae" class="page">
+      <h2>FSAE Formula Electric</h2>
+      <p>I was a founding member of the Formula SAE Electric team at BYU. Starting from scratch with no car, no budget, and no playbook, we built a fully electric formula-style racecar and sent it to competition within two years.</p>
     </div>
 
-    <div id="contact" class="page">
-      <h2>Contact</h2>
-      <p>I'm always open to interesting conversations and collaborations — feel free to reach out via email or LinkedIn. The best ideas usually start with a short message.</p>
+    <div id="turntable" class="page">
+      <h2>Turntable</h2>
+      <p>I'm building a Bluetooth device that lives on my desk and gives physical controls for music and meetings — inspired by the Teenage Engineering OB-4. The centerpiece is a turntable-style platter that spins as audio plays and lets you scrub back through a song or a meeting recording.</p>
+      <p style="margin-top:1rem;">Under the hood: an ESP32 dual-core chip (one core for motor control, one for audio and Bluetooth), a brushless DC gimbal motor driven by SimpleFOC with careful cogging compensation, and a ring buffer that stores the last two minutes of audio. The whole thing runs off USB-C at under 0.1 W in normal operation. This project is in progress.</p>
     </div>
 
     <div id="game" class="page game-page">
