@@ -405,7 +405,9 @@
         <button id="clearPathBtn" class="drop-btn ghost">clear path</button>
       </div>
 
-      <p class="about-bio">I'm an engineer who loves to spin CAD, hates suppliers, and doesn't mind frying a resistor. I studied mechanical engineering at BYU (class of 2024), with a focus on high voltage electronics, mechatronics, and battery chemistry — and I currently work at Tesla in Palo Alto as a mechanical design engineer on the high voltage distribution team. Above all else, I just want to build.</p>
+      <p class="about-bio">Hey, I'm Alex Gold.<br>
+      I'm an engineer who loves to spin CAD, hates CTE mismatches, and doesn't mind frying a resistor.<br>
+      I currently work at Tesla in Palo Alto, California as a mechanical design engineer on the high voltage distribution team. I studied mechanical engineering at BYU with a focus on high voltage electronics, mechatronics, and battery chemistry. I'm passionate about interdisciplinary engineering and mechatronic systems. Above all else I just want to build, build, build!</p>
     </div>
 
     <div id="tesla" class="page">
@@ -578,7 +580,8 @@
       if (aRaf) cancelAnimationFrame(aRaf);
       aRaf = null; aAnimating = false; ball = null;
       dropO.style.visibility = 'visible';
-      requestAnimationFrame(() => { sizeAbout(); aDraw(); });
+      sizeAbout(); aDraw();                                 // size now (layout is ready on nav)
+      requestAnimationFrame(() => { sizeAbout(); aDraw(); }); // and again next frame as a fallback
     }
 
     function aPoint(e) {
@@ -603,9 +606,21 @@
     aCanvas.addEventListener('pointerleave', () => { aDrawing = false; });
 
     const A_REST = 0.3, A_ROLL = 0.985;   // bounciness + rolling retention
+    const GRAVITY = 0.35;                  // straight-down gravity for the falling "o"
+
+    // distance from a point to a segment, plus the closest point on it
+    function closestOnSeg(px, py, s) {
+      const dx = s.x2 - s.x1, dy = s.y2 - s.y1;
+      const len2 = dx * dx + dy * dy || 1;
+      let t = ((px - s.x1) * dx + (py - s.y1) * dy) / len2;
+      t = Math.max(0, Math.min(1, t));
+      const cx = s.x1 + t * dx, cy = s.y1 + t * dy;
+      return { cx, cy, dist: Math.hypot(px - cx, py - cy) };
+    }
 
     function dropBall() {
       if (aRaf) cancelAnimationFrame(aRaf);
+      sizeAbout();                            // make canvas match its on-screen size first
       const s = rectIn(dropO, aboutPage);
       dropO.style.visibility = 'hidden';      // leave the gap in "G ld"
       const R = Math.max(11, Math.round(s.h * 0.3));
