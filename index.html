@@ -205,6 +205,16 @@
       color: #1c2024;
       margin: 1.4rem 0 0.4rem;
     }
+    .tt-arch {
+      margin: 0 0 0.9rem;
+      padding-left: 1.1rem;
+    }
+    .tt-arch li {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #444c55;
+      margin: 0 0 0.7rem;
+    }
 
     .tt-stage {
       position: relative;
@@ -409,7 +419,7 @@
     <a href="#" class="nav-link active" data-page="about">About</a>
     <a href="#" class="nav-link" data-page="tesla">Tesla</a>
     <a href="#" class="nav-link" data-page="fsae">FSAE</a>
-    <a href="#" class="nav-link" data-page="turntable">Turntable</a>
+    <a href="#" class="nav-link" data-page="turntable">Haptic audio controller</a>
     <a href="#" class="nav-link" data-page="game">Game</a>
     <a href="#" class="nav-link secret-link" data-page="secret">??? Secret</a>
   </aside>
@@ -440,10 +450,9 @@
 
     <div id="turntable" class="page turntable-page">
       <div class="tt-writeup">
-        <p class="tt-kicker">Project</p>
-        <h2>Turntable web simulation</h2>
-        <p>A browser-based simulation of a desk turntable controller. The device receives audio from a simulated &ldquo;phone&rdquo; over Bluetooth, plays it through a simulated &ldquo;speaker,&rdquo; and allows the user to grab a spinning platter to scratch, slow, or reverse the audio in real time. It includes an OLED-style display, a volume knob, and a row of buttons along the bottom that handle play/pause, skip forward, skip back, bluetooth connection, and mute.</p>
-        <p>The goal is to faithfully reproduce the behavior of the real hardware device &mdash; the user-facing interaction model &mdash; not the hardware internals. No motor physics, no actual Bluetooth. Grab the platter below and drag it to hear it scratch.</p>
+        <h2>Haptic audio controller</h2>
+        <p>I am working on a bluetooth device that sits on my desk and gives physical interfaces to basic audio controls for music and meetings. A fun aspect I am incorporating is a little turntable-style platter that turns as audio plays though it and can be used to scratch back over a song or meeting you are in (inspired by Teenage Engineering OB-4). I'm always listening to music and connecting to meetings through my phone, but I don't want to have it out all the time to handle controls.</p>
+        <p>My main technical motivation for this project was a to do some buttery smooth haptic interfacing, using the brushless DC motor as an input and output using field controls. I also want to design seamless bluetooth integration, and low latency communication between chips to give a high quality and low lag (&lt;10ms) output. It is also giving me the chance to work on my PCB design and do some industrial design for a sleek housing.</p>
       </div>
       <div class="tt-stage">
         <canvas class="tt-cable" id="ttCable"></canvas>
@@ -503,12 +512,14 @@
         </section>
       </div>
       <div class="tt-writeup below">
-        <h3>The platter</h3>
-        <p>A circular disc rotates continuously, with two dots near the edge to show that it&rsquo;s spinning. It&rsquo;s always in one of three states: idle (turning at a fixed target velocity), grabbed (angular velocity follows your pointer), or releasing (easing back to the target speed). The platter&rsquo;s angular velocity maps to a playback rate &mdash; at rest it&rsquo;s 1.0, backward is negative, and a full stop is zero.</p>
-        <h3>The ring buffer</h3>
-        <p>Behind the scenes is a two-minute window of recently received audio that the playhead can move freely within. The phone continuously writes audio into the buffer at 1&times; speed while the device reads from it at the platter&rsquo;s rate. Catch up to the live edge and it keeps streaming live; fall behind and the display counts how many seconds back you are, up to 120. Reverse playback reads backward through the buffer sample-by-sample, with linear interpolation for non-integer rates.</p>
-        <h3>Display, knob, and buttons</h3>
-        <p>A 128&times;64 monochrome OLED shows the volume, how far behind live you are, and a pixelated side-profile face whose mouth opens and closes with the mute state. The volume knob is a relative encoder &mdash; each click nudges the level by a fixed step and stays in sync with the phone. Everything runs client-side in a single hand-written HTML file, using the Web Audio API and an AudioWorklet for the variable-rate ring buffer.</p>
+        <h3>Architecture:</h3>
+        <ul class="tt-arch">
+          <li>Built around an ESP32 -xxxxx chip, xxx processing speeds and double cores were a key requirement (core 0 strictly handles motor control and feedback, core 1 handles audio buffer, bluetooth, screen, user input)</li>
+          <li>Motor is a brushless DC gimbal motor controlled with a simpleFOC chip. This is something I debated for a while, and considered using a small brushed motor with physical gearing and clutch, similar to a real turntable, but I decided on a gimbal motor because of the total integration and small packaging of the motor, resolver?, and mechanical structure. Also I found the simpleFOC chip which unlocked precise control at very low speeds and has an active community which I referenced for the firmware. I've spent a long time tuning the control method and filtering for this to make the feel correct with very low cogging. I found this matters a lot when you tie an audio output to it; high frequency wobble you can't physically feel shows up as noticeable audio distortion in the highs and lows.</li>
+          <li>I want this to be powered by a usb-c connection that can be plugged into a laptop, so the power draw is limited. This governed the max reaction torque of the platter motor, and required me to add a boost converter to bump up the voltage for my motor. During normal operation the closed-loop motor controls run at shockingly low power (&lt;0.1 watts) so system cooling is not a concern.</li>
+          <li>Firmware is based around a two main processing systems. I'm a firmware novice so Claude helped implement the code once I had laid out the high level architecture. In one core, audio is pulled in through a bluetooth connection and fed into a ring buffer which overwrites itself every two minutes. The audio is fed out through a DAC to a lined connection, the position and rate of output is set by a pointer which references the motor position and velocity. In another core, the motor is controlled using a closed loop system using field controls from which reference the resolver. This system took a lot of refining, it has filtering and the motor goes through a calibration cycle during boot to measure cogging due to the permanent magnets, which it then compensates for. Thanks to the simpleFOC community for that one. I really wanted to do bluetooth in and bluetooth out to airpods, but airpods make this so unfriendly, and it added too much complexity and mostly would have made the latency too high to be usable in a meeting or get a responsive feel at the turntable.</li>
+        </ul>
+        <p>This project is in process.</p>
       </div>
     </div>
 
