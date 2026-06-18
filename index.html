@@ -45,6 +45,7 @@
 
     main {
       flex: 1;
+      min-width: 0;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -168,6 +169,238 @@
       line-height: 1.6;
       color: #444;
     }
+
+    /* ---- Turntable simulation ---- */
+    main.turntable-mode { padding: 0; align-items: stretch; justify-content: stretch; }
+    .page.turntable-page { max-width: none; width: 100%; height: 100%; display: none; }
+    .page.turntable-page.active { display: block; overflow-y: auto; }
+    .tt-writeup {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2.4rem 2rem 0.8rem;
+      color: #2b3138;
+    }
+    .tt-writeup.below { padding: 1.4rem 2rem 3rem; }
+    .tt-writeup h2 {
+      font-size: 1.5rem;
+      margin: 0 0 0.3rem;
+      color: #1c2024;
+    }
+    .tt-writeup .tt-kicker {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #9aa3ad;
+      font-weight: 700;
+      margin: 0 0 0.9rem;
+    }
+    .tt-writeup p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #444c55;
+      margin: 0 0 0.9rem;
+    }
+    .tt-writeup h3 {
+      font-size: 0.95rem;
+      color: #1c2024;
+      margin: 1.4rem 0 0.4rem;
+    }
+
+    .tt-stage {
+      position: relative;
+      width: 100%; min-height: 460px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      padding: 1.5rem 2rem;
+      background: #f4f5f7;
+      overflow: auto;
+      flex-wrap: wrap;
+    }
+    .tt-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .tt-panel h3 {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #9aa3ad;
+      font-weight: 700;
+    }
+
+    /* device */
+    .tt-device {
+      background: #1c2024;
+      border-radius: 20px;
+      border-top-left-radius: 77px;
+      padding: 14px 1.2rem 1.4rem 14px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05);
+      display: grid;
+      grid-template-columns: auto auto;
+      grid-template-rows: auto auto;
+      gap: 1.1rem 1rem;
+      align-items: start;
+    }
+    #ttPlatter {
+      grid-row: 1 / 3;
+      width: 126px; height: 126px;
+      cursor: grab;
+      touch-action: none;
+      border-radius: 50%;
+    }
+    #ttPlatter:active { cursor: grabbing; }
+    .tt-oled {
+      width: 138px; height: 69px;
+      background: #000;
+      border-radius: 6px;
+      image-rendering: pixelated;
+      align-self: start;
+      box-shadow: inset 0 0 0 2px #000, 0 0 0 3px #303539;
+    }
+    .tt-knob {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 35%, #4a5158, #2a2e33 70%);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+      position: relative;
+      cursor: grab;
+      touch-action: none;
+      justify-self: center;
+    }
+    .tt-knob:active { cursor: grabbing; }
+    .tt-knob::after {
+      content: '';
+      position: absolute;
+      left: 50%; top: 8px;
+      width: 4px; height: 16px;
+      margin-left: -2px;
+      border-radius: 2px;
+      background: #d7dde2;
+      transform-origin: 50% 24px;
+      transform: rotate(var(--knob, 0deg));
+    }
+    .tt-buttons {
+      grid-column: 1 / 3;
+      display: flex;
+      gap: 0.6rem;
+      justify-content: center;
+      width: 100%;
+    }
+    .tt-buttons button {
+      flex: 1;
+      height: 56px;
+      border: none;
+      border-radius: 12px;
+      background: #2c3137;
+      color: #cdd3d9;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .tt-buttons button svg { width: 26px; height: 26px; fill: currentColor; display: block; }
+    .tt-buttons button:hover { background: #343a41; }
+    .tt-buttons button:active { transform: translateY(1px); }
+    .tt-buttons button.on { background: #c0392b; color: #fff; }
+    .tt-buttons button.bt-on { background: #2563c0; color: #fff; }
+
+    /* phone */
+    .tt-phone .phone-frame {
+      width: 200px;
+      background: #111;
+      border-radius: 26px;
+      padding: 12px;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+    }
+    .phone-screen {
+      background: #fafafa;
+      border-radius: 16px;
+      padding: 1rem 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      min-height: 320px;
+    }
+    .np-art {
+      width: 100%; aspect-ratio: 1;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #c0392b, #8e44ad);
+    }
+    .np-title { font-size: 1rem; font-weight: 700; color: #111; }
+    .np-artist { font-size: 0.8rem; color: #888; margin-top: -0.4rem; }
+    .phone-screen .ph-row { display: flex; align-items: center; gap: 0.5rem; }
+    #phPlay, #phMeeting, #phMic {
+      font: inherit; font-size: 0.85rem;
+      border: 1px solid #ddd; border-radius: 8px;
+      background: #fff; color: #333; padding: 0.45rem 0.6rem;
+      cursor: pointer; width: 100%;
+    }
+    #phPlay.on { background: #111; color: #fff; border-color: #111; }
+    #phMeeting.on { background: #2980b9; color: #fff; border-color: #2980b9; }
+    #phMic.muted { background: #c0392b; color: #fff; border-color: #c0392b; }
+    #phVol { width: 100%; accent-color: #c0392b; }
+    #phTrack { font: inherit; font-size: 0.85rem; padding: 0.4rem; border-radius: 8px; border: 1px solid #ddd; }
+    .phone-meeting { display: none; flex-direction: column; gap: 0.6rem; }
+    .phone-meeting.on { display: flex; }
+    .phone-music.hidden { display: none; }
+    .meeting-face {
+      width: 100%; aspect-ratio: 16/10;
+      border-radius: 12px;
+      background: #1c2024;
+      display: flex; align-items: center; justify-content: center;
+      color: #cdd3d9; font-size: 0.8rem;
+    }
+
+    /* speaker */
+    .tt-speaker { width: 150px; }
+    .spk-graphic {
+      width: 110px; height: 150px;
+      border-radius: 12px;
+      background: #2c3137;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: space-around;
+      padding: 14px 0;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+    }
+    .spk-cone {
+      width: 66px; height: 66px; border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, #4a5158 30%, #1c2024 75%);
+      box-shadow: inset 0 0 0 4px #20242a;
+    }
+    .spk-cone.small { width: 34px; height: 34px; }
+    .spk-meter {
+      width: 110px; height: 12px;
+      background: #d7dde2; border-radius: 6px; overflow: hidden;
+    }
+    #spkMeter { height: 100%; width: 0%; background: linear-gradient(90deg, #27ae60, #f1c40f, #c0392b); transition: width 0.05s linear; }
+    .spk-jack {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #111; box-shadow: inset 0 0 0 3px #4a5158;
+    }
+    .tt-cable {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .spk-plug {
+      position: absolute;
+      width: 26px; height: 16px;
+      margin: -8px 0 0 -13px;
+      border-radius: 4px;
+      background: linear-gradient(#6b7480, #3a4047);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+      cursor: grab; touch-action: none;
+      z-index: 4;
+    }
+    .spk-plug:active { cursor: grabbing; }
+    .spk-plug.loose { background: linear-gradient(#8a5b5b, #5a3636); }
+    .tt-disconnected { color: #c0392b; font-size: 0.7rem; min-height: 0.9rem; }
   </style>
 </head>
 <body>
@@ -205,10 +438,78 @@
       <p>I was a founding member of the Formula SAE Electric team at BYU. Starting from scratch with no car, no budget, and no playbook, we built a fully electric formula-style racecar and sent it to competition within two years.</p>
     </div>
 
-    <div id="turntable" class="page">
-      <h2>Turntable</h2>
-      <p>I'm building a Bluetooth device that lives on my desk and gives physical controls for music and meetings — inspired by the Teenage Engineering OB-4. The centerpiece is a turntable-style platter that spins as audio plays and lets you scrub back through a song or a meeting recording.</p>
-      <p style="margin-top:1rem;">Under the hood: an ESP32 dual-core chip (one core for motor control, one for audio and Bluetooth), a brushless DC gimbal motor driven by SimpleFOC with careful cogging compensation, and a ring buffer that stores the last two minutes of audio. The whole thing runs off USB-C at under 0.1 W in normal operation. This project is in progress.</p>
+    <div id="turntable" class="page turntable-page">
+      <div class="tt-writeup">
+        <p class="tt-kicker">Project</p>
+        <h2>Turntable web simulation</h2>
+        <p>A browser-based simulation of a desk turntable controller. The device receives audio from a simulated &ldquo;phone&rdquo; over Bluetooth, plays it through a simulated &ldquo;speaker,&rdquo; and allows the user to grab a spinning platter to scratch, slow, or reverse the audio in real time. It includes an OLED-style display, a volume knob, and a row of buttons along the bottom that handle play/pause, skip forward, skip back, bluetooth connection, and mute.</p>
+        <p>The goal is to faithfully reproduce the behavior of the real hardware device &mdash; the user-facing interaction model &mdash; not the hardware internals. No motor physics, no actual Bluetooth. Grab the platter below and drag it to hear it scratch.</p>
+      </div>
+      <div class="tt-stage">
+        <canvas class="tt-cable" id="ttCable"></canvas>
+
+        <!-- Speaker (left) -->
+        <section class="tt-panel tt-speaker">
+          <h3>Speaker</h3>
+          <div class="spk-graphic">
+            <div class="spk-cone small"></div>
+            <div class="spk-cone"></div>
+          </div>
+          <div class="spk-meter"><div id="spkMeter"></div></div>
+          <div class="spk-jack" id="spkJack"></div>
+          <div class="tt-disconnected" id="ttConnState"></div>
+        </section>
+
+        <!-- Device (center) -->
+        <section class="tt-panel">
+          <h3>Controller</h3>
+          <div class="tt-device">
+            <canvas id="ttPlatter"></canvas>
+            <canvas id="ttOled" width="128" height="64"></canvas>
+            <div class="tt-knob" id="ttKnob" title="Volume — drag to turn"></div>
+            <div class="tt-buttons">
+              <button id="ttMute" title="Mute (display only)"></button>
+              <button id="ttPrev" title="Skip back"></button>
+              <button id="ttPlay" title="Play / Pause"></button>
+              <button id="ttNext" title="Skip forward"></button>
+              <button id="ttBt" title="Bluetooth"></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Phone (right) -->
+        <section class="tt-panel tt-phone">
+          <h3>Phone</h3>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="phone-music">
+                <div class="np-art" id="npArt"></div>
+                <div class="np-title" id="npTitle">—</div>
+                <div class="np-artist" id="npArtist">—</div>
+                <button id="phPlay">Play</button>
+                <div class="ph-row">
+                  <span style="font-size:0.8rem;color:#888;">Vol</span>
+                  <input type="range" id="phVol" min="0" max="127" value="64">
+                </div>
+                <select id="phTrack"></select>
+              </div>
+              <div class="phone-meeting" id="phMeetingPanel">
+                <div class="meeting-face">All-hands · live</div>
+                <button id="phMic">Mic on</button>
+              </div>
+              <button id="phMeeting">Join meeting</button>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="tt-writeup below">
+        <h3>The platter</h3>
+        <p>A circular disc rotates continuously, with two dots near the edge to show that it&rsquo;s spinning. It&rsquo;s always in one of three states: idle (turning at a fixed target velocity), grabbed (angular velocity follows your pointer), or releasing (easing back to the target speed). The platter&rsquo;s angular velocity maps to a playback rate &mdash; at rest it&rsquo;s 1.0, backward is negative, and a full stop is zero.</p>
+        <h3>The ring buffer</h3>
+        <p>Behind the scenes is a two-minute window of recently received audio that the playhead can move freely within. The phone continuously writes audio into the buffer at 1&times; speed while the device reads from it at the platter&rsquo;s rate. Catch up to the live edge and it keeps streaming live; fall behind and the display counts how many seconds back you are, up to 120. Reverse playback reads backward through the buffer sample-by-sample, with linear interpolation for non-integer rates.</p>
+        <h3>Display, knob, and buttons</h3>
+        <p>A 128&times;64 monochrome OLED shows the volume, how far behind live you are, and a pixelated side-profile face whose mouth opens and closes with the mute state. The volume knob is a relative encoder &mdash; each click nudges the level by a fixed step and stays in sync with the phone. Everything runs client-side in a single hand-written HTML file, using the Web Audio API and an AudioWorklet for the variable-rate ring buffer.</p>
+      </div>
     </div>
 
     <div id="game" class="page game-page">
@@ -250,8 +551,10 @@
       pages.forEach(p => p.classList.toggle('active', p.id === page));
       mainEl.classList.toggle('game-mode', page === 'game');
       mainEl.classList.toggle('about-mode', page === 'about');
+      mainEl.classList.toggle('turntable-mode', page === 'turntable');
       if (page === 'game') initGame();
       if (page === 'about') resetAbout();
+      if (page === 'turntable') initTurntable(); else stopTurntable();
     }
 
     links.forEach(link => {
@@ -636,6 +939,532 @@
     });
     window.addEventListener('resize', () => {
       if (mainEl.classList.contains('about-mode')) { sizeAbout(); aDraw(); }
+    });
+
+    // ============================================================
+    //  Turntable haptic music controller — simulation
+    // ============================================================
+    const TT = {
+      // constants from the spec
+      TARGET_VELOCITY: 2.09,        // rad/s, ~20 RPM (visual)
+      MAX_RATE: 4.0,
+      RATE_SMOOTHING_ALPHA: 0.20,   // ~4x faster audio catch-up
+      SPRING_BACK_MS: 110,          // ~1/4 of the original spring-back time
+      IDLE_EASE: 0.28,              // how fast the disc spins up / down toward rest
+      RING_BUFFER_SECONDS: 120,
+      DISPLAY_FPS: 12,
+      VOLUME_MAX: 127,
+      VOLUME_STEP: 4,
+      // runtime
+      booted: false, audioReady: false, audioInitting: false,
+      raf: null, oledTimer: null, lastTs: 0,
+      // platter
+      state: 'IDLE',                // IDLE | GRABBED | RELEASING
+      angle: 0, vel: 0,             // starts stopped (paused)
+      grabOffset: 0, prevAngle: 0, prevTime: 0,
+      releaseStart: 0, releaseVel: 0,
+      smoothedRate: 1, behind: 0,
+      // transport / mixer
+      playing: false, muted: false, volume: 64,
+      trackIndex: 0, meeting: false, micMuted: false, connected: true, bt: true,
+      level: 0,
+      // audio graph
+      ctx: null, ring: null, volGain: null, linkGain: null, connGain: null,
+      analyser: null, meterBuf: null, tracks: [], meetingTrack: null,
+      // cable plug position (stage coords)
+      plug: { x: 0, y: 0, dragging: false, placed: false }
+    };
+
+    const ttPlatter = document.getElementById('ttPlatter');
+    const ttOled = document.getElementById('ttOled');
+    const ttKnob = document.getElementById('ttKnob');
+    const ttCable = document.getElementById('ttCable');
+    const PLATTER_SIZE = 126;       // disc diameter (px) — kept in sync with the concentric corner
+
+    // simple monochrome button glyphs (fill follows text color)
+    const ICON = {
+      play:    '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
+      pause:   '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>',
+      prev:    '<svg viewBox="0 0 24 24"><path d="M7 6h2v12H7zM19 6l-9 6 9 6z"/></svg>',
+      next:    '<svg viewBox="0 0 24 24"><path d="M15 6h2v12h-2zM5 6l9 6-9 6z"/></svg>',
+      muteOn:  '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg>',
+      muteOff: '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>',
+      bt:      '<svg viewBox="0 0 24 24"><path d="M17.7 7.7L12 2h-1v7.6L6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 11 14.4V22h1l5.7-5.7-4.3-4.3 4.3-4.3zM13 5.8l1.9 1.9L13 9.6V5.8zm1.9 10.5L13 18.2v-3.8l1.9 1.9z"/></svg>'
+    };
+
+    // ---- AudioWorklet: variable-rate ring-buffer reader (handles reverse) ----
+    const ttWorkletSrc = `
+      class RingReader extends AudioWorkletProcessor {
+        static get parameterDescriptors() {
+          return [
+            { name: 'rate', defaultValue: 1, automationRate: 'k-rate' },
+            { name: 'playing', defaultValue: 0, automationRate: 'k-rate' }
+          ];
+        }
+        constructor() {
+          super();
+          this.buf = null; this.len = 0;
+          this.live = 0; this.read = 0;
+          this.win = 120 * sampleRate;
+          this.tick = 0;
+          this.port.onmessage = (e) => {
+            const d = e.data;
+            if (d.type === 'load') { this.buf = d.buffer; this.len = d.buffer.length; this.live = 0; this.read = 0; }
+            else if (d.type === 'reset') { this.live = 0; this.read = 0; }
+          };
+        }
+        process(inputs, outputs, params) {
+          const out = outputs[0]; const ch0 = out[0]; const n = ch0.length;
+          const rate = params.rate[0];
+          const playing = params.playing[0] > 0.5;
+          if (!this.buf) { for (let i=0;i<n;i++){ ch0[i]=0; if(out[1]) out[1][i]=0; } return true; }
+          const len = this.len;
+          for (let i=0;i<n;i++){
+            if (playing) this.live += 1;                 // live edge advances at 1x wall time
+            this.read += rate;                           // read head follows platter
+            let clamped = false;
+            if (this.read >= this.live) { this.read = this.live; clamped = true; }  // can't read the future
+            let s = 0;
+            const behind = this.live - this.read;
+            // paused + caught up to the frozen present => nothing to play => silence
+            const dead = clamped && !playing;
+            if (!dead && this.read >= 0 && behind <= this.win) {
+              let pos = this.read % len; if (pos < 0) pos += len;
+              const i0 = Math.floor(pos); const frac = pos - i0; const i1 = (i0 + 1) % len;
+              s = this.buf[i0]*(1-frac) + this.buf[i1]*frac;   // linear interpolation
+            }
+            ch0[i] = s; if (out[1]) out[1][i] = s;
+          }
+          this.tick += n;
+          if (this.tick >= 2048) { this.tick = 0; this.port.postMessage({ behind: (this.live - this.read)/sampleRate }); }
+          return true;
+        }
+      }
+      registerProcessor('ring-reader', RingReader);
+    `;
+
+    // download an mp3 and decode it into a mono Float32Array for the ring buffer
+    async function ttDecode(url) {
+      const resp = await fetch(url);
+      const arr = await resp.arrayBuffer();
+      const audioBuf = await TT.ctx.decodeAudioData(arr);     // resampled to ctx rate
+      const n = audioBuf.length, chs = audioBuf.numberOfChannels;
+      const out = new Float32Array(n);
+      for (let c = 0; c < chs; c++) {
+        const d = audioBuf.getChannelData(c);
+        for (let i = 0; i < n; i++) out[i] += d[i] / chs;     // downmix to mono
+      }
+      return out;
+    }
+
+    function ttBuildTracks() {
+      const sr = TT.ctx.sampleRate;
+      const mk = (secs, fn) => { const N = Math.floor(secs*sr); const d = new Float32Array(N); fn(d, sr, N); return d; };
+
+      // real tracks loaded from /audio (decoded async; data filled in when ready)
+      TT.tracks = [
+        { name: 'Soul', artist: 'Ketsa', url: 'audio/song1.mp3', data: null },
+        { name: 'Beautiful Day', artist: 'Mr Smith', url: 'audio/song2.mp3', data: null }
+      ];
+      TT.tracks.forEach((t, i) => {
+        ttDecode(t.url).then(d => {
+          t.data = d;
+          if (!TT.meeting && TT.trackIndex === i) ttLoadSource();   // play once decoded
+        }).catch(e => console.error('audio decode failed:', t.url, e));
+      });
+
+      // Meeting — talking-like formant babble (~8s loop)
+      TT.meetingTrack = { name: 'All-hands', artist: 'Meeting recording', data: mk(8, (d, sr) => {
+        let syl = 0, sylEnd = 0, f0 = 130, open = 0;
+        for (let i=0;i<d.length;i++){
+          const t = i/sr;
+          if (t > sylEnd) {                                  // new syllable
+            const speaking = Math.random() > 0.25;
+            const dur = 0.12 + Math.random()*0.22;
+            sylEnd = t + dur; open = speaking ? 1 : 0;
+            f0 = 110 + Math.random()*70;
+          }
+          let s = 0;
+          if (open) {
+            const env = Math.sin(Math.PI * (1 - (sylEnd - t)/0.3 % 1));
+            s += Math.sin(2*Math.PI*f0*t) * 0.3;
+            s += Math.sin(2*Math.PI*f0*2.2*t) * 0.15;        // formant-ish
+            s += Math.sin(2*Math.PI*f0*3.5*t) * 0.08;
+            s *= Math.max(0, env);
+          }
+          d[i] = Math.tanh(s*1.4)*0.7;
+        }
+      }) };
+    }
+
+    async function ttEnsureAudio() {
+      if (TT.audioReady || TT.audioInitting) { if (TT.ctx) TT.ctx.resume(); return; }
+      TT.audioInitting = true;
+      try {
+        TT.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const blob = new Blob([ttWorkletSrc], { type: 'application/javascript' });
+        const url = URL.createObjectURL(blob);
+        await TT.ctx.audioWorklet.addModule(url);
+        URL.revokeObjectURL(url);
+        TT.ring = new AudioWorkletNode(TT.ctx, 'ring-reader', { outputChannelCount: [2] });
+        TT.volGain = TT.ctx.createGain();
+        TT.linkGain = TT.ctx.createGain();   // bluetooth link gate
+        TT.connGain = TT.ctx.createGain();
+        TT.analyser = TT.ctx.createAnalyser();
+        TT.analyser.fftSize = 256;
+        TT.meterBuf = new Float32Array(TT.analyser.fftSize);
+        TT.ring.connect(TT.volGain).connect(TT.linkGain).connect(TT.connGain)
+               .connect(TT.analyser).connect(TT.ctx.destination);
+        TT.ring.port.onmessage = e => { if (e.data && e.data.behind != null) TT.behind = e.data.behind; };
+        ttBuildTracks();
+        ttLoadSource();
+        ttApplyVolume(); ttApplyMute(); ttApplyLink(); ttApplyConnection(); ttApplyPlaying();
+        TT.audioReady = true;
+        await TT.ctx.resume();
+      } catch (err) {
+        console.error('Turntable audio init failed', err);
+      }
+      TT.audioInitting = false;
+    }
+
+    function ttLoadSource() {
+      if (!TT.ring) return;
+      const src = TT.meeting ? TT.meetingTrack : TT.tracks[TT.trackIndex];
+      if (!src || !src.data) return;            // not decoded yet — will load when ready
+      TT.ring.port.postMessage({ type: 'load', buffer: src.data });
+      TT.behind = 0;
+    }
+
+    function ttApplyVolume() {
+      if (TT.volGain) TT.volGain.gain.value = Math.pow(TT.volume / TT.VOLUME_MAX, 2);
+      ttKnob.style.setProperty('--knob', (TT.volume / TT.VOLUME_MAX * 300 - 150) + 'deg');
+      const slider = document.getElementById('phVol');
+      if (slider && +slider.value !== TT.volume) slider.value = TT.volume;
+    }
+    function ttApplyMute() {
+      // cosmetic only — drives the OLED face mouth + the button icon. No audio change.
+      const b = document.getElementById('ttMute');
+      b.classList.toggle('on', TT.muted);
+      b.innerHTML = TT.muted ? ICON.muteOff : ICON.muteOn;
+    }
+    function ttApplyLink() {        // bluetooth link stays open; button is decorative only
+      if (TT.linkGain) TT.linkGain.gain.value = 1;
+    }
+    function ttApplyConnection() {
+      if (TT.connGain) TT.connGain.gain.value = TT.connected ? 1 : 0;
+      document.getElementById('ttConnState').textContent = TT.connected ? '' : 'aux unplugged';
+    }
+    function ttApplyPlaying() {
+      if (TT.ring) TT.ring.parameters.get('playing').value = TT.playing ? 1 : 0;
+      document.getElementById('ttPlay').innerHTML = TT.playing ? ICON.pause : ICON.play;
+      const p = document.getElementById('phPlay');
+      p.textContent = TT.playing ? 'Pause' : 'Play';
+      p.classList.toggle('on', TT.playing);
+    }
+    function ttSkip(dir) {         // previous / next track (wraps), resets the ring buffer
+      if (TT.meeting) return;
+      const n = TT.tracks.length;
+      const i = (TT.trackIndex + dir + n) % n;
+      const sel = document.getElementById('phTrack'); if (sel) sel.value = i;
+      ttSelectTrack(i);
+    }
+
+    function ttSetPlaying(v) { TT.playing = v; ttApplyPlaying(); }
+    function ttSetVolume(v) { TT.volume = Math.max(0, Math.min(TT.VOLUME_MAX, v)); ttApplyVolume(); }
+
+    function ttSelectTrack(i) {
+      TT.trackIndex = i;
+      const tk = TT.tracks[i];
+      document.getElementById('npTitle').textContent = tk.name;
+      document.getElementById('npArtist').textContent = tk.artist;
+      if (!TT.meeting) ttLoadSource();         // changing track resets the ring buffer
+    }
+
+    function ttSetMeeting(v) {
+      TT.meeting = v;
+      document.getElementById('phMeeting').textContent = v ? 'Leave meeting' : 'Join meeting';
+      document.getElementById('phMeeting').classList.toggle('on', v);
+      document.getElementById('phMeetingPanel').classList.toggle('on', v);
+      document.querySelector('.phone-music').classList.toggle('hidden', v);
+      ttLoadSource();                          // toggling meeting switches the source globally
+    }
+
+    // ---------- platter geometry & rendering ----------
+    function ttSizePlatter() {
+      const dpr = window.devicePixelRatio || 1;
+      const size = PLATTER_SIZE;
+      ttPlatter.width = size * dpr; ttPlatter.height = size * dpr;
+      const g = ttPlatter.getContext('2d');
+      g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function ttPointerAngle(e) {
+      const r = ttPlatter.getBoundingClientRect();
+      return Math.atan2(e.clientY - (r.top + r.height/2), e.clientX - (r.left + r.width/2));
+    }
+    function angNorm(a) { while (a > Math.PI) a -= 2*Math.PI; while (a < -Math.PI) a += 2*Math.PI; return a; }
+
+    ttPlatter.addEventListener('pointerdown', e => {
+      ttEnsureAudio();
+      TT.state = 'GRABBED';
+      const pa = ttPointerAngle(e);
+      TT.grabOffset = TT.angle - pa;
+      TT.prevAngle = TT.angle;
+      TT.prevTime = performance.now();
+      ttPlatter.setPointerCapture(e.pointerId);
+    });
+    ttPlatter.addEventListener('pointermove', e => {
+      if (TT.state !== 'GRABBED') return;
+      const now = performance.now();
+      const dt = Math.max(0.001, (now - TT.prevTime) / 1000);
+      const target = ttPointerAngle(e) + TT.grabOffset;
+      const dA = angNorm(target - TT.prevAngle);
+      TT.vel = dA / dt;                          // angular velocity follows pointer
+      TT.angle = TT.prevAngle + dA;
+      TT.prevAngle = TT.angle;
+      TT.prevTime = now;
+    });
+    function ttRelease(e) {
+      if (TT.state !== 'GRABBED') return;
+      TT.state = 'RELEASING';
+      TT.releaseStart = performance.now();
+      TT.releaseVel = TT.vel;
+      if (e && e.pointerId != null) { try { ttPlatter.releasePointerCapture(e.pointerId); } catch (_) {} }
+    }
+    ttPlatter.addEventListener('pointerup', ttRelease);
+    ttPlatter.addEventListener('pointercancel', ttRelease);
+
+    function ttDrawPlatter() {
+      const g = ttPlatter.getContext('2d');
+      const S = PLATTER_SIZE, c = S/2, R = c - 1;
+      g.clearRect(0, 0, S, S);
+      // plain gray disc — no grooves, label, or spindle
+      g.fillStyle = '#23272c';
+      g.beginPath(); g.arc(c, c, R, 0, Math.PI*2); g.fill();
+      // two reference dots ~2/3 to the edge, to show spin & direction
+      g.save(); g.translate(c, c); g.rotate(TT.angle);
+      g.fillStyle = '#e8edf2';
+      for (const a of [0, Math.PI]) {
+        g.beginPath(); g.arc(Math.cos(a)*R*0.66, Math.sin(a)*R*0.66, 6, 0, Math.PI*2); g.fill();
+      }
+      g.restore();
+    }
+
+    // ---------- OLED 128x64 ----------
+    function ttDrawOled() {
+      const g = ttOled.getContext('2d');
+      g.imageSmoothingEnabled = false;
+      g.fillStyle = '#000'; g.fillRect(0, 0, 128, 64);
+      g.fillStyle = '#fff'; g.strokeStyle = '#fff';
+
+      // left quarter — pixel side-profile face (nose, mouth, jaw), facing right
+      g.lineWidth = 2; g.lineJoin = 'round';
+      g.beginPath();
+      g.moveTo(8, 8);            // top of head
+      g.lineTo(20, 14);          // brow
+      g.lineTo(16, 22);          // bridge
+      g.lineTo(26, 30);          // nose tip
+      g.lineTo(16, 34);          // under nose
+      g.stroke();
+      const open = !TT.muted;
+      if (open) {                // mouth open
+        g.beginPath();
+        g.moveTo(16, 37); g.lineTo(23, 38);   // upper lip
+        g.moveTo(16, 45); g.lineTo(22, 44);   // lower lip
+        g.stroke();
+      } else {                   // mouth closed
+        g.beginPath(); g.moveTo(16, 41); g.lineTo(23, 41); g.stroke();
+      }
+      g.beginPath();
+      g.moveTo(16, 48);          // chin
+      g.lineTo(18, 54);
+      g.lineTo(8, 58);           // jaw back
+      g.stroke();
+
+      // right zone — VOL + time-behind
+      const vol = Math.round(TT.volume / TT.VOLUME_MAX * 10);
+      g.font = 'bold 13px monospace'; g.textBaseline = 'top';
+      g.fillText('VOL ' + vol, 44, 8);
+      const sec = Math.min(120, Math.max(0, Math.round(TT.behind)));
+      g.font = 'bold 15px monospace';
+      g.fillText(sec === 0 ? 'T-0' : 'T-' + sec, 44, 30);
+      g.font = '8px monospace';
+      g.fillText(sec === 0 ? 'LIVE' : 'BEHIND', 44, 50);
+    }
+
+    // ---------- volume knob (relative encoder) ----------
+    let knobPrev = null, knobAccum = 0;
+    const KNOB_STEP_RAD = 0.30;                  // radians per encoder click
+    function knobAngle(e) {
+      const r = ttKnob.getBoundingClientRect();
+      return Math.atan2(e.clientY - (r.top + r.height/2), e.clientX - (r.left + r.width/2));
+    }
+    ttKnob.addEventListener('pointerdown', e => {
+      ttEnsureAudio();
+      knobPrev = knobAngle(e); knobAccum = 0;
+      ttKnob.setPointerCapture(e.pointerId);
+    });
+    ttKnob.addEventListener('pointermove', e => {
+      if (knobPrev == null) return;
+      const a = knobAngle(e);
+      knobAccum += angNorm(a - knobPrev);
+      knobPrev = a;
+      while (knobAccum >= KNOB_STEP_RAD) { knobAccum -= KNOB_STEP_RAD; ttSetVolume(TT.volume + TT.VOLUME_STEP); }
+      while (knobAccum <= -KNOB_STEP_RAD) { knobAccum += KNOB_STEP_RAD; ttSetVolume(TT.volume - TT.VOLUME_STEP); }
+    });
+    function knobUp(e) { knobPrev = null; if (e && e.pointerId != null) { try { ttKnob.releasePointerCapture(e.pointerId); } catch (_) {} } }
+    ttKnob.addEventListener('pointerup', knobUp);
+    ttKnob.addEventListener('pointercancel', knobUp);
+
+    // ---------- aux-cable plug physics ----------
+    const ttPlug = document.createElement('div');
+    ttPlug.className = 'spk-plug';
+    function stageEl() { return document.querySelector('#turntable .tt-stage'); }
+    function ttPlaceInit() {
+      const stage = stageEl();
+      if (!stage.contains(ttPlug)) stage.appendChild(ttPlug);
+      ttSnapPlug();
+    }
+    function jackCenter() {
+      const stage = stageEl(), j = document.getElementById('spkJack');
+      const sr = stage.getBoundingClientRect(), jr = j.getBoundingClientRect();
+      return { x: jr.left - sr.left + jr.width/2, y: jr.top - sr.top + jr.height/2 };
+    }
+    function deviceAnchor() {
+      const stage = stageEl(), d = document.querySelector('.tt-device');
+      const sr = stage.getBoundingClientRect(), dr = d.getBoundingClientRect();
+      return { x: dr.left - sr.left, y: dr.top - sr.top + dr.height*0.7 };
+    }
+    function ttSnapPlug() {
+      const j = jackCenter();
+      TT.plug.x = j.x; TT.plug.y = j.y; TT.plug.placed = true; TT.connected = true;
+      ttApplyConnection(); ttPositionPlug();
+    }
+    function ttPositionPlug() { ttPlug.style.left = TT.plug.x + 'px'; ttPlug.style.top = TT.plug.y + 'px'; }
+    ttPlug.addEventListener('pointerdown', e => {
+      e.preventDefault(); ttEnsureAudio();
+      TT.plug.dragging = true; ttPlug.setPointerCapture(e.pointerId);
+    });
+    ttPlug.addEventListener('pointermove', e => {
+      if (!TT.plug.dragging) return;
+      const sr = stageEl().getBoundingClientRect();
+      TT.plug.x = e.clientX - sr.left; TT.plug.y = e.clientY - sr.top;
+      ttPositionPlug();
+      const j = jackCenter();
+      TT.connected = Math.hypot(TT.plug.x - j.x, TT.plug.y - j.y) < 36;
+      ttApplyConnection();
+    });
+    function plugUp(e) {
+      if (!TT.plug.dragging) return;
+      TT.plug.dragging = false;
+      if (e && e.pointerId != null) { try { ttPlug.releasePointerCapture(e.pointerId); } catch (_) {} }
+      const j = jackCenter();
+      if (Math.hypot(TT.plug.x - j.x, TT.plug.y - j.y) < 40) ttSnapPlug();   // snap back if close
+      else { TT.connected = false; ttApplyConnection(); }
+      ttPlug.classList.toggle('loose', !TT.connected);
+    }
+    ttPlug.addEventListener('pointerup', plugUp);
+    ttPlug.addEventListener('pointercancel', plugUp);
+
+    function ttDrawCable() {
+      const stage = stageEl(); if (!stage) return;
+      const r = stage.getBoundingClientRect();
+      if (ttCable.width !== r.width || ttCable.height !== r.height) {
+        ttCable.width = r.width; ttCable.height = r.height;
+      }
+      const g = ttCable.getContext('2d');
+      g.clearRect(0, 0, ttCable.width, ttCable.height);
+      const a = deviceAnchor(), p = TT.plug;
+      const sag = TT.connected ? 40 : 70;
+      g.strokeStyle = TT.connected ? '#2c3137' : '#a84a3c';
+      g.lineWidth = 4; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(a.x, a.y);
+      g.quadraticCurveTo((a.x + p.x)/2, Math.max(a.y, p.y) + sag, p.x, p.y);
+      g.stroke();
+    }
+
+    // ---------- main animation loop ----------
+    function ttFrame(ts) {
+      if (!mainEl.classList.contains('turntable-mode')) { TT.raf = null; return; }
+      const dt = Math.min(0.05, TT.lastTs ? (ts - TT.lastTs) / 1000 : 0.016);
+      TT.lastTs = ts;
+
+      const restVel = TT.playing ? TT.TARGET_VELOCITY : 0;   // disc only spins while playing
+      if (TT.state === 'IDLE') {
+        TT.vel += (restVel - TT.vel) * TT.IDLE_EASE;         // fast spin-up / spin-down
+        TT.angle += TT.vel * dt;
+      } else if (TT.state === 'RELEASING') {
+        const t = (ts - TT.releaseStart) / TT.SPRING_BACK_MS;
+        if (t >= 1) { TT.vel = restVel; TT.state = 'IDLE'; }
+        else { const e = 1 - (1 - t) * (1 - t); TT.vel = TT.releaseVel + (restVel - TT.releaseVel) * e; }
+        TT.angle += TT.vel * dt;
+      }
+      // GRABBED: angle/vel are driven by the pointer handler
+
+      let raw = TT.vel / TT.TARGET_VELOCITY;
+      raw = Math.max(-TT.MAX_RATE, Math.min(TT.MAX_RATE, raw));
+      TT.smoothedRate += TT.RATE_SMOOTHING_ALPHA * (raw - TT.smoothedRate);
+      if (TT.ring) TT.ring.parameters.get('rate').value = TT.smoothedRate;
+
+      // output level meter (post everything the user hears)
+      if (TT.analyser) {
+        TT.analyser.getFloatTimeDomainData(TT.meterBuf);
+        let sum = 0; for (let i=0;i<TT.meterBuf.length;i++) sum += TT.meterBuf[i]*TT.meterBuf[i];
+        const rms = Math.sqrt(sum / TT.meterBuf.length);
+        TT.level += ((Math.min(1, rms*3)) - TT.level) * 0.3;
+        document.getElementById('spkMeter').style.width = (TT.level*100).toFixed(1) + '%';
+      }
+
+      ttDrawPlatter();
+      ttDrawCable();
+      TT.raf = requestAnimationFrame(ttFrame);
+    }
+
+    function initTurntable() {
+      requestAnimationFrame(() => {
+        ttSizePlatter();
+        ttPlaceInit();
+        if (!TT.raf) { TT.lastTs = 0; TT.raf = requestAnimationFrame(ttFrame); }
+        if (!TT.oledTimer) TT.oledTimer = setInterval(ttDrawOled, Math.round(1000 / TT.DISPLAY_FPS));
+        if (!TT.booted) {
+          // wire phone controls once
+          const trackSel = document.getElementById('phTrack');
+          TT.tracksMeta = [['Soul', 'Ketsa'], ['Beautiful Day', 'Mr Smith']];
+          TT.tracksMeta.forEach((t, i) => { const o = document.createElement('option'); o.value = i; o.textContent = t[0]; trackSel.appendChild(o); });
+          document.getElementById('npTitle').textContent = TT.tracksMeta[0][0];
+          document.getElementById('npArtist').textContent = TT.tracksMeta[0][1];
+          trackSel.addEventListener('change', e => { ttEnsureAudio(); ttSelectTrack(+e.target.value); });
+          document.getElementById('phVol').addEventListener('input', e => { ttEnsureAudio(); ttSetVolume(+e.target.value); });
+          document.getElementById('phPlay').addEventListener('click', () => { ttEnsureAudio(); ttSetPlaying(!TT.playing); });
+          // device button row: mute · skip back · play/pause · skip forward · bluetooth
+          document.getElementById('ttMute').addEventListener('click', () => { TT.muted = !TT.muted; ttApplyMute(); });
+          document.getElementById('ttPrev').addEventListener('click', () => { ttEnsureAudio(); ttSkip(-1); });
+          document.getElementById('ttPlay').addEventListener('click', () => { ttEnsureAudio(); ttSetPlaying(!TT.playing); });
+          document.getElementById('ttNext').addEventListener('click', () => { ttEnsureAudio(); ttSkip(1); });
+          // bluetooth button is decorative only — no behavior
+          // initial glyphs (before audio is initialized)
+          document.getElementById('ttPrev').innerHTML = ICON.prev;
+          document.getElementById('ttNext').innerHTML = ICON.next;
+          document.getElementById('ttBt').innerHTML = ICON.bt;
+          ttApplyMute(); ttApplyPlaying(); ttApplyLink();
+          document.getElementById('phMeeting').addEventListener('click', () => { ttEnsureAudio(); ttSetMeeting(!TT.meeting); });
+          document.getElementById('phMic').addEventListener('click', () => {
+            TT.micMuted = !TT.micMuted;
+            const b = document.getElementById('phMic');
+            b.textContent = TT.micMuted ? 'Mic muted' : 'Mic on';
+            b.classList.toggle('muted', TT.micMuted);
+          });
+          TT.booted = true;
+        }
+      });
+    }
+    function stopTurntable() {
+      if (TT.raf) { cancelAnimationFrame(TT.raf); TT.raf = null; }
+      if (TT.oledTimer) { clearInterval(TT.oledTimer); TT.oledTimer = null; }
+      if (TT.playing) ttSetPlaying(false);     // pause audio when you leave the page
+    }
+    window.addEventListener('resize', () => {
+      if (mainEl.classList.contains('turntable-mode')) { ttSizePlatter(); ttPlaceInit(); }
     });
 
     // apply the initial active page (About) and its mode
