@@ -55,34 +55,6 @@
     .page { display: none; max-width: 500px; }
     .page.active { display: block; }
 
-    main.game-mode { padding: 0; align-items: stretch; justify-content: stretch; }
-    .page.game-page { max-width: none; width: 100%; height: 100%; display: none; flex-direction: column; }
-    .page.game-page.active { display: flex; }
-
-    .game-toolbar {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid #ddd;
-      background: #fafafa;
-      flex-shrink: 0;
-    }
-    .game-toolbar button {
-      font: inherit;
-      font-size: 0.9rem;
-      padding: 0;
-      border: none;
-      background: none;
-      color: #999;
-      cursor: pointer;
-    }
-    .game-toolbar button:hover { color: #555; }
-    .game-toolbar button.primary { color: #333; font-weight: 600; }
-    .game-toolbar .hint { font-size: 0.8rem; color: #aaa; margin-left: auto; }
-
-    #gameCanvas { flex: 1; width: 100%; display: block; background: #f0f6ff; cursor: crosshair; touch-action: none; }
-
     /* ---- About page (full-bleed playground) ---- */
     main.about-mode { padding: 0; align-items: stretch; justify-content: stretch; }
     .page.about-page { max-width: none; width: 100%; height: 100%; display: none; }
@@ -420,7 +392,6 @@
     <a href="#" class="nav-link" data-page="tesla">Tesla</a>
     <a href="#" class="nav-link" data-page="fsae">FSAE</a>
     <a href="#" class="nav-link" data-page="turntable">Haptic audio controller</a>
-    <a href="#" class="nav-link" data-page="game">Game</a>
     <a href="#" class="nav-link secret-link" data-page="secret">??? Secret</a>
   </aside>
 
@@ -523,16 +494,6 @@
       </div>
     </div>
 
-    <div id="game" class="page game-page">
-      <div class="game-toolbar">
-        <button id="playBtn" class="primary">Play</button>
-        <button id="resetBtn">Reset bike</button>
-        <button id="clearBtn">Clear lines</button>
-        <span class="hint">Draw a path with your mouse, then hit Play to ride it.</span>
-      </div>
-      <canvas id="gameCanvas"></canvas>
-    </div>
-
     <div id="secret" class="page">
       <h2>You found the secret.</h2>
       <pre>
@@ -560,10 +521,8 @@
     function activate(page) {
       links.forEach(l => l.classList.toggle('active', l.dataset.page === page));
       pages.forEach(p => p.classList.toggle('active', p.id === page));
-      mainEl.classList.toggle('game-mode', page === 'game');
       mainEl.classList.toggle('about-mode', page === 'about');
       mainEl.classList.toggle('turntable-mode', page === 'turntable');
-      if (page === 'game') initGame();
       if (page === 'about') resetAbout();
       if (page === 'turntable') initTurntable(); else stopTurntable();
     }
@@ -573,183 +532,6 @@
         e.preventDefault();
         activate(link.dataset.page);
       });
-    });
-
-    // ---- Line Rider–style game ----
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    let lines = [];          // drawn segments: {x1,y1,x2,y2}
-    let drawing = false;
-    let lastPt = null;
-    let running = false;
-    let rafId = null;
-    let sized = false;
-
-    // bike state — a point mass (the wheel contact point)
-    const START = { x: 80, y: 60 };
-    let bike = null;
-
-    function resetBike() {
-      bike = { x: START.x, y: START.y, vx: 0, vy: 0, angle: 0 };
-    }
-
-    function sizeCanvas() {
-      const r = canvas.getBoundingClientRect();
-      canvas.width = r.width;
-      canvas.height = r.height;
-    }
-
-    function initGame() {
-      // size lazily once the page is visible so the rect is non-zero
-      requestAnimationFrame(() => {
-        sizeCanvas();
-        if (!sized) { resetBike(); sized = true; }
-        draw();
-      });
-    }
-
-    function canvasPoint(e) {
-      const r = canvas.getBoundingClientRect();
-      return { x: e.clientX - r.left, y: e.clientY - r.top };
-    }
-
-    canvas.addEventListener('pointerdown', e => {
-      if (running) return;
-      drawing = true;
-      lastPt = canvasPoint(e);
-      canvas.setPointerCapture(e.pointerId);
-    });
-    canvas.addEventListener('pointermove', e => {
-      if (!drawing) return;
-      const p = canvasPoint(e);
-      const dx = p.x - lastPt.x, dy = p.y - lastPt.y;
-      if (dx * dx + dy * dy > 25) {            // min segment length
-        lines.push({ x1: lastPt.x, y1: lastPt.y, x2: p.x, y2: p.y });
-        lastPt = p;
-        draw();
-      }
-    });
-    canvas.addEventListener('pointerup', () => { drawing = false; });
-    canvas.addEventListener('pointerleave', () => { drawing = false; });
-
-    document.getElementById('playBtn').addEventListener('click', () => {
-      if (running) { stop(); } else { start(); }
-    });
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      stop(); resetBike(); draw();
-    });
-    document.getElementById('clearBtn').addEventListener('click', () => {
-      stop(); lines = []; resetBike(); draw();
-    });
-
-    function start() {
-      running = true;
-      document.getElementById('playBtn').textContent = 'Stop';
-      loop();
-    }
-    function stop() {
-      running = false;
-      document.getElementById('playBtn').textContent = 'Play';
-      if (rafId) cancelAnimationFrame(rafId);
-    }
-
-    const GRAVITY = 0.35;
-    const FRICTION = 0.999;     // along-surface speed retention
-    const RADIUS = 7;           // wheel radius for collision
-
-    // distance from point to a segment, plus the closest point
-    function closestOnSeg(px, py, s) {
-      const dx = s.x2 - s.x1, dy = s.y2 - s.y1;
-      const len2 = dx * dx + dy * dy || 1;
-      let t = ((px - s.x1) * dx + (py - s.y1) * dy) / len2;
-      t = Math.max(0, Math.min(1, t));
-      const cx = s.x1 + t * dx, cy = s.y1 + t * dy;
-      return { cx, cy, dist: Math.hypot(px - cx, py - cy) };
-    }
-
-    function step() {
-      // integrate gravity
-      bike.vy += GRAVITY;
-      bike.x += bike.vx;
-      bike.y += bike.vy;
-
-      // collide against every drawn line
-      for (const s of lines) {
-        const { cx, cy, dist } = closestOnSeg(bike.x, bike.y, s);
-        if (dist < RADIUS && dist > 0.0001) {
-          // surface normal (from contact point to wheel center)
-          let nx = (bike.x - cx) / dist;
-          let ny = (bike.y - cy) / dist;
-          // push wheel out to rest on the surface
-          const push = RADIUS - dist;
-          bike.x += nx * push;
-          bike.y += ny * push;
-          // remove the velocity component into the surface (slide along it)
-          const vn = bike.vx * nx + bike.vy * ny;
-          if (vn < 0) {
-            bike.vx -= vn * nx;
-            bike.vy -= vn * ny;
-          }
-          bike.vx *= FRICTION;
-          bike.vy *= FRICTION;
-          bike.angle = Math.atan2(s.y2 - s.y1, s.x2 - s.x1);
-        }
-      }
-
-      // off-screen — stop
-      if (bike.y > canvas.height + 200 || bike.x > canvas.width + 200 || bike.x < -200) {
-        stop();
-      }
-    }
-
-    function loop() {
-      step();
-      draw();
-      if (running) rafId = requestAnimationFrame(loop);
-    }
-
-    function drawBike() {
-      ctx.save();
-      ctx.translate(bike.x, bike.y);
-      ctx.rotate(bike.angle);
-      // frame
-      ctx.strokeStyle = '#c0392b';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.moveTo(-10, -4); ctx.lineTo(0, -14); ctx.lineTo(10, -4);
-      ctx.stroke();
-      // wheels
-      ctx.fillStyle = '#222';
-      for (const wx of [-10, 10]) {
-        ctx.beginPath();
-        ctx.arc(wx, -4, RADIUS, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      // rider dot
-      ctx.fillStyle = '#2980b9';
-      ctx.beginPath();
-      ctx.arc(0, -16, 4, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // drawn track
-      ctx.strokeStyle = '#34495e';
-      ctx.lineWidth = 3;
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      for (const s of lines) {
-        ctx.moveTo(s.x1, s.y1);
-        ctx.lineTo(s.x2, s.y2);
-      }
-      ctx.stroke();
-      if (bike) drawBike();
-    }
-
-    window.addEventListener('resize', () => {
-      if (mainEl.classList.contains('game-mode')) { sizeCanvas(); draw(); }
     });
 
     // ---- About page: draw a path, drop the "o" into the bin ----
