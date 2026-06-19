@@ -63,6 +63,19 @@
       box-shadow: 0 10px 24px rgba(0,0,0,0.15);
     }
 
+    .page.resume-page { max-width: 820px; width: 100%; }
+    .resume-actions { margin: 0.5rem 0 1rem; font-size: 0.95rem; }
+    .resume-actions a { color: #b8860b; text-decoration: none; font-weight: 600; }
+    .resume-actions a:hover { text-decoration: underline; }
+    .resume-frame {
+      width: 100%;
+      height: 80vh;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.15);
+      background: #fff;
+    }
+
     /* ---- About page (full-bleed playground) ---- */
     main.about-mode { padding: 0; align-items: stretch; justify-content: stretch; }
     .page.about-page { max-width: none; width: 100%; height: 100%; display: none; }
@@ -400,6 +413,7 @@
     <a href="#" class="nav-link" data-page="tesla">Tesla</a>
     <a href="#" class="nav-link" data-page="fsae">FSAE</a>
     <a href="#" class="nav-link" data-page="turntable">Haptic audio controller</a>
+    <a href="#" class="nav-link" data-page="resume">Resume</a>
     <a href="#" class="nav-link secret-link" data-page="secret">??? Secret</a>
   </aside>
 
@@ -506,6 +520,16 @@
       </div>
     </div>
 
+    <div id="resume" class="page resume-page">
+      <h2>Resume</h2>
+      <p class="resume-actions">
+        <a href="files/Alex-Gold-Resume.pdf" target="_blank" rel="noopener">Open in new tab</a>
+        &nbsp;·&nbsp;
+        <a href="files/Alex-Gold-Resume.pdf" download>Download PDF</a>
+      </p>
+      <iframe class="resume-frame" src="files/Alex-Gold-Resume.pdf#view=FitH" title="Alex Gold resume"></iframe>
+    </div>
+
     <div id="secret" class="page">
       <h2>You found the secret.</h2>
       <pre>
@@ -564,11 +588,10 @@
     }
 
     function revealSecret() {        // reveal the sidebar link only — no navigation
-      localStorage.setItem('secretUnlocked', '1');
       secretLink.classList.add('revealed');
       secretLink.textContent = '★ Secret';
     }
-    if (localStorage.getItem('secretUnlocked') === '1') revealSecret();
+    // no persistence: the secret link only appears after you sink the shot this session
 
     function computeBasket() {
       const W = aCanvas.width, H = aCanvas.height;
@@ -653,22 +676,26 @@
         b.vx *= 0.3;                      // settle into the bin
       }
 
-      if (!b.scored) {
-        const segs = aLines.concat([
-          { x1: 0, y1: H, x2: W, y2: H },   // floor
-          { x1: 0, y1: 0, x2: 0, y2: H },   // left wall
-          { x1: W, y1: 0, x2: W, y2: H }    // right wall
-        ]);
-        for (const seg of segs) {
-          const c = closestOnSeg(b.x, b.y, seg);
-          if (c.dist < b.R && c.dist > 0.0001) {
-            const nx = (b.x - c.cx) / c.dist, ny = (b.y - c.cy) / c.dist;
-            const push = b.R - c.dist;
-            b.x += nx * push; b.y += ny * push;
-            const vn = b.vx * nx + b.vy * ny;
-            if (vn < 0) { b.vx -= (1 + A_REST) * vn * nx; b.vy -= (1 + A_REST) * vn * ny; }
-            b.vx *= A_ROLL; b.vy *= A_ROLL;
-          }
+      // collisions are always on, so the ball outline can never cross the
+      // basket's outer lines — it bounces off the walls and settles on the floor
+      const segs = aLines.concat([
+        { x1: 0, y1: H, x2: W, y2: H },   // floor
+        { x1: 0, y1: 0, x2: 0, y2: H },   // left wall
+        { x1: W, y1: 0, x2: W, y2: H },   // right wall
+        // basket: tapered walls + bottom, double-sided solid surfaces
+        { x1: basket.x1, y1: basket.top, x2: basket.x1 + basket.inset, y2: basket.bottom },
+        { x1: basket.x2, y1: basket.top, x2: basket.x2 - basket.inset, y2: basket.bottom },
+        { x1: basket.x1 + basket.inset, y1: basket.bottom, x2: basket.x2 - basket.inset, y2: basket.bottom }
+      ]);
+      for (const seg of segs) {
+        const c = closestOnSeg(b.x, b.y, seg);
+        if (c.dist < b.R && c.dist > 0.0001) {
+          const nx = (b.x - c.cx) / c.dist, ny = (b.y - c.cy) / c.dist;
+          const push = b.R - c.dist;
+          b.x += nx * push; b.y += ny * push;
+          const vn = b.vx * nx + b.vy * ny;
+          if (vn < 0) { b.vx -= (1 + A_REST) * vn * nx; b.vy -= (1 + A_REST) * vn * ny; }
+          b.vx *= A_ROLL; b.vy *= A_ROLL;
         }
       }
     }
