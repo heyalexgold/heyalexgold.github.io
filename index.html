@@ -148,7 +148,7 @@
     .about-top button { pointer-events: auto; }
     .about-name {
       font-size: 4rem;
-      font-weight: 800;
+      font-weight: 400;
       color: #111;
       letter-spacing: -0.02em;
       line-height: 1;
@@ -157,7 +157,7 @@
       white-space: nowrap;
       flex-shrink: 0;
       border-bottom: 5px solid #e23b2e;
-      padding-bottom: 10px;
+      padding-bottom: 6px;          /* red line sits ~2mm under the name */
     }
     .about-name .drop-o { display: inline-block; }
 
@@ -177,7 +177,7 @@
     .drop-btn.ghost:hover { color: #777; }
 
     .about-bio {
-      margin-top: 0.7rem;          /* keep the red line close to the words below */
+      margin-top: 7rem;            /* lift the name ~5 lines above the bio */
       max-width: 620px;
       font-size: 1rem;
       line-height: 1.6;
@@ -642,13 +642,34 @@
     // ---- About page: draw a path, drop the "o" into the bin ----
     const aboutPage = document.getElementById('about');
     const dropO = document.getElementById('dropO');
+    const aboutName = aboutPage.querySelector('.about-name');
+    const aboutBio = aboutPage.querySelector('.about-bio');
+    const aboutBtns = aboutPage.querySelectorAll('.about-tools button');
     const secretLink = document.querySelector('.secret-link');
     const aCanvas = document.getElementById('aboutCanvas');
     const actx = aCanvas.getContext('2d');
 
     let aLines = [];          // user-drawn path segments
+    let textSegs = [];        // the on-page words, as platforms the ball lands on
     let aDrawing = false, aLast = null;
     let ball = null, aRaf = null, aAnimating = false, basket = null;
+
+    // turn the headline, bio (per line) and buttons into thin top-edge
+    // platforms so the ball rests on the words instead of passing over them
+    function computeTextSegs() {
+      textSegs = [];
+      const cr = aCanvas.getBoundingClientRect();
+      const pushTop = r => {
+        if (r.width < 2) return;
+        textSegs.push({ x1: r.left - cr.left, y1: r.top - cr.top,
+                        x2: r.right - cr.left, y2: r.top - cr.top, oneway: true });
+      };
+      pushTop(aboutName.getBoundingClientRect());
+      aboutBtns.forEach(b => pushTop(b.getBoundingClientRect()));
+      const range = document.createRange();
+      range.selectNodeContents(aboutBio);
+      for (const r of range.getClientRects()) pushTop(r);   // one platform per wrapped line
+    }
 
     function rectIn(el, container) {
       const r = el.getBoundingClientRect();
@@ -665,7 +686,7 @@
     function computeBasket() {
       const W = aCanvas.width, H = aCanvas.height;
       const ow = 58;                                  // opening width
-      const x2 = W - 22, x1 = x2 - ow;                // tucked into the right corner
+      const x1 = 22, x2 = x1 + ow;                    // tucked into the left corner
       const depth = 62, inset = 8;
       const bottom = H - 10, top = bottom - depth;    // sitting at the very bottom
       basket = { x1, x2, top, depth, inset, bottom };
@@ -723,6 +744,7 @@
     function dropBall() {
       if (aRaf) cancelAnimationFrame(aRaf);
       sizeAbout();                            // make canvas match its on-screen size first
+      computeTextSegs();                      // snapshot the word platforms at current layout
       const s = rectIn(dropO, aboutPage);
       dropO.style.visibility = 'hidden';      // leave the gap in "G ld"
       const R = Math.max(11, Math.round(s.h * 0.3));
@@ -747,7 +769,7 @@
 
       // collisions are always on, so the ball outline can never cross the
       // basket's outer lines — it bounces off the walls and settles on the floor
-      const segs = aLines.concat([
+      const segs = aLines.concat(textSegs, [
         { x1: 0, y1: H, x2: W, y2: H },   // floor
         { x1: 0, y1: 0, x2: 0, y2: H },   // left wall
         { x1: W, y1: 0, x2: W, y2: H },   // right wall
@@ -757,6 +779,9 @@
         { x1: basket.x1 + basket.inset, y1: basket.bottom, x2: basket.x2 - basket.inset, y2: basket.bottom }
       ]);
       for (const seg of segs) {
+        // word platforms are one-way: solid only when landed on from above,
+        // so the ball rests on the text instead of wedging between lines
+        if (seg.oneway && b.y > seg.y1) continue;
         const c = closestOnSeg(b.x, b.y, seg);
         if (c.dist < b.R && c.dist > 0.0001) {
           const nx = (b.x - c.cx) / c.dist, ny = (b.y - c.cy) / c.dist;
