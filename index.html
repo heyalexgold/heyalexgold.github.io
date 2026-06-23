@@ -51,9 +51,9 @@
       position: absolute;
       left: 1.5rem;
       top: 0;
-      width: 9px;
-      height: 9px;
-      margin-top: -4.5px;            /* center on the link via JS-set top */
+      width: 13px;
+      height: 13px;
+      margin-top: -6.5px;            /* center on the link via JS-set top */
       border-radius: 50%;
       background: #e23b2e;
       z-index: 3;
@@ -62,12 +62,6 @@
       transition: top 0.42s cubic-bezier(0.34, 1.45, 0.5, 1), opacity 0.2s ease;
     }
     .nav-dot.ready { opacity: 1; }
-    .nav-dot.pulse { animation: dotPulse 0.42s ease; }
-    @keyframes dotPulse {
-      0%   { transform: scale(1); }
-      45%  { transform: scale(2); }
-      100% { transform: scale(1); }
-    }
 
     main {
       flex: 1;
@@ -598,24 +592,19 @@
     const navDot = document.querySelector('.nav-dot');
 
     // glide the red dot so it settles next to the active nav item
-    function moveDot(link, animate) {
+    function moveDot(link) {
       if (!link) return;
       navDot.classList.add('ready');
       navDot.style.top = (link.offsetTop + link.offsetHeight / 2) + 'px';
-      if (animate) {
-        navDot.classList.remove('pulse');
-        void navDot.offsetWidth;        // restart the zoom pulse
-        navDot.classList.add('pulse');
-      }
     }
 
-    function activate(page, animate) {
+    function activate(page) {
       const link = [...links].find(l => l.dataset.page === page);
       links.forEach(l => l.classList.toggle('active', l.dataset.page === page));
       pages.forEach(p => p.classList.toggle('active', p.id === page));
       mainEl.classList.toggle('about-mode', page === 'about');
       mainEl.classList.toggle('turntable-mode', page === 'turntable');
-      moveDot(link, animate);
+      moveDot(link);
       if (page === 'about') resetAbout();
       if (page === 'turntable') initTurntable(); else stopTurntable();
     }
@@ -623,12 +612,12 @@
     links.forEach(link => {
       link.addEventListener('click', e => {
         e.preventDefault();
-        activate(link.dataset.page, true);
+        activate(link.dataset.page);
       });
     });
 
     // settle the dot next to the initial page once layout is ready
-    moveDot(document.querySelector('.nav-link.active'), false);
+    moveDot(document.querySelector('.nav-link.active'));
 
     // ---- About page: draw a path, drop the "o" into the bin ----
     const aboutPage = document.getElementById('about');
