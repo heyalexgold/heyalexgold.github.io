@@ -282,13 +282,17 @@
       font-weight: 700;
     }
 
-    /* device */
+    /* device — machined / CNC aluminum */
     .tt-device {
-      background: #1c2024;
+      background:
+        linear-gradient(135deg, #dfe2e5 0%, #c2c6cb 38%, #cdd1d5 52%, #abb0b5 100%);
       border-radius: 20px;
       border-top-left-radius: 77px;
+      border: 1px solid rgba(255,255,255,0.6);
       padding: 14px 1.2rem 1.4rem 14px;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.28),
+                  inset 0 1px 0 rgba(255,255,255,0.8),
+                  inset 0 -2px 6px rgba(0,0,0,0.12);
       display: grid;
       grid-template-columns: auto auto;
       grid-template-rows: auto auto;
@@ -303,13 +307,16 @@
       border-radius: 50%;
     }
     #ttPlatter:active { cursor: grabbing; }
-    .tt-oled {
-      width: 138px; height: 69px;
+    /* 0.96" OLED: 128x64 monochrome pixels, drawn 1:1 then upscaled crisply */
+    #ttOled {
+      width: 168px; height: 84px;
       background: #000;
-      border-radius: 6px;
+      border-radius: 7px;
       image-rendering: pixelated;
+      image-rendering: crisp-edges;
       align-self: start;
-      box-shadow: inset 0 0 0 2px #000, 0 0 0 3px #303539;
+      box-shadow: 0 0 0 3px #15181b, 0 0 0 4px rgba(255,255,255,0.5),
+                  inset 0 0 8px rgba(0,0,0,0.8);
     }
     .tt-knob {
       width: 64px; height: 64px;
@@ -359,52 +366,95 @@
     .tt-buttons button.on { background: #c0392b; color: #fff; }
     .tt-buttons button.bt-on { background: #2563c0; color: #fff; }
 
-    /* phone */
+    /* phone — iPhone style */
     .tt-phone .phone-frame {
-      width: 200px;
-      background: #111;
-      border-radius: 26px;
-      padding: 12px;
-      box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+      position: relative;
+      width: 212px;
+      background: #0b0b0d;
+      border-radius: 40px;
+      padding: 9px;
+      box-shadow: 0 16px 34px rgba(0,0,0,0.32), inset 0 0 0 2px #2c2c30;
+    }
+    .phone-island {
+      position: absolute;
+      top: 16px; left: 50%; transform: translateX(-50%);
+      width: 78px; height: 20px;
+      background: #000; border-radius: 12px; z-index: 3;
     }
     .phone-screen {
-      background: #fafafa;
-      border-radius: 16px;
-      padding: 1rem 0.9rem;
+      background: #f2f2f7;
+      border-radius: 32px;
+      padding: 0.4rem 0.65rem 1.1rem;
       display: flex;
       flex-direction: column;
       gap: 0.7rem;
-      min-height: 320px;
+      min-height: 392px;
     }
+    .phone-statusbar {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.74rem; font-weight: 700; color: #111;
+      padding: 0.5rem 0.7rem 0.1rem;
+    }
+    .sb-right { display: flex; align-items: center; gap: 5px; }
+    .sb-sig {
+      width: 17px; height: 10px;
+      background: linear-gradient(90deg,#111 0 3px,transparent 3px 4px,#111 4px 7px,
+                  transparent 7px 8px,#111 8px 11px,transparent 11px 12px,#111 12px 17px);
+    }
+    .sb-bat {
+      width: 20px; height: 10px; border: 1px solid #111;
+      border-radius: 2px; position: relative;
+    }
+    .sb-bat::before { content:''; position:absolute; inset:1.5px; width:65%; background:#111; border-radius:1px; }
+    .sb-bat::after { content:''; position:absolute; right:-3px; top:3px; width:2px; height:4px; background:#111; border-radius:1px; }
+
+    /* iOS notification card */
+    .ph-notif {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: rgba(255,255,255,0.96);
+      border-radius: 17px;
+      padding: 0.5rem 0.55rem;
+      box-shadow: 0 5px 16px rgba(0,0,0,0.09);
+    }
+    .ph-notif-app {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: #e23b2e; color: #fff;
+      font-size: 0.62rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .ph-notif-text { display: flex; flex-direction: column; line-height: 1.25; flex: 1; min-width: 0; }
+    .ph-notif-text strong { font-size: 0.72rem; color: #111; }
+    .ph-notif-text span { font-size: 0.72rem; color: #555; }
+    .ph-join {
+      font: inherit; font-size: 0.74rem; font-weight: 600;
+      border: none; border-radius: 15px;
+      background: #0a84ff; color: #fff;
+      padding: 0.34rem 0.75rem; cursor: pointer; flex-shrink: 0;
+    }
+    .ph-join:active { transform: translateY(1px); }
+    .ph-join.in { background: #ff3b30; }
+
+    /* now playing */
+    .phone-music { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.3rem 0.35rem 0; }
     .np-art {
       width: 100%; aspect-ratio: 1;
-      border-radius: 12px;
+      border-radius: 16px;
       background: linear-gradient(135deg, #c0392b, #8e44ad);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.18);
     }
-    .np-title { font-size: 1rem; font-weight: 700; color: #111; }
-    .np-artist { font-size: 0.8rem; color: #888; margin-top: -0.4rem; }
-    .phone-screen .ph-row { display: flex; align-items: center; gap: 0.5rem; }
-    #phPlay, #phMeeting, #phMic {
-      font: inherit; font-size: 0.85rem;
-      border: 1px solid #ddd; border-radius: 8px;
-      background: #fff; color: #333; padding: 0.45rem 0.6rem;
-      cursor: pointer; width: 100%;
+    .np-title { font-size: 1.05rem; font-weight: 700; color: #111; }
+    .np-artist { font-size: 0.82rem; color: #8a8a8e; margin-top: -0.35rem; }
+    .ph-transport {
+      display: flex; align-items: center; justify-content: center; gap: 1.6rem;
+      margin-top: 0.35rem;
     }
-    #phPlay.on { background: #111; color: #fff; border-color: #111; }
-    #phMeeting.on { background: #2980b9; color: #fff; border-color: #2980b9; }
-    #phMic.muted { background: #c0392b; color: #fff; border-color: #c0392b; }
-    #phVol { width: 100%; accent-color: #c0392b; }
-    #phTrack { font: inherit; font-size: 0.85rem; padding: 0.4rem; border-radius: 8px; border: 1px solid #ddd; }
-    .phone-meeting { display: none; flex-direction: column; gap: 0.6rem; }
-    .phone-meeting.on { display: flex; }
-    .phone-music.hidden { display: none; }
-    .meeting-face {
-      width: 100%; aspect-ratio: 16/10;
-      border-radius: 12px;
-      background: #1c2024;
+    .ph-transport button {
+      border: none; background: none; cursor: pointer; color: #111; padding: 0;
       display: flex; align-items: center; justify-content: center;
-      color: #cdd3d9; font-size: 0.8rem;
     }
+    .ph-transport button svg { width: 28px; height: 28px; fill: currentColor; display: block; }
+    .ph-transport #phPlay svg { width: 42px; height: 42px; }
+    .ph-transport button:active { opacity: 0.5; }
 
     /* speaker */
     .tt-speaker { width: 150px; }
@@ -540,23 +590,30 @@
         <section class="tt-panel tt-phone">
           <h3>Phone</h3>
           <div class="phone-frame">
+            <div class="phone-island"></div>
             <div class="phone-screen">
+              <div class="phone-statusbar">
+                <span>9:41</span>
+                <span class="sb-right"><i class="sb-sig"></i><i class="sb-bat"></i></span>
+              </div>
+              <div class="ph-notif">
+                <div class="ph-notif-app">AG</div>
+                <div class="ph-notif-text">
+                  <strong>Meetings</strong>
+                  <span>Meeting started</span>
+                </div>
+                <button id="phMeeting" class="ph-join">Join</button>
+              </div>
               <div class="phone-music">
                 <div class="np-art" id="npArt"></div>
                 <div class="np-title" id="npTitle">—</div>
                 <div class="np-artist" id="npArtist">—</div>
-                <button id="phPlay">Play</button>
-                <div class="ph-row">
-                  <span style="font-size:0.8rem;color:#888;">Vol</span>
-                  <input type="range" id="phVol" min="0" max="127" value="64">
+                <div class="ph-transport">
+                  <button id="phPrev" title="Back"></button>
+                  <button id="phPlay" title="Play / Pause"></button>
+                  <button id="phNext" title="Forward"></button>
                 </div>
-                <select id="phTrack"></select>
               </div>
-              <div class="phone-meeting" id="phMeetingPanel">
-                <div class="meeting-face">All-hands · live</div>
-                <button id="phMic">Mic on</button>
-              </div>
-              <button id="phMeeting">Join meeting</button>
             </div>
           </div>
         </section>
@@ -1097,8 +1154,7 @@
       if (TT.ring) TT.ring.parameters.get('playing').value = TT.playing ? 1 : 0;
       document.getElementById('ttPlay').innerHTML = TT.playing ? ICON.pause : ICON.play;
       const p = document.getElementById('phPlay');
-      p.textContent = TT.playing ? 'Pause' : 'Play';
-      p.classList.toggle('on', TT.playing);
+      if (p) p.innerHTML = TT.playing ? ICON.pause : ICON.play;
     }
     function ttSkip(dir) {         // previous / next track (wraps), resets the ring buffer
       if (TT.meeting) return;
@@ -1121,11 +1177,10 @@
 
     function ttSetMeeting(v) {
       TT.meeting = v;
-      document.getElementById('phMeeting').textContent = v ? 'Leave meeting' : 'Join meeting';
-      document.getElementById('phMeeting').classList.toggle('on', v);
-      document.getElementById('phMeetingPanel').classList.toggle('on', v);
-      document.querySelector('.phone-music').classList.toggle('hidden', v);
-      ttLoadSource();                          // toggling meeting switches the source globally
+      const btn = document.getElementById('phMeeting');
+      btn.textContent = v ? 'Leave' : 'Join';   // notification button reflects state
+      btn.classList.toggle('in', v);
+      ttLoadSource();                            // switches the source between music / meeting
     }
 
     // ---------- platter geometry & rendering ----------
@@ -1177,58 +1232,89 @@
       const g = ttPlatter.getContext('2d');
       const S = PLATTER_SIZE, c = S/2, R = c - 1;
       g.clearRect(0, 0, S, S);
-      // plain gray disc — no grooves, label, or spindle
-      g.fillStyle = '#23272c';
+      // brushed-aluminum disc, a touch lighter than the body so the screen pops
+      const grad = g.createRadialGradient(c, c*0.8, R*0.1, c, c, R);
+      grad.addColorStop(0, '#eef0f2');
+      grad.addColorStop(1, '#cfd3d7');
+      g.fillStyle = grad;
       g.beginPath(); g.arc(c, c, R, 0, Math.PI*2); g.fill();
+      // subtle machined rim
+      g.lineWidth = 1.5; g.strokeStyle = 'rgba(0,0,0,0.12)';
+      g.beginPath(); g.arc(c, c, R - 1, 0, Math.PI*2); g.stroke();
       // two reference dots ~2/3 to the edge, to show spin & direction
       g.save(); g.translate(c, c); g.rotate(TT.angle);
-      g.fillStyle = '#e8edf2';
+      g.fillStyle = '#3a3f45';
       for (const a of [0, Math.PI]) {
         g.beginPath(); g.arc(Math.cos(a)*R*0.66, Math.sin(a)*R*0.66, 6, 0, Math.PI*2); g.fill();
       }
       g.restore();
     }
 
-    // ---------- OLED 128x64 ----------
+    // ---------- OLED 128x64 monochrome ----------
+    // 5x7 pixel font (only the glyphs the screen needs)
+    const OLED_FONT = {
+      'V': ['10001','10001','10001','10001','10001','01010','00100'],
+      'O': ['01110','10001','10001','10001','10001','10001','01110'],
+      'L': ['10000','10000','10000','10000','10000','10000','11111'],
+      'T': ['11111','00100','00100','00100','00100','00100','00100'],
+      '-': ['00000','00000','00000','11111','00000','00000','00000'],
+      ' ': ['00000','00000','00000','00000','00000','00000','00000'],
+      '0': ['01110','10001','10011','10101','11001','10001','01110'],
+      '1': ['00100','01100','00100','00100','00100','00100','01110'],
+      '2': ['01110','10001','00001','00010','00100','01000','11111'],
+      '3': ['11111','00010','00100','00010','00001','10001','01110'],
+      '4': ['00010','00110','01010','10010','11111','00010','00010'],
+      '5': ['11111','10000','11110','00001','00001','10001','01110'],
+      '6': ['00110','01000','10000','11110','10001','10001','01110'],
+      '7': ['11111','00001','00010','00100','01000','01000','01000'],
+      '8': ['01110','10001','10001','01110','10001','10001','01110'],
+      '9': ['01110','10001','10001','01111','00001','00010','01100']
+    };
+    function oledText(g, str, x, y, s) {       // s = pixel size of each font dot
+      let cx = x;
+      for (const ch of str) {
+        const gl = OLED_FONT[ch] || OLED_FONT[' '];
+        for (let r = 0; r < 7; r++)
+          for (let c = 0; c < 5; c++)
+            if (gl[r][c] === '1') g.fillRect(cx + c*s, y + r*s, s, s);
+        cx += 6 * s;                            // 5 wide + 1 space
+      }
+    }
+    // filled head silhouette, facing right — front contour shows forehead/nose/lips/chin
+    const FACE_BACK  = [[12,12],[16,8],[26,7],[38,8],[48,11],[56,15]];
+    const FACE_FRONT = [[12,20],[16,24],[22,25],[25,23],[29,33],[32,24],
+                        [35,28],[38,26],[41,29],[45,27],[50,20],[56,15]];
+    function faceX(pts, y) {
+      if (y <= pts[0][0]) return pts[0][1];
+      for (let i = 1; i < pts.length; i++) {
+        if (y <= pts[i][0]) { const a = pts[i-1], b = pts[i];
+          return a[1] + (b[1]-a[1]) * (y-a[0]) / (b[0]-a[0]); }
+      }
+      return pts[pts.length-1][1];
+    }
     function ttDrawOled() {
       const g = ttOled.getContext('2d');
       g.imageSmoothingEnabled = false;
       g.fillStyle = '#000'; g.fillRect(0, 0, 128, 64);
-      g.fillStyle = '#fff'; g.strokeStyle = '#fff';
 
-      // left quarter — pixel side-profile face (nose, mouth, jaw), facing right
-      g.lineWidth = 2; g.lineJoin = 'round';
-      g.beginPath();
-      g.moveTo(8, 8);            // top of head
-      g.lineTo(20, 14);          // brow
-      g.lineTo(16, 22);          // bridge
-      g.lineTo(26, 30);          // nose tip
-      g.lineTo(16, 34);          // under nose
-      g.stroke();
-      const open = !TT.muted;
-      if (open) {                // mouth open
-        g.beginPath();
-        g.moveTo(16, 37); g.lineTo(23, 38);   // upper lip
-        g.moveTo(16, 45); g.lineTo(22, 44);   // lower lip
-        g.stroke();
-      } else {                   // mouth closed
-        g.beginPath(); g.moveTo(16, 41); g.lineTo(23, 41); g.stroke();
+      // ---- left: side-profile face silhouette ----
+      g.fillStyle = '#fff';
+      for (let y = 12; y <= 56; y++) {
+        const xl = Math.round(faceX(FACE_BACK, y)), xr = Math.round(faceX(FACE_FRONT, y));
+        if (xr > xl) g.fillRect(xl, y, xr - xl + 1, 1);
       }
-      g.beginPath();
-      g.moveTo(16, 48);          // chin
-      g.lineTo(18, 54);
-      g.lineTo(8, 58);           // jaw back
-      g.stroke();
+      g.fillStyle = '#000';
+      g.fillRect(20, 22, 2, 2);                                   // eye
+      const speaking = !TT.muted && TT.level > 0.05;             // mouth: speaking vs muted/silent
+      if (speaking) g.fillRect(19, 35, 9, 5);                    // open: dark cavity
+      else          g.fillRect(19, 38, 9, 2);                    // closed: thin line
 
-      // right zone — VOL + time-behind
+      // ---- right: VOL and time-behind, that's all ----
+      g.fillStyle = '#fff';
       const vol = Math.round(TT.volume / TT.VOLUME_MAX * 10);
-      g.font = 'bold 13px monospace'; g.textBaseline = 'top';
-      g.fillText('VOL ' + vol, 44, 8);
+      oledText(g, 'VOL ' + vol, 46, 8, 2);
       const sec = Math.min(120, Math.max(0, Math.round(TT.behind)));
-      g.font = 'bold 15px monospace';
-      g.fillText(sec === 0 ? 'T-0' : 'T-' + sec, 44, 30);
-      g.font = '8px monospace';
-      g.fillText(sec === 0 ? 'LIVE' : 'BEHIND', 44, 50);
+      oledText(g, 'T-' + sec, 46, 34, 2);
     }
 
     // ---------- volume knob (relative encoder) ----------
@@ -1366,15 +1452,23 @@
         if (!TT.raf) { TT.lastTs = 0; TT.raf = requestAnimationFrame(ttFrame); }
         if (!TT.oledTimer) TT.oledTimer = setInterval(ttDrawOled, Math.round(1000 / TT.DISPLAY_FPS));
         if (!TT.booted) {
-          // wire phone controls once
-          const trackSel = document.getElementById('phTrack');
+          // now-playing labels
           TT.tracksMeta = [['Soul', 'Ketsa'], ['Beautiful Day', 'Mr Smith']];
-          TT.tracksMeta.forEach((t, i) => { const o = document.createElement('option'); o.value = i; o.textContent = t[0]; trackSel.appendChild(o); });
           document.getElementById('npTitle').textContent = TT.tracksMeta[0][0];
           document.getElementById('npArtist').textContent = TT.tracksMeta[0][1];
-          trackSel.addEventListener('change', e => { ttEnsureAudio(); ttSelectTrack(+e.target.value); });
-          document.getElementById('phVol').addEventListener('input', e => { ttEnsureAudio(); ttSetVolume(+e.target.value); });
+          // phone transport: back · play/pause · forward
+          document.getElementById('phPrev').addEventListener('click', () => { ttEnsureAudio(); ttSkip(-1); });
           document.getElementById('phPlay').addEventListener('click', () => { ttEnsureAudio(); ttSetPlaying(!TT.playing); });
+          document.getElementById('phNext').addEventListener('click', () => { ttEnsureAudio(); ttSkip(1); });
+          document.getElementById('phPrev').innerHTML = ICON.prev;
+          document.getElementById('phNext').innerHTML = ICON.next;
+          // phone meeting notification — join starts the meeting, leave returns to music
+          document.getElementById('phMeeting').addEventListener('click', () => {
+            ttEnsureAudio();
+            const joining = !TT.meeting;
+            ttSetMeeting(joining);
+            if (joining) ttSetPlaying(true);
+          });
           // device button row: mute · skip back · play/pause · skip forward · bluetooth
           document.getElementById('ttMute').addEventListener('click', () => { TT.muted = !TT.muted; ttApplyMute(); });
           document.getElementById('ttPrev').addEventListener('click', () => { ttEnsureAudio(); ttSkip(-1); });
@@ -1386,13 +1480,6 @@
           document.getElementById('ttNext').innerHTML = ICON.next;
           document.getElementById('ttBt').innerHTML = ICON.bt;
           ttApplyMute(); ttApplyPlaying(); ttApplyLink();
-          document.getElementById('phMeeting').addEventListener('click', () => { ttEnsureAudio(); ttSetMeeting(!TT.meeting); });
-          document.getElementById('phMic').addEventListener('click', () => {
-            TT.micMuted = !TT.micMuted;
-            const b = document.getElementById('phMic');
-            b.textContent = TT.micMuted ? 'Mic muted' : 'Mic on';
-            b.classList.toggle('muted', TT.micMuted);
-          });
           TT.booted = true;
         }
       });
