@@ -1475,34 +1475,27 @@
     // Endpoints are pinned (device anchor + the plug the user drags). Middle
     // points fall under gravity, swing on grab, and are pushed out of the
     // device's rounded body so the cable can't intersect it.
-    const ROPE = { N: 26, iters: 6, gravity: 0.55, damp: 0.985, rest: 6, points: [] };
+    const ROPE = { N: 26, iters: 14, rest: 6, points: [] };
     function ropeInit() {
+      // start as a straight line between anchor and plug — no initial sag
       const a = deviceAnchor(), j = jackCenter();
       ROPE.points = [];
       for (let i = 0; i < ROPE.N; i++) {
         const t = i / (ROPE.N - 1);
         const x = a.x + (j.x - a.x) * t;
-        const y = a.y + (j.y - a.y) * t + Math.sin(t * Math.PI) * 30;   // initial sag
-        ROPE.points.push({ x, y, px: x, py: y });
+        const y = a.y + (j.y - a.y) * t;
+        ROPE.points.push({ x, y });
       }
       const straight = Math.hypot(j.x - a.x, j.y - a.y);
-      ROPE.rest = (straight * 1.35) / (ROPE.N - 1);                     // bit of slack
+      ROPE.rest = (straight * 1.05) / (ROPE.N - 1);     // taut: just barely longer than straight
     }
     function ropeStep() {
       if (!ROPE.points.length) return;
       const a = deviceAnchor(), p = TT.plug;
-      // pin endpoints — overwrite both position and prev so they don't get verlet'd
-      const p0 = ROPE.points[0]; p0.x = p0.px = a.x; p0.y = p0.py = a.y;
-      const pN = ROPE.points[ROPE.N-1]; pN.x = pN.px = p.x; pN.y = pN.py = p.y;
-      // integrate middle points
-      for (let i = 1; i < ROPE.N - 1; i++) {
-        const pt = ROPE.points[i];
-        const vx = (pt.x - pt.px) * ROPE.damp;
-        const vy = (pt.y - pt.py) * ROPE.damp;
-        pt.px = pt.x; pt.py = pt.y;
-        pt.x += vx; pt.y += vy + ROPE.gravity;
-      }
-      // satisfy constraints
+      // pin endpoints (no integration / momentum — the cable is purely kinematic)
+      ROPE.points[0].x = a.x; ROPE.points[0].y = a.y;
+      ROPE.points[ROPE.N-1].x = p.x; ROPE.points[ROPE.N-1].y = p.y;
+      // satisfy constraints: equalize segment lengths + keep points off the device
       const rect = deviceRect();
       for (let it = 0; it < ROPE.iters; it++) {
         for (let i = 0; i < ROPE.N - 1; i++) {
@@ -1511,8 +1504,8 @@
           const d = Math.hypot(dx, dy) || 0.0001;
           const diff = (d - ROPE.rest) / d * 0.5;
           const mx = dx * diff, my = dy * diff;
-          if (i !== 0)         { a_.x += mx; a_.y += my; }
-          if (i !== ROPE.N-2)  { b_.x -= mx; b_.y -= my; }
+          if (i !== 0)        { a_.x += mx; a_.y += my; }
+          if (i !== ROPE.N-2) { b_.x -= mx; b_.y -= my; }
         }
         for (let i = 1; i < ROPE.N - 1; i++) pushOutOfDevice(ROPE.points[i], rect);
       }
