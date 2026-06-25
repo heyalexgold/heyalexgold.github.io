@@ -485,6 +485,7 @@
     /* speaker */
     .tt-speaker { width: 150px; }
     .spk-graphic {
+      position: relative;
       width: 110px; height: 150px;
       border-radius: 12px;
       background: #2c3137;
@@ -505,6 +506,8 @@
     }
     #spkMeter { height: 100%; width: 0%; background: #e23b2e; transition: width 0.05s linear; }
     .spk-jack {
+      position: absolute;
+      right: -9px; top: 64%;
       width: 18px; height: 18px; border-radius: 50%;
       background: #111; box-shadow: inset 0 0 0 3px #4a5158;
     }
@@ -589,9 +592,9 @@
           <div class="spk-graphic">
             <div class="spk-cone small"></div>
             <div class="spk-cone"></div>
+            <div class="spk-jack" id="spkJack"></div>
           </div>
           <div class="spk-meter"><div id="spkMeter"></div></div>
-          <div class="spk-jack" id="spkJack"></div>
           <div class="tt-disconnected" id="ttConnState"></div>
         </section>
 
@@ -1391,6 +1394,7 @@
       const stage = stageEl();
       if (!stage.contains(ttPlug)) stage.appendChild(ttPlug);
       ttSnapPlug();
+      ropeInit();
     }
     function jackCenter() {
       const stage = stageEl(), j = document.getElementById('spkJack');
@@ -1398,9 +1402,42 @@
       return { x: jr.left - sr.left + jr.width/2, y: jr.top - sr.top + jr.height/2 };
     }
     function deviceAnchor() {
+      // jack on the left side of the device, kept just outside the body so the
+      // rope's pinned start visually sits *next to* the device rather than on it
       const stage = stageEl(), d = document.querySelector('.tt-device');
       const sr = stage.getBoundingClientRect(), dr = d.getBoundingClientRect();
-      return { x: dr.left - sr.left, y: dr.top - sr.top + dr.height*0.7 };
+      return { x: dr.left - sr.left - 5, y: dr.top - sr.top + dr.height*0.78 };
+    }
+    function deviceRect() {
+      const stage = stageEl(), d = document.querySelector('.tt-device');
+      const sr = stage.getBoundingClientRect(), dr = d.getBoundingClientRect();
+      // matches the CSS border-top-left-radius (kept concentric with the platter)
+      return { x: dr.left - sr.left, y: dr.top - sr.top, w: dr.width, h: dr.height, cornerR: 98 };
+    }
+    // push a single point outside the rounded-rect device shape, with a margin
+    function pushOutOfDevice(p, r) {
+      const m = 3;
+      const left = r.x - m, right = r.x + r.w + m;
+      const top  = r.y - m, bottom = r.y + r.h + m;
+      if (p.x < left || p.x > right || p.y < top || p.y > bottom) return;
+      // top-left rounded corner: arc centered at (r.x + R, r.y + R)
+      if (p.x < r.x + r.cornerR && p.y < r.y + r.cornerR) {
+        const cx = r.x + r.cornerR, cy = r.y + r.cornerR;
+        const dx = p.x - cx, dy = p.y - cy;
+        const d = Math.hypot(dx, dy) || 0.0001;
+        if (d < r.cornerR + m) {
+          const t = (r.cornerR + m) / d;
+          p.x = cx + dx * t; p.y = cy + dy * t;
+        }
+        return;
+      }
+      // straight edges: push to the closest one
+      const dL = p.x - left, dR = right - p.x, dT = p.y - top, dB = bottom - p.y;
+      const k = Math.min(dL, dR, dT, dB);
+      if      (k === dL) p.x = left;
+      else if (k === dR) p.x = right;
+      else if (k === dT) p.y = top;
+      else               p.y = bottom;
     }
     function ttSnapPlug() {
       const j = jackCenter();
@@ -1433,6 +1470,53 @@
     ttPlug.addEventListener('pointerup', plugUp);
     ttPlug.addEventListener('pointercancel', plugUp);
 
+    // ----- verlet rope -----
+    // The cable is a chain of point masses connected by length constraints.
+    // Endpoints are pinned (device anchor + the plug the user drags). Middle
+    // points fall under gravity, swing on grab, and are pushed out of the
+    // device's rounded body so the cable can't intersect it.
+    const ROPE = { N: 26, iters: 6, gravity: 0.55, damp: 0.985, rest: 6, points: [] };
+    function ropeInit() {
+      const a = deviceAnchor(), j = jackCenter();
+      ROPE.points = [];
+      for (let i = 0; i < ROPE.N; i++) {
+        const t = i / (ROPE.N - 1);
+        const x = a.x + (j.x - a.x) * t;
+        const y = a.y + (j.y - a.y) * t + Math.sin(t * Math.PI) * 30;   // initial sag
+        ROPE.points.push({ x, y, px: x, py: y });
+      }
+      const straight = Math.hypot(j.x - a.x, j.y - a.y);
+      ROPE.rest = (straight * 1.35) / (ROPE.N - 1);                     // bit of slack
+    }
+    function ropeStep() {
+      if (!ROPE.points.length) return;
+      const a = deviceAnchor(), p = TT.plug;
+      // pin endpoints — overwrite both position and prev so they don't get verlet'd
+      const p0 = ROPE.points[0]; p0.x = p0.px = a.x; p0.y = p0.py = a.y;
+      const pN = ROPE.points[ROPE.N-1]; pN.x = pN.px = p.x; pN.y = pN.py = p.y;
+      // integrate middle points
+      for (let i = 1; i < ROPE.N - 1; i++) {
+        const pt = ROPE.points[i];
+        const vx = (pt.x - pt.px) * ROPE.damp;
+        const vy = (pt.y - pt.py) * ROPE.damp;
+        pt.px = pt.x; pt.py = pt.y;
+        pt.x += vx; pt.y += vy + ROPE.gravity;
+      }
+      // satisfy constraints
+      const rect = deviceRect();
+      for (let it = 0; it < ROPE.iters; it++) {
+        for (let i = 0; i < ROPE.N - 1; i++) {
+          const a_ = ROPE.points[i], b_ = ROPE.points[i+1];
+          const dx = b_.x - a_.x, dy = b_.y - a_.y;
+          const d = Math.hypot(dx, dy) || 0.0001;
+          const diff = (d - ROPE.rest) / d * 0.5;
+          const mx = dx * diff, my = dy * diff;
+          if (i !== 0)         { a_.x += mx; a_.y += my; }
+          if (i !== ROPE.N-2)  { b_.x -= mx; b_.y -= my; }
+        }
+        for (let i = 1; i < ROPE.N - 1; i++) pushOutOfDevice(ROPE.points[i], rect);
+      }
+    }
     function ttDrawCable() {
       const stage = stageEl(); if (!stage) return;
       const r = stage.getBoundingClientRect();
@@ -1441,12 +1525,17 @@
       }
       const g = ttCable.getContext('2d');
       g.clearRect(0, 0, ttCable.width, ttCable.height);
-      const a = deviceAnchor(), p = TT.plug;
-      const sag = TT.connected ? 40 : 70;
+      if (!ROPE.points.length) return;
       g.strokeStyle = TT.connected ? '#2c3137' : '#a84a3c';
-      g.lineWidth = 4; g.lineCap = 'round';
-      g.beginPath(); g.moveTo(a.x, a.y);
-      g.quadraticCurveTo((a.x + p.x)/2, Math.max(a.y, p.y) + sag, p.x, p.y);
+      g.lineWidth = 5; g.lineCap = 'round'; g.lineJoin = 'round';
+      g.beginPath();
+      g.moveTo(ROPE.points[0].x, ROPE.points[0].y);
+      for (let i = 1; i < ROPE.points.length - 1; i++) {
+        const cur = ROPE.points[i], nxt = ROPE.points[i+1];
+        g.quadraticCurveTo(cur.x, cur.y, (cur.x + nxt.x) / 2, (cur.y + nxt.y) / 2);
+      }
+      const last = ROPE.points[ROPE.points.length - 1];
+      g.lineTo(last.x, last.y);
       g.stroke();
     }
 
@@ -1483,6 +1572,7 @@
       }
 
       ttDrawPlatter();
+      ropeStep();
       ttDrawCable();
       TT.raf = requestAnimationFrame(ttFrame);
     }
