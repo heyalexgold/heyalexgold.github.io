@@ -1303,6 +1303,8 @@
       'V': ['10001','10001','10001','10001','10001','01010','00100'],
       'O': ['01110','10001','10001','10001','10001','10001','01110'],
       'L': ['10000','10000','10000','10000','10000','10000','11111'],
+      'I': ['11111','00100','00100','00100','00100','00100','11111'],
+      'E': ['11111','10000','10000','11110','10000','10000','11111'],
       'T': ['11111','00100','00100','00100','00100','00100','00100'],
       '-': ['00000','00000','00000','11111','00000','00000','00000'],
       ' ': ['00000','00000','00000','00000','00000','00000','00000'],
@@ -1383,7 +1385,7 @@
       const vol = Math.round(TT.volume / TT.VOLUME_MAX * 10);
       oledText(g, 'VOL ' + vol, 46, 8, 2);
       const sec = Math.min(120, Math.max(0, Math.round(TT.behind)));
-      oledText(g, 'T-' + sec, 46, 34, 2);
+      oledText(g, sec === 0 ? 'LIVE' : 'T-' + sec, 46, 34, 2);
     }
 
     // ---------- volume knob (relative encoder) ----------
@@ -1563,10 +1565,12 @@
       TT.lastTs = ts;
 
       // disc rest velocity matches the audio rate: stopped when paused, fast
-      // forward while scrubbing forward, reverse while scrubbing back
+      // forward while catching up, reverse while scrubbing back. FF only spins
+      // the disc fast while we're still behind; once we hit live, the platter
+      // eases back to normal so it matches the resumed 1x playback.
       let restVel = TT.playing ? TT.TARGET_VELOCITY : 0;
-      if (TT.scrub === 'ff')  restVel =  TT.TARGET_VELOCITY * TT.MAX_RATE;
-      if (TT.scrub === 'rew') restVel = -TT.TARGET_VELOCITY;
+      if (TT.scrub === 'ff' && TT.behind > 0.3) restVel = TT.TARGET_VELOCITY * TT.MAX_RATE;
+      if (TT.scrub === 'rew')                   restVel = -TT.TARGET_VELOCITY;
       if (TT.state === 'IDLE') {
         TT.vel += (restVel - TT.vel) * TT.IDLE_EASE;         // fast spin-up / spin-down
         TT.angle += TT.vel * dt;
@@ -1581,11 +1585,12 @@
       let raw = TT.vel / TT.TARGET_VELOCITY;
       raw = Math.max(-TT.MAX_RATE, Math.min(TT.MAX_RATE, raw));
       TT.smoothedRate += TT.RATE_SMOOTHING_ALPHA * (raw - TT.smoothedRate);
-      // hold-to-scrub overrides the rate while behind: skip-forward fast-forwards,
-      // skip-back plays in reverse, both at the worklet's max rate
+      // hold-to-scrub overrides the rate while behind: skip-forward fast-forwards
+      // until caught up, then drops to 1x so live playback resumes seamlessly;
+      // skip-back plays in reverse at real-time -1x
       let outRate = TT.smoothedRate;
-      if (TT.scrub === 'ff')  outRate =  TT.MAX_RATE;
-      if (TT.scrub === 'rew') outRate = -1;          // real-time reverse playback
+      if (TT.scrub === 'ff' && TT.behind > 0.3) outRate = TT.MAX_RATE;
+      if (TT.scrub === 'rew')                   outRate = -1;
       if (TT.ring) TT.ring.parameters.get('rate').value = outRate;
 
       // output level meter (post everything the user hears)
