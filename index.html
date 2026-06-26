@@ -1539,7 +1539,11 @@
       const dt = Math.min(0.05, TT.lastTs ? (ts - TT.lastTs) / 1000 : 0.016);
       TT.lastTs = ts;
 
-      const restVel = TT.playing ? TT.TARGET_VELOCITY : 0;   // disc only spins while playing
+      // disc rest velocity matches the audio rate: stopped when paused, fast
+      // forward while scrubbing forward, reverse while scrubbing back
+      let restVel = TT.playing ? TT.TARGET_VELOCITY : 0;
+      if (TT.scrub === 'ff')  restVel =  TT.TARGET_VELOCITY * TT.MAX_RATE;
+      if (TT.scrub === 'rew') restVel = -TT.TARGET_VELOCITY;
       if (TT.state === 'IDLE') {
         TT.vel += (restVel - TT.vel) * TT.IDLE_EASE;         // fast spin-up / spin-down
         TT.angle += TT.vel * dt;
@@ -1558,7 +1562,7 @@
       // skip-back plays in reverse, both at the worklet's max rate
       let outRate = TT.smoothedRate;
       if (TT.scrub === 'ff')  outRate =  TT.MAX_RATE;
-      if (TT.scrub === 'rew') outRate = -TT.MAX_RATE;
+      if (TT.scrub === 'rew') outRate = -1;          // real-time reverse playback
       if (TT.ring) TT.ring.parameters.get('rate').value = outRate;
 
       // output level meter (post everything the user hears)
