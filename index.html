@@ -130,7 +130,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: min(700px, 86%);
+      width: min(960px, 90%);
       pointer-events: none;
     }
     .about-top {
@@ -156,8 +156,8 @@
       display: inline-block;
       white-space: nowrap;
       flex-shrink: 0;
-      border-bottom: 5px solid #e23b2e;
-      padding-bottom: 6px;          /* red line sits ~2mm under the name */
+      border-bottom: 8px solid #e23b2e;
+      padding-bottom: 0;             /* line sits flush against the bottom of the name */
     }
     .about-name .drop-o { display: inline-block; }
 
@@ -176,8 +176,20 @@
     .drop-btn.ghost { color: #bbb; }
     .drop-btn.ghost:hover { color: #777; }
 
+    .about-body {
+      margin-top: 7rem;             /* lift the name ~5 lines above the body */
+      display: flex;
+      align-items: center;
+      gap: 2.4rem;
+    }
+    .about-portrait {
+      width: 220px;
+      height: auto;
+      flex-shrink: 0;
+      pointer-events: none;
+      user-select: none;
+    }
     .about-bio {
-      margin-top: 7rem;            /* lift the name ~5 lines above the bio */
       max-width: 620px;
       font-size: 1rem;
       line-height: 1.6;
@@ -558,9 +570,12 @@
           </div>
         </div>
 
+        <div class="about-body">
         <p class="about-bio">Hey, I'm <strong>Alex Gold</strong>.<br>
       I'm an engineer who loves to spin CAD, hates CTE mismatches, and doesn't mind frying a resistor.<br>
       I currently work at <strong>Tesla</strong> in Palo Alto, California as a mechanical design engineer on the high voltage distribution team. I studied mechanical engineering at BYU with a focus on <strong>high voltage electronics, mechatronics, and battery chemistry</strong>. I'm passionate about interdisciplinary engineering and mechatronic systems. Above all else <strong>I just want to build, build, build!</strong></p>
+        <img class="about-portrait" src="images/alex-portrait.png" alt="Alex Gold" />
+        </div>
       </div>
     </div>
 
