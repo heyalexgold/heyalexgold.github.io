@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>alex gold — v2 mock</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #e8e8e8;                       /* half as dark as before */
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #111;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    .canvas {
+      position: relative;
+      width: 1360px;
+      height: 1180px;
+      margin: 24px auto;
+    }
+
+    /* every tile is a white rectangle with 4 tiny black corner-selection squares */
+    .tile {
+      position: absolute;
+      background: #fff;
+      padding: 22px 26px;
+      font-size: 22px;
+      line-height: 1.28;
+      color: #111;
+    }
+    /* corner squares — centered on the tile corner so the white edge and the
+       black square meet exactly at the corner point */
+    .tile::before, .tile::after,
+    .tile > .h1, .tile > .h2 {
+      content: '';
+      position: absolute;
+      width: 9px; height: 9px;
+      background: #000;
+    }
+    .tile::before        { top:    -4px; left:  -4px; }
+    .tile::after         { top:    -4px; right: -4px; }
+    .tile > .h1          { bottom: -4px; left:  -4px; }
+    .tile > .h2          { bottom: -4px; right: -4px; }
+
+    /* ---- sidebar column ---- */
+    .header-slot { top: 40px; left: 40px;  width: 280px; height: 68px; }
+
+    .nav-item {
+      position: absolute; left: 40px;
+      width: 280px; padding: 22px 26px 22px 32px;
+      font-size: 26px; line-height: 1.12;
+      display: flex; align-items: center;
+    }
+    .nav-item.active::marker { display: none; }
+    .nav-item.active .stripe {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 14px; background: #e73422;
+    }
+    .n1 { top: 122px; height: 96px; }         /* home */
+    .n2 { top: 232px; height: 118px; }        /* currently working on */
+    .n3 { top: 364px; height: 152px; }        /* wish I was working on… */
+    .n4 { top: 530px; height: 82px; }         /* in the news? */
+    .n5 { top: 626px; height: 118px; }        /* resume / contact me */
+    .n6 { top: 758px; height: 118px; }        /* creative work */
+
+    /* ---- sub-menu next to "currently working on" ---- */
+    .submenu {
+      top: 300px; left: 350px;
+      width: 200px;
+      padding: 22px 24px;
+    }
+    .submenu .item { font-size: 20px; line-height: 1.25; }
+    .submenu .item + .item { margin-top: 20px; }
+
+    /* ---- title ---- */
+    .title {
+      top: 96px; left: 500px;
+      width: 460px; height: 108px;
+      padding: 0 32px;
+      display: flex; align-items: center;
+    }
+    .title h1 {
+      font-size: 60px; font-weight: 500;
+      color: #e73422; letter-spacing: -0.01em;
+    }
+
+    /* ---- tagline ---- */
+    .tagline {
+      top: 234px; left: 680px;
+      width: 280px;
+      padding: 24px 28px;
+    }
+    .tagline p { font-size: 22px; line-height: 1.32; }
+
+    /* ---- portrait ---- */
+    .portrait {
+      top: 96px; left: 990px;
+      width: 270px; height: 310px;
+      padding: 0; overflow: hidden;
+    }
+    .portrait img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center 22%;
+      display: block;
+    }
+
+    /* ---- about ---- */
+    .about {
+      top: 466px; left: 500px;
+      width: 620px;
+      padding: 34px 40px 44px;
+    }
+    .about p { font-size: 22px; line-height: 1.36; }
+    .about p + p { margin-top: 22px; }
+    .about .label { margin-bottom: 10px; }
+    .about a, .about .accent { color: #e73422; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="canvas">
+
+    <!-- top-left: empty header slot -->
+    <div class="tile header-slot"><i class="h1"></i><i class="h2"></i></div>
+
+    <!-- sidebar nav -->
+    <div class="tile nav-item active n1"><span class="stripe"></span>home<i class="h1"></i><i class="h2"></i></div>
+    <div class="tile nav-item n2">currently<br>working on<i class="h1"></i><i class="h2"></i></div>
+    <div class="tile nav-item n3">wish I was<br>working<br>on…<i class="h1"></i><i class="h2"></i></div>
+    <div class="tile nav-item n4">in the news?<i class="h1"></i><i class="h2"></i></div>
+    <div class="tile nav-item n5">resume/<br>contact me<i class="h1"></i><i class="h2"></i></div>
+    <div class="tile nav-item n6">creative<br>work<i class="h1"></i><i class="h2"></i></div>
+
+    <!-- currently-working-on sub-menu -->
+    <div class="tile submenu">
+      <div class="item">haptic audio<br>controller</div>
+      <div class="item">strava ghost<br>runners</div>
+      <div class="item">thermal printer<br>camera</div>
+      <i class="h1"></i><i class="h2"></i>
+    </div>
+
+    <!-- title -->
+    <div class="tile title"><h1>alex gold</h1><i class="h1"></i><i class="h2"></i></div>
+
+    <!-- tagline -->
+    <div class="tile tagline"><p>engineer<br>busy bee<br>under thinker</p><i class="h1"></i><i class="h2"></i></div>
+
+    <!-- portrait -->
+    <div class="tile portrait">
+      <img src="../images/alex-portrait.png" alt="alex gold" />
+      <i class="h1"></i><i class="h2"></i>
+    </div>
+
+    <!-- about -->
+    <div class="tile about">
+      <p class="label">about:</p>
+      <p>alex gold is a bay area based mechanical engineer who is currently working as a design engineer at <a href="#" class="accent">Tesla</a>.</p>
+      <p>alex has got a couple active side projects going on like <a href="#" class="accent">this</a> and <a href="#" class="accent">that</a> with interactive displays</p>
+      <p>he recently thought about trash and got a roll of film developed</p>
+      <i class="h1"></i><i class="h2"></i>
+    </div>
+
+  </div>
+</body>
+</html>

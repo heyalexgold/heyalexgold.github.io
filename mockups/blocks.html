@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>blocks</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #e8e8e8;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #111;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ----- the primitive ----- */
+    /* a block is a plain white rectangle. its 4 corner handles are absolutely
+       positioned children that sit fully OUTSIDE the white, so the white edge
+       and the black square meet at exactly one point — the shared corner. */
+    .block {
+      position: absolute;
+      background: #fff;
+      touch-action: none;
+      user-select: none;
+      cursor: grab;
+    }
+    .block.dragging { cursor: grabbing; }
+
+    /* text layer fills the white; measured on its own so the outside handles
+       don't corrupt the overflow check */
+    .block > .content {
+      position: absolute; inset: 0;
+      padding: 12px 14px;
+      overflow: hidden;
+      font-size: 16px;
+      line-height: 1.3;
+      color: #111;
+      overflow-wrap: normal;
+      word-break: normal;
+      white-space: normal;
+    }
+
+    .block > .handle {
+      position: absolute;
+      width: 10px; height: 10px;   /* --- HANDLE (keep in sync with JS) --- */
+      background: #000;
+    }
+    /* offset by the full handle size so the square lives outside the white,
+       touching only at the corner */
+    .handle.tl { top:  -10px; left:  -10px; cursor: nwse-resize; }
+    .handle.tr { top:  -10px; right: -10px; cursor: nesw-resize; }
+    .handle.bl { bottom: -10px; left:  -10px; cursor: nesw-resize; }
+    .handle.br { bottom: -10px; right: -10px; cursor: nwse-resize; }
+  </style>
+</head>
+<body>
+
+  <script>
+  // ---------- block primitive ----------
+  //
+  // A Block is a plain rect { x, y, w, h }. Its DOM is <div.block> + 4 corner
+  // <span.handle>s that render just outside the white, sharing each corner.
+  //
+  // Rules (kept deliberately small so we can build on top later):
+  //   • drag the white  -> move
+  //   • drag a handle   -> resize from that corner (handles stay a fixed size)
+  //   • white may never overlap another block's white or handles
+  //   • handles MAY overlap other handles
+  //   • moves/resizes are tried per-axis, so blocks slide along each other
+  //   • light snapping aligns edges (and leaves a one-handle gap) when close
+
+  const HANDLE = 10;        // handle square size (px) — matches the CSS
+  const MIN    = 40;        // minimum block size (px)
+  const GAP    = HANDLE;    // resting gap = handle size, so neighbours' corner squares overlap exactly
+  const SNAP   = 14;        // snap threshold (px)
+  const CORNERS = ['tl', 'tr', 'bl', 'br'];
+  let topZ = 1;
+
+  const near = (v, c) => Math.abs(v - c) < SNAP;
+  const snap = (v, cands) => { for (const c of cands) if (near(v, c)) return c; return v; };
+  const overlap = (a, b) =>
+    a.x < b.x + b.w && a.x + a.w > b.x &&
+    a.y < b.y + b.h && a.y + a.h > b.y;
+
+  // rect of one handle square, sitting outside the white at `corner`
+  function handleRect(b, corner) {
+    const left = corner.includes('l'), top = corner.includes('t');
+    return {
+      x: left ? b.x - HANDLE : b.x + b.w,
+      y: top  ? b.y - HANDLE : b.y + b.h,
+      w: HANDLE, h: HANDLE
+    };
+  }
+
+  class Block {
+    static all = [];
+
+    constructor(x, y, w, h, text = '') {
+      Object.assign(this, { x, y, w, h });
+      this.el = document.createElement('div');
+      this.el.className = 'block';
+      this.content = document.createElement('div');
+      this.content.className = 'content';
+      this.content.textContent = text;
+      this.el.appendChild(this.content);
+      for (const c of CORNERS) {
+        const hd = document.createElement('span');
+        hd.className = 'handle ' + c;
+        hd.dataset.corner = c;
+        this.el.appendChild(hd);
+      }
+      this.el.addEventListener('pointerdown', e => this.onDown(e));
+      document.body.appendChild(this.el);
+      this.draw();
+      Block.all.push(this);
+    }
+
+    // does the text spill out of the white at the current size?
+    overflowing() {
+      const c = this.content;
+      return c.scrollWidth > c.clientWidth + 1 || c.scrollHeight > c.clientHeight + 1;
+    }
+
+    draw() {
+      const s = this.el.style;
+      s.left = this.x + 'px'; s.top = this.y + 'px';
+      s.width = this.w + 'px'; s.height = this.h + 'px';
+    }
+
+    others() { return Block.all.filter(b => b !== this); }
+    hitsAny() { return this.others().some(b => this.hits(b)); }
+
+    hits(o) {
+      if (overlap(this, o)) return true;                       // white vs white
+      for (const c of CORNERS) {
+        if (overlap(this, handleRect(o, c))) return true;      // my white vs their handle
+        if (overlap(o, handleRect(this, c))) return true;      // their white vs my handle
+      }
+      return false;                                            // handle vs handle: allowed
+    }
+
+    onDown(e) {
+      e.preventDefault();
+      this.el.style.zIndex = ++topZ;
+      const corner = e.target.dataset.corner || null;   // null = move
+      const s = { px: e.clientX, py: e.clientY, x: this.x, y: this.y, w: this.w, h: this.h };
+      this.el.classList.add('dragging');
+      this.el.setPointerCapture(e.pointerId);
+
+      const move = ev => {
+        const dx = ev.clientX - s.px, dy = ev.clientY - s.py;
+        corner ? this.resize(s, corner, dx, dy) : this.move(s.x + dx, s.y + dy);
+      };
+      const up = () => {
+        this.el.classList.remove('dragging');
+        this.el.removeEventListener('pointermove', move);
+        this.el.removeEventListener('pointerup', up);
+        this.el.removeEventListener('pointercancel', up);
+      };
+      this.el.addEventListener('pointermove', move);
+      this.el.addEventListener('pointerup', up);
+      this.el.addEventListener('pointercancel', up);
+    }
+
+    // ---- move ----
+    move(nx, ny) {
+      for (const b of this.others()) {
+        nx = snap(nx, [b.x, b.x + b.w - this.w, b.x + b.w + GAP, b.x - this.w - GAP]);
+        ny = snap(ny, [b.y, b.y + b.h - this.h, b.y + b.h + GAP, b.y - this.h - GAP]);
+      }
+      const ox = this.x; this.x = nx; if (this.hitsAny()) this.x = ox;   // x axis
+      const oy = this.y; this.y = ny; if (this.hitsAny()) this.y = oy;   // y axis
+      this.draw();
+    }
+
+    // ---- resize from a corner ----
+    resize(s, corner, dx, dy) {
+      const left = corner.includes('l'), top = corner.includes('t');
+      let L = s.x, R = s.x + s.w, T = s.y, B = s.y + s.h;
+      if (left) L = s.x + dx; else R = s.x + s.w + dx;
+      if (top)  T = s.y + dy; else B = s.y + s.h + dy;
+
+      // snap the moving edges to neighbours (align, or leave a one-gap space)
+      for (const b of this.others()) {
+        if (left) L = snap(L, [b.x, b.x + b.w + GAP]); else R = snap(R, [b.x + b.w, b.x - GAP]);
+        if (top)  T = snap(T, [b.y, b.y + b.h + GAP]); else B = snap(B, [b.y + b.h, b.y - GAP]);
+      }
+      // clamp to the minimum size (from the moving side)
+      if (R - L < MIN) { if (left) L = R - MIN; else R = L + MIN; }
+      if (B - T < MIN) { if (top)  T = B - MIN; else B = T + MIN; }
+
+      const o = { x: this.x, y: this.y, w: this.w, h: this.h };
+      this.x = L; this.w = R - L; if (this.hitsAny()) { this.x = o.x; this.w = o.w; }  // width axis
+      this.y = T; this.h = B - T; if (this.hitsAny()) { this.y = o.y; this.h = o.h; }  // height axis
+      this.draw();
+      // never shrink past the text: if it spills, keep the last size that fit
+      if (this.overflowing()) { Object.assign(this, o); this.draw(); }
+    }
+  }
+
+  // two starting blocks
+  new Block(180, 160, 260, 170, 'drag the white box to move me. drag a black square to resize. the text wraps to fit.');
+  new Block(560, 320, 220, 150, "you can't shrink a block past the point where its text would spill out.");
+  </script>
+</body>
+</html>

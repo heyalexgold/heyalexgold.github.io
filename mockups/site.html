@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Alex Gold</title>
+  <title>alex gold — blocks</title>
   <style>
     :root { --red: #e5392b; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,9 +24,6 @@
       z-index: 1;                 /* above the sliding red bar */
     }
     .block.dragging { cursor: grabbing; }
-    .block.locked { cursor: default; }
-    .block.locked.nav { cursor: pointer; }            /* menu items are click-only */
-    .block.locked > .handle { cursor: default; }
 
     /* the active-menu indicator: a red bar living in the left gutter, between
        the two black corner squares. z-index 0 so it slides UNDER the blocks. */
@@ -51,24 +48,22 @@
 
     .block > .handle {
       position: absolute;
-      width: 7px; height: 7px;     /* HANDLE — keep in sync with JS */
+      width: 10px; height: 10px;   /* HANDLE — keep in sync with JS */
       background: #000;
     }
-    .handle.tl { top: -7px; left: -7px; cursor: nwse-resize; }
-    .handle.tr { top: -7px; right: -7px; cursor: nesw-resize; }
-    .handle.bl { bottom: -7px; left: -7px; cursor: nesw-resize; }
-    .handle.br { bottom: -7px; right: -7px; cursor: nwse-resize; }
+    .handle.tl { top: -10px; left: -10px; cursor: nwse-resize; }
+    .handle.tr { top: -10px; right: -10px; cursor: nesw-resize; }
+    .handle.bl { bottom: -10px; left: -10px; cursor: nesw-resize; }
+    .handle.br { bottom: -10px; right: -10px; cursor: nwse-resize; }
 
     /* ---------- content variants ---------- */
-    .block.nav > .content   { display: flex; align-items: center; padding: 10px 16px; font-size: 17px; line-height: 1.25; }
+    .block.nav > .content   { display: flex; align-items: center; font-size: 20px; line-height: 1.25; }
 
     .block.title > .content { display: flex; align-items: center; }
     .block.title h1 { font-size: 54px; font-weight: 500; letter-spacing: -0.01em; color: var(--red); }
 
-    .block.sub > .content   { padding: 10px 14px; font-size: 16px; line-height: 1.22; }
+    .block.sub > .content   { font-size: 16px; line-height: 1.22; }
     .block.sub .item + .item { margin-top: 9px; }
-
-    .block.redcap { background: var(--red); }
 
     .block.portrait img { width: 100%; height: 100%; object-fit: cover; object-position: center 16%; display: block; }
 
@@ -80,11 +75,10 @@
 
   <script>
   // ---------- block engine (shared primitive) ----------
-  const HANDLE = 7;
+  const HANDLE = 10;
   const MIN    = 40;
   const GAP    = HANDLE;   // neighbours rest a handle apart, so corner squares overlap exactly
-  const SNAP   = 7;        // snap threshold (px) — gentle
-  const RANGE  = 100;      // only snap to blocks whose nearest edge is within this many px
+  const SNAP   = 14;
   const CORNERS = ['tl', 'tr', 'bl', 'br'];
   let topZ = 1;
 
@@ -92,12 +86,6 @@
   const snap = (v, cands) => { for (const c of cands) if (near(v, c)) return c; return v; };
   const overlap = (a, b) =>
     a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
-  // is block b close enough to a rect (x,y,w,h) to be a snap target?
-  const nearRect = (x, y, w, h, b) => {
-    const dx = Math.max(0, b.x - (x + w), x - (b.x + b.w));
-    const dy = Math.max(0, b.y - (y + h), y - (b.y + b.h));
-    return Math.hypot(dx, dy) < RANGE;
-  };
 
   function handleRect(b, corner) {
     const left = corner.includes('l'), top = corner.includes('t');
@@ -114,8 +102,6 @@
     constructor(x, y, w, h, opts = {}) {
       Object.assign(this, { x, y, w, h });
       this.nav = !!(opts.cls && opts.cls.split(' ').includes('nav'));
-      this.onClick = opts.onClick || null;
-      this.locked = !!opts.locked;                     // locked = not draggable/resizable
       this.el = document.createElement('div');
       this.el.className = 'block' + (opts.cls ? ' ' + opts.cls : '');
       this.content = document.createElement('div');
@@ -168,7 +154,6 @@
       const move = ev => {
         const dx = ev.clientX - s.px, dy = ev.clientY - s.py;
         if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
-        if (this.locked) return;                        // menu boxes: click only, no drag/resize
         corner ? this.resize(s, corner, dx, dy) : this.move(s.x + dx, s.y + dy);
       };
       const up = () => {
@@ -176,10 +161,7 @@
         this.el.removeEventListener('pointermove', move);
         this.el.removeEventListener('pointerup', up);
         this.el.removeEventListener('pointercancel', up);
-        if (!moved) {                                   // a click (not a drag)
-          if (this.nav) activateNav(this);
-          if (this.onClick) this.onClick();
-        }
+        if (!moved && this.nav) activateNav(this);      // a click (not a drag) selects the item
       };
       this.el.addEventListener('pointermove', move);
       this.el.addEventListener('pointerup', up);
@@ -188,7 +170,6 @@
 
     move(nx, ny) {
       for (const b of this.others()) {
-        if (!nearRect(nx, ny, this.w, this.h, b)) continue;   // only snap to nearby blocks
         nx = snap(nx, [b.x, b.x + b.w - this.w, b.x + b.w + GAP, b.x - this.w - GAP]);
         ny = snap(ny, [b.y, b.y + b.h - this.h, b.y + b.h + GAP, b.y - this.h - GAP]);
       }
@@ -202,9 +183,7 @@
       let L = s.x, R = s.x + s.w, T = s.y, B = s.y + s.h;
       if (left) L = s.x + dx; else R = s.x + s.w + dx;
       if (top)  T = s.y + dy; else B = s.y + s.h + dy;
-      const cx = L, cy = T, cw = R - L, ch = B - T;           // candidate rect for proximity
       for (const b of this.others()) {
-        if (!nearRect(cx, cy, cw, ch, b)) continue;           // only snap to nearby blocks
         if (left) L = snap(L, [b.x, b.x + b.w + GAP]); else R = snap(R, [b.x + b.w, b.x - GAP]);
         if (top)  T = snap(T, [b.y, b.y + b.h + GAP]); else B = snap(B, [b.y + b.h, b.y - GAP]);
       }
@@ -265,29 +244,26 @@
 
   // ---------- the site, as blocks (positions mirror the mockup) ----------
 
-  // sidebar (menu items are locked — click only, no drag/resize)
-  // boxes sized to fit their text; 7px gaps so corner squares overlap
-  new Block(40,  40, 140, 24, { cls: 'redcap', locked: true });                  // red cap on top
-  const home = new Block(40,  71, 140, 42, { cls: 'nav', locked: true, html: 'home' });
-  const cwo  = new Block(40, 120, 140, 63, { cls: 'nav', locked: true, html: 'currently<br>working on' });
-  new Block(40, 190, 140, 42, { cls: 'nav', locked: true, html: 'tesla' });
-  new Block(40, 239, 140, 42, { cls: 'nav', locked: true, html: 'in the news?' });
-  new Block(40, 288, 140, 63, { cls: 'nav', locked: true, html: 'resume/<br>contact me' });
-  new Block(40, 358, 140, 63, { cls: 'nav', locked: true, html: 'creative<br>work' });
+  // sidebar
+  new Block(40,  90, 226,  40);                                                  // empty header slot
+  const home = new Block(40, 140, 156,  55, { cls: 'nav', html: 'home' });
+  new Block(40, 205, 156,  94, { cls: 'nav', html: 'currently<br>working on' });
+  new Block(40, 310, 156, 114, { cls: 'nav', html: 'wish I was<br>working<br>on&hellip;' });
+  new Block(40, 434, 156,  68, { cls: 'nav', html: 'in the news?' });
+  new Block(40, 513, 156,  79, { cls: 'nav', html: 'resume/<br>contact me' });
+  new Block(40, 601, 156,  79, { cls: 'nav', html: 'creative<br>work' });
 
-  // sub-menu — three independent cards, hidden until the parent is clicked
-  const cards = [
-    new Block(187, 120, 150, 60, { cls: 'sub', locked: true, html: 'haptic audio<br>controller',
-      onClick: () => { location.href = 'controller.html'; } }),   // opens the turntable simulator
-    new Block(187, 187, 150, 60, { cls: 'sub', locked: true, html: 'strava ghost<br>runners' }),
-    new Block(187, 254, 150, 60, { cls: 'sub', locked: true, html: 'thermal printer<br>camera' })
-  ];
+  // sub-menu peeking off "currently working on"
+  new Block(206, 205, 167, 180, { cls: 'sub', html:
+    '<div class="item">haptic audio<br>controller</div>' +
+    '<div class="item">strava ghost<br>runners</div>' +
+    '<div class="item">thermal printer<br>camera</div>' });
 
-  // header cluster (title + main content stay movable/resizable)
+  // header cluster
   new Block(486, 91, 335, 104, { cls: 'title', html: '<h1>alex gold</h1>' });
   new Block(650, 205, 170, 112, { html: 'engineer<br>busy bee<br>under thinker' });
   new Block(831, 91, 176, 274, { cls: 'portrait', bare: true,
-    html: '<img src="images/profile.jpg" alt="alex gold">' });
+    html: '<img src="../images/profile.jpg" alt="alex gold">' });
 
   // about / main text
   new Block(384, 474, 623, 418, { html:
@@ -295,59 +271,6 @@
     'alex gold is a bay area based mechanical engineer who is currently working as a design engineer at <a href="#">Tesla</a>.' + sp +
     'alex has got a couple active side projects going on like <a href="#">this</a> and <a href="#">that</a> with interactive displays' + sp +
     'he recently thought about trash and got a roll of film developed' });
-
-  // ----- sub-menu pop-up · MODE C -----
-  // The top card slides + grows out from under the parent. Each card below then
-  // slides STRAIGHT DOWN, emerging from under the card above it, once it's out.
-  let subOpen = false;
-  const setBox = (el, b) => {
-    el.style.left = b.x + 'px'; el.style.top = b.y + 'px';
-    el.style.width = b.w + 'px'; el.style.height = b.h + 'px';
-  };
-  const openBox = c => ({ x: c.x, y: c.y, w: c.w, h: c.h });
-  const restBox = () => ({ x: cwo.x, y: cwo.y, w: cwo.w, h: cwo.h });   // hidden home: behind the parent
-  const CARD_MOVE = 'left .17s cubic-bezier(.2,.7,.3,1), top .17s cubic-bezier(.2,.7,.3,1), width .17s cubic-bezier(.2,.7,.3,1), height .17s cubic-bezier(.2,.7,.3,1)';
-
-  const jumpTo = (el, box) => { el.style.transition = 'none'; setBox(el, box); void el.offsetWidth; };
-  const glideTo = (el, box) => { el.style.transition = CARD_MOVE; setBox(el, box); };
-
-  function showTop() {                       // top card: slide + grow out from under the parent
-    const el = cards[0].el;
-    jumpTo(el, restBox()); glideTo(el, openBox(cards[0])); el.style.pointerEvents = '';
-  }
-  function showLower() {                      // the two below: start behind the top card, slide straight down together
-    for (let i = 1; i < cards.length; i++) {
-      const el = cards[i].el;
-      jumpTo(el, openBox(cards[0])); glideTo(el, openBox(cards[i])); el.style.pointerEvents = '';
-    }
-  }
-  function hideLower() {                     // the two below: slide straight up, back behind the top card
-    for (let i = 1; i < cards.length; i++) {
-      const el = cards[i].el;
-      glideTo(el, openBox(cards[0])); el.style.pointerEvents = 'none';
-    }
-  }
-  function hideTop() {                        // top card retracts under the parent; lowers tuck home behind it
-    glideTo(cards[0].el, restBox()); cards[0].el.style.pointerEvents = 'none';
-    for (let i = 1; i < cards.length; i++) jumpTo(cards[i].el, restBox());
-  }
-  function openSub() {
-    if (subOpen) return; subOpen = true;
-    showTop();
-    setTimeout(() => { if (subOpen) showLower(); }, 160);      // once the top is out
-  }
-  function closeSub() {                       // the exact reverse of openSub
-    if (!subOpen) return; subOpen = false;
-    hideLower();
-    setTimeout(() => { if (!subOpen) hideTop(); }, 160);       // once the lowers are back up
-  }
-
-  // all cards start hidden behind the parent (nothing shows until it's clicked)
-  cards.forEach((c, i) => { c.el.style.zIndex = -i; jumpTo(c.el, restBox()); c.el.style.pointerEvents = 'none'; });
-  cwo.onClick = () => subOpen ? closeSub() : openSub();
-  document.addEventListener('pointerdown', e => {
-    if (subOpen && !cwo.el.contains(e.target) && !cards.some(c => c.el.contains(e.target))) closeSub();
-  });
 
   // start with the bar on "home"
   activeNav = home;
