@@ -62,8 +62,10 @@
     /* ---------- content variants ---------- */
     .block.nav > .content   { display: flex; align-items: center; padding: 10px 16px; font-size: 17px; line-height: 1.25; }
 
-    .block.title > .content { display: flex; align-items: center; padding: 9px 15px; }
-    .block.title h1 { font-size: 28px; font-weight: 500; letter-spacing: -0.01em; color: var(--red); }
+    .block.title > .content { display: flex; align-items: center; }
+    .block.title h1 { font-size: 54px; font-weight: 500; letter-spacing: -0.01em; color: var(--red); }
+    .block.title-side > .content { padding: 9px 15px; }
+    .block.title-side h1 { font-size: 30px; }
 
     .block.sub > .content   { padding: 10px 14px; font-size: 16px; line-height: 1.22; }
     .block.sub .item + .item { margin-top: 9px; }
@@ -623,7 +625,10 @@
   function hapticActive() { return currentPage === 'haptic'; }
   function showPage(page) {
     currentPage = page;
-    for (const b of Block.all) b.el.style.display = (!b.page || b.page === page) ? '' : 'none';
+    for (const b of Block.all) {
+      const vis = !b.page || b.page === page || (b.page === '_side' && page !== 'home');
+      b.el.style.display = vis ? '' : 'none';
+    }
     document.querySelectorAll('[data-page]').forEach(el => { el.style.display = el.dataset.page === page ? '' : 'none'; });
     if (typeof closeSub === 'function') closeSub();
     activateNav(pageNav[page] || cwo);
@@ -652,12 +657,14 @@
     new Block(187, 254, 150, 60, { cls: 'sub', locked: true, html: 'thermal printer<br>camera',   onClick: () => showPage('thermal') })
   ];
 
-  // title — constant, small, upper-right corner (about the width of the portrait)
-  new Block(831, 40, 176, 56, { cls: 'title', html: '<h1>alex gold</h1>' });
+  // title — big on home; smaller version above the content on side pages,
+  // sharing a corner with the top-left of the body block (384,230)
+  new Block(486, 91, 335, 104, { cls: 'title', page: 'home', html: '<h1>alex gold</h1>' });
+  new Block(384, 169, 176, 54, { cls: 'title title-side', page: '_side', html: '<h1>alex gold</h1>' });
 
   // ---- HOME page: bio + portrait + about (these stay draggable) ----
   new Block(650, 205, 170, 112, { page: 'home', html: 'engineer<br>busy bee<br>under thinker' });
-  new Block(831, 113, 176, 274, { page: 'home', cls: 'portrait', bare: true,
+  new Block(831, 91, 176, 274, { page: 'home', cls: 'portrait', bare: true,
     html: '<img src="images/profile.jpg" alt="alex gold">' });
   new Block(384, 474, 623, 418, { page: 'home', html:
     'about:' + sp +
