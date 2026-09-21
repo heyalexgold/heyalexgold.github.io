@@ -75,6 +75,7 @@
     .block.redcap { background: var(--red); }
 
     .block.portrait img { width: 100%; height: 100%; object-fit: cover; object-position: center 16%; display: block; }
+    .block > .content.bare img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
     .block a, .block .accent { color: var(--red); text-decoration: none; }
     .block .sp { display: block; height: 0.9em; }   /* paragraph spacer */
@@ -84,7 +85,7 @@
     .block .phead { display: block; font-size: 1.5rem; font-weight: 600; color: #111; margin-bottom: 0.55rem; letter-spacing: -0.01em; }
     .block b { font-weight: 700; }
     /* the turntable simulation, dropped between the haptic text blocks */
-    .tt-host { position: absolute; left: 292px; top: 470px; width: 800px; z-index: 1; }
+    .tt-host { position: absolute; left: 292px; top: 560px; width: 800px; z-index: 1; }
     .tt-host .tt-stage { background: transparent; padding: 0.5rem 0; min-height: 0; }
     .tt-stage {
       position: relative;
@@ -685,12 +686,12 @@
 
   // ---- SIDE pages: locked text blocks; interactive bits live between them ----
   // Tesla
-  new Block(384, 230, 623, 300, { page: 'tesla', locked: true, html:
+  new Block(384, 230, 623, 400, { page: 'tesla', locked: true, html:
     'I work on developing new vehicle programs — from high-level planning and integration with large groups, to detailed part design, to reliability spec generation and validation, to ramping and producing at massive scale.' + sp +
     'I am the design owner of the Cybercab high-voltage charge port, which I took from early design to production. It\'s an intricate system with an integrated actuator and several integrated sensors.' + sp +
     'I took over in the prototype phase and led a small team through a complete design overhaul for hyper-scaling — focused on reliability and manufacturing simplicity — pushed into full production with very low failure rates.' });
-  new Block(384, 540, 420, 300, { page: 'tesla', locked: true, bare: true,
-    html: '<img src="images/Tesla-Cybercab-2.jpeg" alt="Tesla Cybercab" style="width:100%;height:100%;object-fit:cover">' });
+  new Block(384, 650, 420, 300, { page: 'tesla', locked: true, bare: true,
+    html: '<img src="images/Tesla-Cybercab-2.jpeg" alt="Tesla Cybercab">' });
 
   // FSAE
   new Block(384, 230, 623, 170, { page: 'fsae', locked: true, html:
@@ -700,7 +701,7 @@
   new Block(384, 230, 623, 110, { page: 'news', locked: true, html:
     'KSL NewsRadio shared a photo I took of a cold air funnel spotted over Lehi, Utah.' });
   new Block(384, 350, 360, 470, { page: 'news', locked: true, bare: true,
-    html: '<img src="images/weather_report.JPG" alt="KSL NewsRadio tweet" style="width:100%;height:100%;object-fit:cover">' });
+    html: '<img src="images/weather_report.JPG" alt="KSL NewsRadio tweet">' });
 
   // Resume / Creative / Strava / Thermal — placeholders for now
   new Block(384, 230, 623, 120, { page: 'resume',   locked: true, html: 'content incoming…' });
@@ -709,11 +710,11 @@
   new Block(384, 230, 623, 120, { page: 'thermal',  locked: true, html: 'content incoming…' });
 
   // ---- HAPTIC page: text blocks with the turntable simulation between them ----
-  new Block(384, 230, 623, 210, { page: 'haptic', locked: true, html:
+  new Block(384, 230, 623, 300, { page: 'haptic', locked: true, html:
     'A bluetooth device that sits on my desk and gives physical interfaces to basic audio controls for music and meetings. A little turntable-style platter turns as audio plays through it and can scratch back over a song or a meeting (inspired by Teenage Engineering OB-4).' + sp +
     'My main motivation was buttery-smooth haptic interfacing — using a brushless DC motor as both input and output via field controls — plus seamless bluetooth and low-latency (&lt;10ms) audio.' });
   // (the turntable widget itself is the .tt-host element below, shown on this page)
-  new Block(384, 980, 623, 430, { page: 'haptic', locked: true, html:
+  new Block(384, 1074, 623, 430, { page: 'haptic', locked: true, html:
     '<span class="phead">architecture</span>' +
     '<b>ESP32</b> dual-core — core 0 handles motor control and feedback, core 1 handles the audio buffer, bluetooth, screen and input.' + sp +
     'A brushless DC <b>gimbal motor</b> driven by simpleFOC, chosen for tight integration and precise low-speed control. Lots of tuning to keep cogging low — high-frequency wobble you can\'t feel shows up as audible distortion.' + sp +
