@@ -66,6 +66,8 @@
     .block.title h1 { font-size: 54px; font-weight: 500; letter-spacing: -0.01em; color: var(--red); }
     .block.title-side > .content { padding: 9px 15px; }
     .block.title-side h1 { font-size: 30px; }
+    .block.title-page > .content { padding: 8px 14px; }
+    .block.title-page h1 { font-size: 28px; color: #111; }
 
     .block.sub > .content   { padding: 10px 14px; font-size: 16px; line-height: 1.22; }
     .block.sub .item + .item { margin-top: 9px; }
@@ -657,22 +659,23 @@
     new Block(187, 254, 150, 60, { cls: 'sub', locked: true, html: 'thermal printer<br>camera',   onClick: () => showPage('thermal') })
   ];
 
-  // "alex gold" — constant, top-right corner of every page
-  new Block(831, 40, 176, 56, { cls: 'title title-side', html: '<h1>alex gold</h1>' });
+  // "alex gold" — big on home (left of the picture); small top-right on every other page
+  new Block(486, 91, 335, 104, { cls: 'title', page: 'home', html: '<h1>alex gold</h1>' });
+  new Block(831, 40, 176, 56, { cls: 'title title-side', page: '_side', html: '<h1>alex gold</h1>' });
 
-  // per-page title blocks — sit above the body, sharing its top-left corner (384,230)
-  new Block(384, 167, 140, 56, { cls: 'title title-side', page: 'tesla',    html: '<h1>tesla</h1>' });
-  new Block(384, 167, 260, 56, { cls: 'title title-side', page: 'fsae',     html: '<h1>fsae formula e</h1>' });
-  new Block(384, 167, 210, 56, { cls: 'title title-side', page: 'news',     html: '<h1>in the news</h1>' });
-  new Block(384, 167, 300, 56, { cls: 'title title-side', page: 'resume',   html: '<h1>resume / contact</h1>' });
-  new Block(384, 167, 250, 56, { cls: 'title title-side', page: 'creative', html: '<h1>creative work</h1>' });
-  new Block(384, 167, 420, 56, { cls: 'title title-side', page: 'haptic',   html: '<h1>haptic audio controller</h1>' });
-  new Block(384, 167, 360, 56, { cls: 'title title-side', page: 'strava',   html: '<h1>strava ghost runners</h1>' });
-  new Block(384, 167, 400, 56, { cls: 'title title-side', page: 'thermal',  html: '<h1>thermal printer camera</h1>' });
+  // per-page title blocks — black, sized to the text, sharing the body's top-left corner (384,230)
+  new Block(384, 171,  94, 52, { cls: 'title title-page', page: 'tesla',    html: '<h1>tesla</h1>' });
+  new Block(384, 171, 216, 52, { cls: 'title title-page', page: 'fsae',     html: '<h1>fsae formula e</h1>' });
+  new Block(384, 171, 180, 52, { cls: 'title title-page', page: 'news',     html: '<h1>in the news</h1>' });
+  new Block(384, 171, 251, 52, { cls: 'title title-page', page: 'resume',   html: '<h1>resume / contact</h1>' });
+  new Block(384, 171, 206, 52, { cls: 'title title-page', page: 'creative', html: '<h1>creative work</h1>' });
+  new Block(384, 171, 323, 52, { cls: 'title title-page', page: 'haptic',   html: '<h1>haptic audio controller</h1>' });
+  new Block(384, 171, 299, 52, { cls: 'title title-page', page: 'strava',   html: '<h1>strava ghost runners</h1>' });
+  new Block(384, 171, 327, 52, { cls: 'title title-page', page: 'thermal',  html: '<h1>thermal printer camera</h1>' });
 
   // ---- HOME page: bio + portrait + about (these stay draggable) ----
   new Block(590, 205, 235, 120, { page: 'home', html: 'engineer<br>busy bee<br>multi-disciplinarian' });
-  new Block(831, 113, 176, 274, { page: 'home', cls: 'portrait', bare: true,
+  new Block(831, 91, 176, 274, { page: 'home', cls: 'portrait', bare: true,
     html: '<img src="images/profile.jpg" alt="alex gold">' });
   new Block(384, 474, 623, 418, { page: 'home', html:
     'about:' + sp +
