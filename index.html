@@ -62,8 +62,8 @@
     /* ---------- content variants ---------- */
     .block.nav > .content   { display: flex; align-items: center; padding: 10px 16px; font-size: 17px; line-height: 1.25; }
 
-    .block.title > .content { display: flex; align-items: center; }
-    .block.title h1 { font-size: 54px; font-weight: 500; letter-spacing: -0.01em; color: var(--red); }
+    .block.title > .content { display: flex; align-items: center; padding: 9px 15px; }
+    .block.title h1 { font-size: 28px; font-weight: 500; letter-spacing: -0.01em; color: var(--red); }
 
     .block.sub > .content   { padding: 10px 14px; font-size: 16px; line-height: 1.22; }
     .block.sub .item + .item { margin-top: 9px; }
@@ -74,9 +74,364 @@
 
     .block a, .block .accent { color: var(--red); text-decoration: none; }
     .block .sp { display: block; height: 0.9em; }   /* paragraph spacer */
+
+    /* ---- page content ---- */
+    body { min-height: 1500px; }
+    .block .phead { display: block; font-size: 1.5rem; font-weight: 600; color: #111; margin-bottom: 0.55rem; letter-spacing: -0.01em; }
+    .block b { font-weight: 700; }
+    /* the turntable simulation, dropped between the haptic text blocks */
+    .tt-host { position: absolute; left: 292px; top: 470px; width: 800px; z-index: 1; }
+    .tt-host .tt-stage { background: transparent; padding: 0.5rem 0; min-height: 0; }
+    .tt-stage {
+      position: relative;
+      width: 100%; min-height: 460px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      padding: 1.5rem 2rem;
+      background: #f4f5f7;
+      overflow: auto;
+      flex-wrap: wrap;
+    }
+    .tt-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .tt-panel h3 {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #9aa3ad;
+      font-weight: 700;
+    }
+
+    /* device — machined / CNC aluminum */
+    .tt-device {
+      background:
+        linear-gradient(135deg, #dfe2e5 0%, #c2c6cb 38%, #cdd1d5 52%, #abb0b5 100%);
+      border-radius: 20px;
+      border-top-left-radius: 98px;
+      border: 1px solid rgba(255,255,255,0.6);
+      padding: 14px 1.2rem 1.4rem 14px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.28),
+                  inset 0 1px 0 rgba(255,255,255,0.8),
+                  inset 0 -2px 6px rgba(0,0,0,0.12);
+      display: grid;
+      grid-template-columns: auto auto;
+      grid-template-rows: auto auto;
+      gap: 1.1rem 1rem;
+      align-items: start;
+    }
+    #ttPlatter {
+      grid-row: 1 / 3;
+      width: 168px; height: 168px;
+      cursor: grab;
+      touch-action: none;
+      border-radius: 50%;
+    }
+    #ttPlatter:active { cursor: grabbing; }
+    /* 0.96" OLED: 128x64 monochrome pixels, drawn 1:1 then upscaled crisply */
+    #ttOled {
+      width: 138px; height: 69px;
+      background: #000;
+      border-radius: 6px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      align-self: start;
+      box-shadow: 0 0 0 3px #15181b, 0 0 0 4px rgba(255,255,255,0.5),
+                  inset 0 0 8px rgba(0,0,0,0.8);
+    }
+    .tt-knob {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 35%, #4a5158, #2a2e33 70%);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+      position: relative;
+      cursor: grab;
+      touch-action: none;
+      justify-self: center;
+    }
+    .tt-knob:active { cursor: grabbing; }
+    .tt-knob::after {
+      content: '';
+      position: absolute;
+      left: 50%; top: 8px;
+      width: 4px; height: 16px;
+      margin-left: -2px;
+      border-radius: 2px;
+      background: #d7dde2;
+      transform-origin: 50% 24px;
+      transform: rotate(var(--knob, 0deg));
+    }
+    .tt-buttons {
+      grid-column: 1 / 3;
+      display: flex;
+      gap: 0.6rem;
+      justify-content: center;
+      width: 100%;
+    }
+    .tt-buttons button {
+      flex: 1;
+      height: 56px;
+      border: none;
+      border-radius: 12px;
+      background: #2c3137;
+      color: #cdd3d9;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .tt-buttons button svg { width: 26px; height: 26px; fill: currentColor; display: block; }
+    .tt-buttons button:active { transform: translateY(1px); }
+
+    /* phone — iPhone style */
+    .tt-phone .phone-frame {
+      position: relative;
+      width: 212px;
+      background: #0b0b0d;
+      border-radius: 40px;
+      padding: 9px;
+      box-shadow: 0 16px 34px rgba(0,0,0,0.32), inset 0 0 0 2px #2c2c30;
+    }
+    .phone-island {
+      position: absolute;
+      top: 16px; left: 50%; transform: translateX(-50%);
+      width: 78px; height: 20px;
+      background: #000; border-radius: 12px; z-index: 3;
+    }
+    .phone-screen {
+      background: #f2f2f7;
+      border-radius: 32px;
+      padding: 0.4rem 0.65rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      min-height: 392px;
+    }
+    .phone-statusbar {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.74rem; font-weight: 700; color: #111;
+      padding: 0.5rem 0.7rem 0.1rem;
+    }
+    .sb-right { display: flex; align-items: center; gap: 5px; }
+    .sb-sig {
+      width: 17px; height: 10px;
+      background: linear-gradient(90deg,#111 0 3px,transparent 3px 4px,#111 4px 7px,
+                  transparent 7px 8px,#111 8px 11px,transparent 11px 12px,#111 12px 17px);
+    }
+    .sb-bat {
+      width: 20px; height: 10px; border: 1px solid #111;
+      border-radius: 2px; position: relative;
+    }
+    .sb-bat::before { content:''; position:absolute; inset:1.5px; width:65%; background:#111; border-radius:1px; }
+    .sb-bat::after { content:''; position:absolute; right:-3px; top:3px; width:2px; height:4px; background:#111; border-radius:1px; }
+
+    /* iOS notification card */
+    .ph-notif {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: rgba(255,255,255,0.96);
+      border-radius: 17px;
+      padding: 0.5rem 0.55rem;
+      box-shadow: 0 5px 16px rgba(0,0,0,0.09);
+    }
+    .ph-notif-app {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: #e23b2e; color: #fff;
+      font-size: 0.62rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .ph-notif-text { display: flex; flex-direction: column; line-height: 1.25; flex: 1; min-width: 0; }
+    .ph-notif-text strong { font-size: 0.72rem; color: #111; }
+    .ph-notif-text span { font-size: 0.72rem; color: #555; }
+    .ph-join {
+      font: inherit; font-size: 0.74rem; font-weight: 600;
+      border: none; border-radius: 15px;
+      background: #0a84ff; color: #fff;
+      padding: 0.34rem 0.75rem; cursor: pointer; flex-shrink: 0;
+    }
+    .ph-join:active { transform: translateY(1px); }
+    .ph-join.in { background: #ff3b30; }
+
+    /* now playing */
+    .phone-music { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.3rem 0.35rem 0; }
+    .np-art {
+      width: 100%; aspect-ratio: 1;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #c0392b, #8e44ad);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+    }
+    .np-title { font-size: 1.05rem; font-weight: 700; color: #111; }
+    .np-artist { font-size: 0.82rem; color: #8a8a8e; margin-top: -0.35rem; }
+    .ph-transport {
+      display: flex; align-items: center; justify-content: center; gap: 1.6rem;
+      margin-top: 0.35rem;
+    }
+    .ph-transport button {
+      border: none; background: none; cursor: pointer; color: #111; padding: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ph-transport button svg { width: 28px; height: 28px; fill: currentColor; display: block; }
+    .ph-transport #phPlay svg { width: 42px; height: 42px; }
+    .ph-transport button:active { opacity: 0.5; }
+
+    .ph-vol { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.55rem; }
+    .ph-vol-icon { width: 14px; height: 14px; flex-shrink: 0; }
+    .ph-vol-min {
+      background: radial-gradient(circle, #111 30%, transparent 32%) center/4px 4px no-repeat;
+    }
+    .ph-vol-max {
+      background: radial-gradient(circle, #111 30%, transparent 32%) center/10px 10px no-repeat;
+    }
+    .ph-vol input[type=range] {
+      flex: 1; -webkit-appearance: none; appearance: none;
+      background: transparent; height: 18px; cursor: pointer;
+    }
+    .ph-vol input[type=range]::-webkit-slider-runnable-track {
+      height: 4px; border-radius: 2px; background: #d1d1d6;
+    }
+    .ph-vol input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #fff; border: 1px solid #c5c5c9;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      margin-top: -6px;
+    }
+    .ph-vol input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; background: #d1d1d6; }
+    .ph-vol input[type=range]::-moz-range-thumb {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #fff; border: 1px solid #c5c5c9;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    /* speaker */
+    .tt-speaker { width: 150px; }
+    .spk-graphic {
+      position: relative;
+      width: 110px; height: 150px;
+      border-radius: 12px;
+      background: #2c3137;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: space-around;
+      padding: 14px 0;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+    }
+    .spk-cone {
+      width: 66px; height: 66px; border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, #4a5158 30%, #1c2024 75%);
+      box-shadow: inset 0 0 0 4px #20242a;
+    }
+    .spk-cone.small { width: 34px; height: 34px; }
+    .spk-meter {
+      width: 110px; height: 3px;
+      background: #d7dde2; border-radius: 2px; overflow: hidden;
+    }
+    #spkMeter { height: 100%; width: 0%; background: #e23b2e; transition: width 0.05s linear; }
+    .spk-jack {
+      position: absolute;
+      right: -9px; top: 64%;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #111; box-shadow: inset 0 0 0 3px #4a5158;
+    }
+    .tt-cable {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .spk-plug {
+      position: absolute;
+      width: 26px; height: 16px;
+      margin: -8px 0 0 -13px;
+      border-radius: 4px;
+      background: linear-gradient(#6b7480, #3a4047);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+      cursor: grab; touch-action: none;
+      z-index: 4;
+    }
+    .spk-plug:active { cursor: grabbing; }
+    .spk-plug.loose { background: linear-gradient(#8a5b5b, #5a3636); }
+    .tt-disconnected { color: #c0392b; font-size: 0.7rem; min-height: 0.9rem; }
+
   </style>
 </head>
 <body>
+
+  <div class="tt-host" data-page="haptic">
+      <div class="tt-stage">
+        <canvas class="tt-cable" id="ttCable"></canvas>
+
+        <!-- Speaker (left) -->
+        <section class="tt-panel tt-speaker">
+          <h3>Speaker</h3>
+          <div class="spk-graphic">
+            <div class="spk-cone small"></div>
+            <div class="spk-cone"></div>
+            <div class="spk-jack" id="spkJack"></div>
+          </div>
+          <div class="spk-meter"><div id="spkMeter"></div></div>
+          <div class="tt-disconnected" id="ttConnState"></div>
+        </section>
+
+        <!-- Device (center) -->
+        <section class="tt-panel">
+          <h3>Controller</h3>
+          <div class="tt-device">
+            <canvas id="ttPlatter"></canvas>
+            <canvas id="ttOled" width="128" height="64"></canvas>
+            <div class="tt-knob" id="ttKnob" title="Volume — drag to turn"></div>
+            <div class="tt-buttons">
+              <button id="ttMute" title="Mute (display only)"></button>
+              <button id="ttPrev" title="Skip back"></button>
+              <button id="ttPlay" title="Play / Pause"></button>
+              <button id="ttNext" title="Skip forward"></button>
+              <button id="ttBt" title="Bluetooth"></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Phone (right) -->
+        <section class="tt-panel tt-phone">
+          <h3>Phone</h3>
+          <div class="phone-frame">
+            <div class="phone-island"></div>
+            <div class="phone-screen">
+              <div class="phone-statusbar">
+                <span>9:41</span>
+                <span class="sb-right"><i class="sb-sig"></i><i class="sb-bat"></i></span>
+              </div>
+              <div class="ph-notif">
+                <div class="ph-notif-app">AG</div>
+                <div class="ph-notif-text">
+                  <strong>Meetings</strong>
+                  <span>Meeting started</span>
+                </div>
+                <button id="phMeeting" class="ph-join">Join</button>
+              </div>
+              <div class="phone-music">
+                <div class="np-art" id="npArt"></div>
+                <div class="np-title" id="npTitle">—</div>
+                <div class="np-artist" id="npArtist">—</div>
+                <div class="ph-transport">
+                  <button id="phPrev" title="Back"></button>
+                  <button id="phPlay" title="Play / Pause"></button>
+                  <button id="phNext" title="Forward"></button>
+                </div>
+                <div class="ph-vol">
+                  <span class="ph-vol-icon ph-vol-min"></span>
+                  <input type="range" id="phVol" min="0" max="127" value="64">
+                  <span class="ph-vol-icon ph-vol-max"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+  </div>
 
   <script>
   // ---------- block engine (shared primitive) ----------
@@ -116,6 +471,7 @@
       this.nav = !!(opts.cls && opts.cls.split(' ').includes('nav'));
       this.onClick = opts.onClick || null;
       this.locked = !!opts.locked;                     // locked = not draggable/resizable
+      this.page = opts.page || null;                   // null = shown on every page
       this.el = document.createElement('div');
       this.el.className = 'block' + (opts.cls ? ' ' + opts.cls : '');
       this.content = document.createElement('div');
@@ -261,40 +617,94 @@
     activeNav = b;
   }
 
+  // ---------- page routing: the sidebar + title stay, the middle swaps ----------
+  let currentPage = 'home';
+  const pageNav = {};                        // page -> the nav block the red bar rides
+  function hapticActive() { return currentPage === 'haptic'; }
+  function showPage(page) {
+    currentPage = page;
+    for (const b of Block.all) b.el.style.display = (!b.page || b.page === page) ? '' : 'none';
+    document.querySelectorAll('[data-page]').forEach(el => { el.style.display = el.dataset.page === page ? '' : 'none'; });
+    if (typeof closeSub === 'function') closeSub();
+    activateNav(pageNav[page] || cwo);
+    if (page === 'haptic') { if (typeof initTurntable === 'function') initTurntable(); }
+    else if (typeof stopTurntable === 'function') stopTurntable();
+  }
+
   const sp = '<span class="sp"></span>';   // paragraph gap
 
   // ---------- the site, as blocks (positions mirror the mockup) ----------
 
-  // sidebar (menu items are locked — click only, no drag/resize)
-  // boxes sized to fit their text; 7px gaps so corner squares overlap
+  // ---- sidebar (constant across pages; locked = click-only) ----
   new Block(40,  40, 140, 24, { cls: 'redcap', locked: true });                  // red cap on top
-  const home = new Block(40,  71, 140, 42, { cls: 'nav', locked: true, html: 'home' });
-  const cwo  = new Block(40, 120, 140, 63, { cls: 'nav', locked: true, html: 'currently<br>working on' });
-  new Block(40, 190, 140, 42, { cls: 'nav', locked: true, html: 'tesla' });
-  new Block(40, 239, 140, 42, { cls: 'nav', locked: true, html: 'in the news?' });
-  new Block(40, 288, 140, 63, { cls: 'nav', locked: true, html: 'resume/<br>contact me' });
-  new Block(40, 358, 140, 63, { cls: 'nav', locked: true, html: 'creative<br>work' });
+  const home      = new Block(40,  71, 140, 42, { cls: 'nav', locked: true, html: 'home',                  onClick: () => showPage('home') });
+  const cwo       = new Block(40, 120, 140, 63, { cls: 'nav', locked: true, html: 'currently<br>working on' });
+  const teslaNav  = new Block(40, 190, 140, 42, { cls: 'nav', locked: true, html: 'tesla',                 onClick: () => showPage('tesla') });
+  const fsaeNav   = new Block(40, 239, 140, 63, { cls: 'nav', locked: true, html: 'fsae<br>formula e',      onClick: () => showPage('fsae') });
+  const newsNav   = new Block(40, 309, 140, 42, { cls: 'nav', locked: true, html: 'in the news?',          onClick: () => showPage('news') });
+  const resumeNav = new Block(40, 358, 140, 63, { cls: 'nav', locked: true, html: 'resume/<br>contact me', onClick: () => showPage('resume') });
+  const creativeNav = new Block(40, 428, 140, 63, { cls: 'nav', locked: true, html: 'creative<br>work',    onClick: () => showPage('creative') });
 
-  // sub-menu — three independent cards, hidden until the parent is clicked
+  // sub-menu cards under "currently working on" — each opens a project page
   const cards = [
-    new Block(187, 120, 150, 60, { cls: 'sub', locked: true, html: 'haptic audio<br>controller',
-      onClick: () => { location.href = 'controller.html'; } }),   // opens the turntable simulator
-    new Block(187, 187, 150, 60, { cls: 'sub', locked: true, html: 'strava ghost<br>runners' }),
-    new Block(187, 254, 150, 60, { cls: 'sub', locked: true, html: 'thermal printer<br>camera' })
+    new Block(187, 120, 150, 60, { cls: 'sub', locked: true, html: 'haptic audio<br>controller', onClick: () => showPage('haptic') }),
+    new Block(187, 187, 150, 60, { cls: 'sub', locked: true, html: 'strava ghost<br>runners',     onClick: () => showPage('strava') }),
+    new Block(187, 254, 150, 60, { cls: 'sub', locked: true, html: 'thermal printer<br>camera',   onClick: () => showPage('thermal') })
   ];
 
-  // header cluster (title + main content stay movable/resizable)
-  new Block(486, 91, 335, 104, { cls: 'title', html: '<h1>alex gold</h1>' });
-  new Block(650, 205, 170, 112, { html: 'engineer<br>busy bee<br>under thinker' });
-  new Block(831, 91, 176, 274, { cls: 'portrait', bare: true,
-    html: '<img src="images/profile.jpg" alt="alex gold">' });
+  // title — constant, small, upper-right corner (about the width of the portrait)
+  new Block(831, 40, 176, 56, { cls: 'title', html: '<h1>alex gold</h1>' });
 
-  // about / main text
-  new Block(384, 474, 623, 418, { html:
+  // ---- HOME page: bio + portrait + about (these stay draggable) ----
+  new Block(650, 205, 170, 112, { page: 'home', html: 'engineer<br>busy bee<br>under thinker' });
+  new Block(831, 113, 176, 274, { page: 'home', cls: 'portrait', bare: true,
+    html: '<img src="images/profile.jpg" alt="alex gold">' });
+  new Block(384, 474, 623, 418, { page: 'home', html:
     'about:' + sp +
     'alex gold is a bay area based mechanical engineer who is currently working as a design engineer at <a href="#">Tesla</a>.' + sp +
     'alex has got a couple active side projects going on like <a href="#">this</a> and <a href="#">that</a> with interactive displays' + sp +
     'he recently thought about trash and got a roll of film developed' });
+
+  // ---- SIDE pages: locked text blocks; interactive bits live between them ----
+  // Tesla
+  new Block(384, 230, 623, 300, { page: 'tesla', locked: true, html:
+    '<span class="phead">tesla</span>' +
+    'I work on developing new vehicle programs — from high-level planning and integration with large groups, to detailed part design, to reliability spec generation and validation, to ramping and producing at massive scale.' + sp +
+    'I am the design owner of the Cybercab high-voltage charge port, which I took from early design to production. It\'s an intricate system with an integrated actuator and several integrated sensors.' + sp +
+    'I took over in the prototype phase and led a small team through a complete design overhaul for hyper-scaling — focused on reliability and manufacturing simplicity — pushed into full production with very low failure rates.' });
+  new Block(384, 540, 420, 300, { page: 'tesla', locked: true, bare: true,
+    html: '<img src="images/Tesla-Cybercab-2.jpeg" alt="Tesla Cybercab" style="width:100%;height:100%;object-fit:cover">' });
+
+  // FSAE
+  new Block(384, 230, 623, 170, { page: 'fsae', locked: true, html:
+    '<span class="phead">fsae formula electric</span>' +
+    'I was a founding member of the Formula SAE Electric team at BYU. Starting from scratch — no car, no budget, no playbook — we built a fully electric formula-style racecar and sent it to competition within two years.' });
+
+  // In the news
+  new Block(384, 230, 623, 110, { page: 'news', locked: true, html:
+    '<span class="phead">in the news</span>' +
+    'KSL NewsRadio shared a photo I took of a cold air funnel spotted over Lehi, Utah.' });
+  new Block(384, 350, 360, 470, { page: 'news', locked: true, bare: true,
+    html: '<img src="images/weather_report.JPG" alt="KSL NewsRadio tweet" style="width:100%;height:100%;object-fit:cover">' });
+
+  // Resume / Creative / Strava / Thermal — placeholders for now
+  new Block(384, 230, 623, 120, { page: 'resume',   locked: true, html: '<span class="phead">resume / contact</span>content incoming…' });
+  new Block(384, 230, 623, 120, { page: 'creative', locked: true, html: '<span class="phead">creative work</span>content incoming…' });
+  new Block(384, 230, 623, 120, { page: 'strava',   locked: true, html: '<span class="phead">strava ghost runners</span>content incoming…' });
+  new Block(384, 230, 623, 120, { page: 'thermal',  locked: true, html: '<span class="phead">thermal printer camera</span>content incoming…' });
+
+  // ---- HAPTIC page: text blocks with the turntable simulation between them ----
+  new Block(384, 230, 623, 210, { page: 'haptic', locked: true, html:
+    '<span class="phead">haptic audio controller</span>' +
+    'A bluetooth device that sits on my desk and gives physical interfaces to basic audio controls for music and meetings. A little turntable-style platter turns as audio plays through it and can scratch back over a song or a meeting (inspired by Teenage Engineering OB-4).' + sp +
+    'My main motivation was buttery-smooth haptic interfacing — using a brushless DC motor as both input and output via field controls — plus seamless bluetooth and low-latency (&lt;10ms) audio.' });
+  // (the turntable widget itself is the .tt-host element below, shown on this page)
+  new Block(384, 980, 623, 430, { page: 'haptic', locked: true, html:
+    '<span class="phead">architecture</span>' +
+    '<b>ESP32</b> dual-core — core 0 handles motor control and feedback, core 1 handles the audio buffer, bluetooth, screen and input.' + sp +
+    'A brushless DC <b>gimbal motor</b> driven by simpleFOC, chosen for tight integration and precise low-speed control. Lots of tuning to keep cogging low — high-frequency wobble you can\'t feel shows up as audible distortion.' + sp +
+    'USB-C powered, with a boost converter for the motor; closed-loop control runs at &lt;0.1W. Audio streams over bluetooth into a 2-minute ring buffer, read out by a pointer that follows the motor\'s position and velocity.' + sp +
+    'This project is in process.' });
 
   // ----- sub-menu pop-up · MODE C -----
   // The top card slides + grows out from under the parent. Each card below then
@@ -349,9 +759,720 @@
     if (subOpen && !cwo.el.contains(e.target) && !cards.some(c => c.el.contains(e.target))) closeSub();
   });
 
-  // start with the bar on "home"
+  // which nav block lights up for each page (project pages ride "currently working on")
+  Object.assign(pageNav, {
+    home, tesla: teslaNav, fsae: fsaeNav, news: newsNav, resume: resumeNav,
+    creative: creativeNav, haptic: cwo, strava: cwo, thermal: cwo
+  });
   activeNav = home;
   placeBar(home, false);
+  
+    const TT = {
+      // constants from the spec
+      TARGET_VELOCITY: 2.09,        // rad/s, ~20 RPM (visual)
+      MAX_RATE: 4.0,
+      RATE_SMOOTHING_ALPHA: 0.20,   // ~4x faster audio catch-up
+      SPRING_BACK_MS: 110,          // ~1/4 of the original spring-back time
+      IDLE_EASE: 0.28,              // how fast the disc spins up / down toward rest
+      RING_BUFFER_SECONDS: 120,
+      DISPLAY_FPS: 12,
+      VOLUME_MAX: 127,
+      VOLUME_STEP: 4,
+      // runtime
+      booted: false, audioReady: false, audioInitting: false,
+      raf: null, oledTimer: null, lastTs: 0,
+      // platter
+      state: 'IDLE',                // IDLE | GRABBED | RELEASING
+      angle: 0, vel: 0,             // starts stopped (paused)
+      grabOffset: 0, prevAngle: 0, prevTime: 0,
+      releaseStart: 0, releaseVel: 0,
+      smoothedRate: 1, behind: 0,
+      scrub: null,                  // null | 'ff' | 'rew' — overrides audio rate while held
+      // transport / mixer
+      playing: false, muted: false, volume: 64,
+      trackIndex: 0, meeting: false, micMuted: false, connected: true, bt: true,
+      level: 0,
+      // audio graph
+      ctx: null, ring: null, volGain: null, linkGain: null, connGain: null,
+      analyser: null, meterBuf: null, tracks: [], meetingTrack: null,
+      // cable plug position (stage coords)
+      plug: { x: 0, y: 0, dragging: false, placed: false }
+    };
+
+    const ttPlatter = document.getElementById('ttPlatter');
+    const ttOled = document.getElementById('ttOled');
+    const ttKnob = document.getElementById('ttKnob');
+    const ttCable = document.getElementById('ttCable');
+    const PLATTER_SIZE = 168;       // disc diameter (px) — kept in sync with the concentric corner
+
+    // simple monochrome button glyphs (fill follows text color)
+    const ICON = {
+      play:    '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
+      pause:   '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>',
+      prev:    '<svg viewBox="0 0 24 24"><path d="M7 6h2v12H7zM19 6l-9 6 9 6z"/></svg>',
+      next:    '<svg viewBox="0 0 24 24"><path d="M15 6h2v12h-2zM5 6l9 6-9 6z"/></svg>',
+      mic:     '<svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2z"/></svg>',
+      micOff:  '<svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2z"/><path d="M3 3l18 18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>',
+      bt:      '<svg viewBox="0 0 24 24"><path d="M17.7 7.7L12 2h-1v7.6L6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 11 14.4V22h1l5.7-5.7-4.3-4.3 4.3-4.3zM13 5.8l1.9 1.9L13 9.6V5.8zm1.9 10.5L13 18.2v-3.8l1.9 1.9z"/></svg>'
+    };
+
+    // ---- AudioWorklet: variable-rate ring-buffer reader (handles reverse) ----
+    const ttWorkletSrc = `
+      class RingReader extends AudioWorkletProcessor {
+        static get parameterDescriptors() {
+          return [
+            { name: 'rate', defaultValue: 1, automationRate: 'k-rate' },
+            { name: 'playing', defaultValue: 0, automationRate: 'k-rate' }
+          ];
+        }
+        constructor() {
+          super();
+          this.buf = null; this.len = 0;
+          this.live = 0; this.read = 0;
+          this.win = 120 * sampleRate;
+          this.tick = 0;
+          this.port.onmessage = (e) => {
+            const d = e.data;
+            if (d.type === 'load') { this.buf = d.buffer; this.len = d.buffer.length; this.live = 0; this.read = 0; }
+            else if (d.type === 'reset') { this.live = 0; this.read = 0; }
+          };
+        }
+        process(inputs, outputs, params) {
+          const out = outputs[0]; const ch0 = out[0]; const n = ch0.length;
+          const rate = params.rate[0];
+          const playing = params.playing[0] > 0.5;
+          if (!this.buf) { for (let i=0;i<n;i++){ ch0[i]=0; if(out[1]) out[1][i]=0; } return true; }
+          const len = this.len;
+          for (let i=0;i<n;i++){
+            if (playing) this.live += 1;                 // live edge advances at 1x wall time
+            this.read += rate;                           // read head follows platter
+            let clamped = false;
+            if (this.read >= this.live) { this.read = this.live; clamped = true; }  // can't read the future
+            let s = 0;
+            const behind = this.live - this.read;
+            // paused + caught up to the frozen present => nothing to play => silence
+            const dead = clamped && !playing;
+            if (!dead && this.read >= 0 && behind <= this.win) {
+              let pos = this.read % len; if (pos < 0) pos += len;
+              const i0 = Math.floor(pos); const frac = pos - i0; const i1 = (i0 + 1) % len;
+              s = this.buf[i0]*(1-frac) + this.buf[i1]*frac;   // linear interpolation
+            }
+            ch0[i] = s; if (out[1]) out[1][i] = s;
+          }
+          this.tick += n;
+          if (this.tick >= 2048) { this.tick = 0; this.port.postMessage({ behind: (this.live - this.read)/sampleRate }); }
+          return true;
+        }
+      }
+      registerProcessor('ring-reader', RingReader);
+    `;
+
+    // download an mp3 and decode it into a mono Float32Array for the ring buffer
+    async function ttDecode(url) {
+      const resp = await fetch(url);
+      const arr = await resp.arrayBuffer();
+      const audioBuf = await TT.ctx.decodeAudioData(arr);     // resampled to ctx rate
+      const n = audioBuf.length, chs = audioBuf.numberOfChannels;
+      const out = new Float32Array(n);
+      for (let c = 0; c < chs; c++) {
+        const d = audioBuf.getChannelData(c);
+        for (let i = 0; i < n; i++) out[i] += d[i] / chs;     // downmix to mono
+      }
+      return out;
+    }
+
+    function ttBuildTracks() {
+      const sr = TT.ctx.sampleRate;
+      const mk = (secs, fn) => { const N = Math.floor(secs*sr); const d = new Float32Array(N); fn(d, sr, N); return d; };
+
+      // real tracks loaded from /audio (decoded async; data filled in when ready)
+      TT.tracks = [
+        { name: 'Soul', artist: 'Ketsa', url: 'audio/song1.mp3', data: null },
+        { name: 'Beautiful Day', artist: 'Mr Smith', url: 'audio/song2.mp3', data: null }
+      ];
+      TT.tracks.forEach((t, i) => {
+        ttDecode(t.url).then(d => {
+          t.data = d;
+          if (!TT.meeting && TT.trackIndex === i) ttLoadSource();   // play once decoded
+        }).catch(e => console.error('audio decode failed:', t.url, e));
+      });
+
+      // Meeting — talking-like formant babble (~8s loop)
+      TT.meetingTrack = { name: 'All-hands', artist: 'Meeting recording', data: mk(8, (d, sr) => {
+        let syl = 0, sylEnd = 0, f0 = 130, open = 0;
+        for (let i=0;i<d.length;i++){
+          const t = i/sr;
+          if (t > sylEnd) {                                  // new syllable
+            const speaking = Math.random() > 0.25;
+            const dur = 0.12 + Math.random()*0.22;
+            sylEnd = t + dur; open = speaking ? 1 : 0;
+            f0 = 110 + Math.random()*70;
+          }
+          let s = 0;
+          if (open) {
+            const env = Math.sin(Math.PI * (1 - (sylEnd - t)/0.3 % 1));
+            s += Math.sin(2*Math.PI*f0*t) * 0.3;
+            s += Math.sin(2*Math.PI*f0*2.2*t) * 0.15;        // formant-ish
+            s += Math.sin(2*Math.PI*f0*3.5*t) * 0.08;
+            s *= Math.max(0, env);
+          }
+          d[i] = Math.tanh(s*1.4)*0.7;
+        }
+      }) };
+    }
+
+    async function ttEnsureAudio() {
+      if (TT.audioReady || TT.audioInitting) { if (TT.ctx) TT.ctx.resume(); return; }
+      TT.audioInitting = true;
+      try {
+        TT.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const blob = new Blob([ttWorkletSrc], { type: 'application/javascript' });
+        const url = URL.createObjectURL(blob);
+        await TT.ctx.audioWorklet.addModule(url);
+        URL.revokeObjectURL(url);
+        TT.ring = new AudioWorkletNode(TT.ctx, 'ring-reader', { outputChannelCount: [2] });
+        TT.volGain = TT.ctx.createGain();
+        TT.linkGain = TT.ctx.createGain();   // bluetooth link gate
+        TT.connGain = TT.ctx.createGain();
+        TT.analyser = TT.ctx.createAnalyser();
+        TT.analyser.fftSize = 256;
+        TT.meterBuf = new Float32Array(TT.analyser.fftSize);
+        TT.ring.connect(TT.volGain).connect(TT.linkGain).connect(TT.connGain)
+               .connect(TT.analyser).connect(TT.ctx.destination);
+        TT.ring.port.onmessage = e => { if (e.data && e.data.behind != null) TT.behind = e.data.behind; };
+        ttBuildTracks();
+        ttLoadSource();
+        ttApplyVolume(); ttApplyMute(); ttApplyLink(); ttApplyConnection(); ttApplyPlaying();
+        TT.audioReady = true;
+        await TT.ctx.resume();
+      } catch (err) {
+        console.error('Turntable audio init failed', err);
+      }
+      TT.audioInitting = false;
+    }
+
+    function ttLoadSource() {
+      if (!TT.ring) return;
+      const src = TT.meeting ? TT.meetingTrack : TT.tracks[TT.trackIndex];
+      if (!src || !src.data) return;            // not decoded yet — will load when ready
+      TT.ring.port.postMessage({ type: 'load', buffer: src.data });
+      TT.behind = 0;
+    }
+
+    function ttApplyVolume() {
+      if (TT.volGain) TT.volGain.gain.value = Math.pow(TT.volume / TT.VOLUME_MAX, 2);
+      ttKnob.style.setProperty('--knob', (TT.volume / TT.VOLUME_MAX * 300 - 150) + 'deg');
+      const slider = document.getElementById('phVol');
+      if (slider && +slider.value !== TT.volume) slider.value = TT.volume;
+    }
+    function ttApplyMute() {
+      // cosmetic only — drives the OLED face mouth + the button icon. No audio change.
+      const b = document.getElementById('ttMute');
+      b.classList.toggle('on', TT.muted);
+      b.innerHTML = TT.muted ? ICON.micOff : ICON.mic;
+    }
+    function ttApplyLink() {        // bluetooth link stays open; button is decorative only
+      if (TT.linkGain) TT.linkGain.gain.value = 1;
+    }
+    function ttApplyConnection() {
+      if (TT.connGain) TT.connGain.gain.value = TT.connected ? 1 : 0;
+      document.getElementById('ttConnState').textContent = TT.connected ? '' : 'aux unplugged';
+    }
+    function ttApplyPlaying() {
+      if (TT.ring) TT.ring.parameters.get('playing').value = TT.playing ? 1 : 0;
+      document.getElementById('ttPlay').innerHTML = TT.playing ? ICON.pause : ICON.play;
+      // phone shows the music transport: paused while a meeting is live on the device
+      const phonePlaying = TT.playing && !TT.meeting;
+      const p = document.getElementById('phPlay');
+      if (p) p.innerHTML = phonePlaying ? ICON.pause : ICON.play;
+    }
+    function ttSkip(dir) {         // previous / next track (wraps), resets the ring buffer
+      if (TT.meeting) return;
+      const n = TT.tracks.length;
+      const i = (TT.trackIndex + dir + n) % n;
+      const sel = document.getElementById('phTrack'); if (sel) sel.value = i;
+      ttSelectTrack(i);
+    }
+
+    function ttSetPlaying(v) {
+      TT.playing = v;
+      // snap the platter + the audio rate so play/pause is instant on the device
+      // (no audible pitch-glide from the disc easing up or down)
+      if (TT.state === 'IDLE') {
+        TT.vel = v ? TT.TARGET_VELOCITY : 0;
+        TT.smoothedRate = v ? 1 : 0;
+        if (TT.ring) TT.ring.parameters.get('rate').value = TT.smoothedRate;
+      }
+      ttApplyPlaying();
+    }
+    function ttSetVolume(v) { TT.volume = Math.max(0, Math.min(TT.VOLUME_MAX, v)); ttApplyVolume(); }
+
+    function ttSelectTrack(i) {
+      TT.trackIndex = i;
+      const tk = TT.tracks[i];
+      document.getElementById('npTitle').textContent = tk.name;
+      document.getElementById('npArtist').textContent = tk.artist;
+      if (!TT.meeting) ttLoadSource();         // changing track resets the ring buffer
+    }
+
+    function ttSetMeeting(v) {
+      TT.meeting = v;
+      const btn = document.getElementById('phMeeting');
+      btn.textContent = v ? 'Leave' : 'Join';   // notification button reflects state
+      btn.classList.toggle('in', v);
+      ttLoadSource();                            // switches the source between music / meeting
+    }
+
+    // ---------- platter geometry & rendering ----------
+    function ttSizePlatter() {
+      const dpr = window.devicePixelRatio || 1;
+      const size = PLATTER_SIZE;
+      ttPlatter.width = size * dpr; ttPlatter.height = size * dpr;
+      const g = ttPlatter.getContext('2d');
+      g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function ttPointerAngle(e) {
+      const r = ttPlatter.getBoundingClientRect();
+      return Math.atan2(e.clientY - (r.top + r.height/2), e.clientX - (r.left + r.width/2));
+    }
+    function angNorm(a) { while (a > Math.PI) a -= 2*Math.PI; while (a < -Math.PI) a += 2*Math.PI; return a; }
+
+    ttPlatter.addEventListener('pointerdown', e => {
+      ttEnsureAudio();
+      TT.state = 'GRABBED';
+      const pa = ttPointerAngle(e);
+      TT.grabOffset = TT.angle - pa;
+      TT.prevAngle = TT.angle;
+      TT.prevTime = performance.now();
+      ttPlatter.setPointerCapture(e.pointerId);
+    });
+    ttPlatter.addEventListener('pointermove', e => {
+      if (TT.state !== 'GRABBED') return;
+      const now = performance.now();
+      const dt = Math.max(0.001, (now - TT.prevTime) / 1000);
+      const target = ttPointerAngle(e) + TT.grabOffset;
+      const dA = angNorm(target - TT.prevAngle);
+      TT.vel = dA / dt;                          // angular velocity follows pointer
+      TT.angle = TT.prevAngle + dA;
+      TT.prevAngle = TT.angle;
+      TT.prevTime = now;
+    });
+    function ttRelease(e) {
+      if (TT.state !== 'GRABBED') return;
+      TT.state = 'RELEASING';
+      TT.releaseStart = performance.now();
+      TT.releaseVel = TT.vel;
+      if (e && e.pointerId != null) { try { ttPlatter.releasePointerCapture(e.pointerId); } catch (_) {} }
+    }
+    ttPlatter.addEventListener('pointerup', ttRelease);
+    ttPlatter.addEventListener('pointercancel', ttRelease);
+
+    function ttDrawPlatter() {
+      const g = ttPlatter.getContext('2d');
+      const S = PLATTER_SIZE, c = S/2, R = c - 1;
+      g.clearRect(0, 0, S, S);
+      // brushed-aluminum disc, a touch lighter than the body so the screen pops
+      const grad = g.createRadialGradient(c, c*0.8, R*0.1, c, c, R);
+      grad.addColorStop(0, '#eef0f2');
+      grad.addColorStop(1, '#cfd3d7');
+      g.fillStyle = grad;
+      g.beginPath(); g.arc(c, c, R, 0, Math.PI*2); g.fill();
+      // subtle machined rim
+      g.lineWidth = 1.5; g.strokeStyle = 'rgba(0,0,0,0.12)';
+      g.beginPath(); g.arc(c, c, R - 1, 0, Math.PI*2); g.stroke();
+      // two reference dots ~2/3 to the edge, to show spin & direction
+      g.save(); g.translate(c, c); g.rotate(TT.angle);
+      g.fillStyle = '#3a3f45';
+      for (const a of [0, Math.PI]) {
+        g.beginPath(); g.arc(Math.cos(a)*R*0.66, Math.sin(a)*R*0.66, 6, 0, Math.PI*2); g.fill();
+      }
+      g.restore();
+    }
+
+    // ---------- OLED 128x64 monochrome ----------
+    // 5x7 pixel font (only the glyphs the screen needs)
+    const OLED_FONT = {
+      'V': ['10001','10001','10001','10001','10001','01010','00100'],
+      'O': ['01110','10001','10001','10001','10001','10001','01110'],
+      'L': ['10000','10000','10000','10000','10000','10000','11111'],
+      'I': ['11111','00100','00100','00100','00100','00100','11111'],
+      'E': ['11111','10000','10000','11110','10000','10000','11111'],
+      'T': ['11111','00100','00100','00100','00100','00100','00100'],
+      '-': ['00000','00000','00000','11111','00000','00000','00000'],
+      ' ': ['00000','00000','00000','00000','00000','00000','00000'],
+      '0': ['01110','10001','10011','10101','11001','10001','01110'],
+      '1': ['00100','01100','00100','00100','00100','00100','01110'],
+      '2': ['01110','10001','00001','00010','00100','01000','11111'],
+      '3': ['11111','00010','00100','00010','00001','10001','01110'],
+      '4': ['00010','00110','01010','10010','11111','00010','00010'],
+      '5': ['11111','10000','11110','00001','00001','10001','01110'],
+      '6': ['00110','01000','10000','11110','10001','10001','01110'],
+      '7': ['11111','00001','00010','00100','01000','01000','01000'],
+      '8': ['01110','10001','10001','01110','10001','10001','01110'],
+      '9': ['01110','10001','10001','01111','00001','00010','01100']
+    };
+    function oledText(g, str, x, y, s) {       // s = pixel size of each font dot
+      let cx = x;
+      for (const ch of str) {
+        const gl = OLED_FONT[ch] || OLED_FONT[' '];
+        for (let r = 0; r < 7; r++)
+          for (let c = 0; c < 5; c++)
+            if (gl[r][c] === '1') g.fillRect(cx + c*s, y + r*s, s, s);
+        cx += 6 * s;                            // 5 wide + 1 space
+      }
+    }
+    // 32×45 face bitmaps (row-major, MSB-first — same format as the firmware's
+    // SSD1306 buffer). Closed-mouth face and an open-mouth variant.
+    const FACE_W = 32, FACE_H = 45, FACE_X = 4, FACE_Y = 9;
+    const FACE_CLOSED = new Uint8Array([
+      0xff,0xff,0x80,0x00, 0xff,0xff,0xc0,0x00, 0xff,0xff,0xc0,0x00, 0xff,0xff,0xe0,0x00,
+      0xff,0xff,0xe0,0x00, 0xff,0xff,0xe0,0x00, 0xff,0xff,0xf0,0x00, 0xff,0xff,0xf0,0x00,
+      0xff,0xff,0xf8,0x00, 0xff,0xff,0xf8,0x00, 0xff,0xff,0xfc,0x00, 0xff,0xff,0xfc,0x00,
+      0xff,0xff,0xfc,0x00, 0xff,0xff,0xfe,0x00, 0xff,0xff,0xfe,0x00, 0xff,0xff,0xff,0x00,
+      0xff,0xff,0xff,0x00, 0xff,0xff,0x00,0x00, 0xff,0xff,0x00,0x00, 0xff,0xff,0x00,0x00,
+      0xff,0xff,0x00,0x00, 0xff,0xff,0x00,0x00, 0xff,0xff,0x00,0x00, 0xf0,0x00,0x00,0x00,
+      0xf0,0x00,0x00,0x00, 0xff,0xff,0x00,0x00, 0xff,0xff,0x00,0x00, 0xff,0xff,0x00,0x00,
+      0xff,0xff,0x00,0x00, 0xff,0xff,0x00,0x00, 0xff,0xff,0x00,0x00, 0xff,0xff,0x00,0x00,
+      0xff,0xff,0x00,0x00, 0xff,0xff,0x00,0x00, 0xff,0xfe,0x00,0x00, 0xfc,0x00,0x00,0x00,
+      0xf8,0x00,0x00,0x00, 0xf8,0x00,0x00,0x00, 0xf0,0x00,0x00,0x00, 0xf0,0x00,0x00,0x00,
+      0xe0,0x00,0x00,0x00, 0xe0,0x00,0x00,0x00, 0xc0,0x00,0x00,0x00, 0xc0,0x00,0x00,0x00,
+      0xc0,0x00,0x00,0x00
+    ]);
+    const FACE_OPEN = new Uint8Array([
+      0xff,0xfe,0x00,0x00, 0xff,0xff,0x00,0x00, 0xff,0xff,0x80,0x00, 0xff,0xff,0xc0,0x00,
+      0xff,0xff,0xe0,0x00, 0xff,0xff,0xf0,0x00, 0xff,0xff,0xf8,0x00, 0xff,0xff,0xfc,0x00,
+      0xff,0xff,0xf8,0x00, 0xff,0xff,0xe0,0x00, 0xff,0xff,0x80,0x00, 0xff,0xfe,0x00,0x00,
+      0xff,0xfe,0x00,0x00, 0xff,0xff,0x00,0x00, 0xff,0xff,0x00,0x00, 0xff,0xff,0x80,0x00,
+      0xff,0xff,0x80,0x00, 0xff,0xff,0x80,0x00, 0xff,0xff,0x80,0x00, 0xff,0xff,0x00,0x00,
+      0xff,0xfc,0x80,0x00, 0xff,0xe6,0x00,0x00, 0xff,0x30,0x00,0x00, 0xfd,0x80,0x00,0x00,
+      0xf2,0x00,0x00,0x00, 0xfc,0x80,0x00,0x00, 0xff,0x20,0x00,0x00, 0xff,0xc8,0x00,0x00,
+      0xff,0xf2,0x00,0x00, 0xff,0xfc,0x80,0x00, 0xff,0xff,0x00,0x00, 0xff,0xff,0x80,0x00,
+      0xff,0xff,0x80,0x00, 0xff,0xff,0x00,0x00, 0xff,0xff,0x00,0x00, 0xfb,0xff,0x00,0x00,
+      0xf0,0xff,0x00,0x00, 0xf0,0x1e,0x00,0x00, 0xf0,0x00,0x00,0x00, 0xf0,0x00,0x00,0x00,
+      0xe0,0x00,0x00,0x00, 0xe0,0x00,0x00,0x00, 0xe0,0x00,0x00,0x00, 0xe0,0x00,0x00,0x00,
+      0xc0,0x00,0x00,0x00
+    ]);
+    function drawFaceBitmap(g, bytes) {
+      for (let r = 0; r < FACE_H; r++) {
+        for (let bx = 0; bx < 4; bx++) {
+          const byte = bytes[r * 4 + bx];
+          if (!byte) continue;
+          for (let b = 0; b < 8; b++) {
+            if (byte & (0x80 >> b)) g.fillRect(FACE_X + bx * 8 + b, FACE_Y + r, 1, 1);
+          }
+        }
+      }
+    }
+    function ttDrawOled() {
+      const g = ttOled.getContext('2d');
+      g.imageSmoothingEnabled = false;
+      g.fillStyle = '#000'; g.fillRect(0, 0, 128, 64);
+
+      // ---- left: 32x45 face bitmap, open when unmuted, closed when muted ----
+      g.fillStyle = '#fff';
+      drawFaceBitmap(g, TT.muted ? FACE_CLOSED : FACE_OPEN);
+
+      // ---- right: VOL and time-behind, that's all ----
+      g.fillStyle = '#fff';
+      const vol = Math.round(TT.volume / TT.VOLUME_MAX * 10);
+      oledText(g, 'VOL ' + vol, 46, 8, 2);
+      const sec = Math.min(120, Math.max(0, Math.round(TT.behind)));
+      oledText(g, sec === 0 ? 'LIVE' : 'T-' + sec, 46, 34, 2);
+    }
+
+    // ---------- volume knob (relative encoder) ----------
+    let knobPrev = null, knobAccum = 0;
+    const KNOB_STEP_RAD = 0.30;                  // radians per encoder click
+    function knobAngle(e) {
+      const r = ttKnob.getBoundingClientRect();
+      return Math.atan2(e.clientY - (r.top + r.height/2), e.clientX - (r.left + r.width/2));
+    }
+    ttKnob.addEventListener('pointerdown', e => {
+      ttEnsureAudio();
+      knobPrev = knobAngle(e); knobAccum = 0;
+      ttKnob.setPointerCapture(e.pointerId);
+    });
+    ttKnob.addEventListener('pointermove', e => {
+      if (knobPrev == null) return;
+      const a = knobAngle(e);
+      knobAccum += angNorm(a - knobPrev);
+      knobPrev = a;
+      while (knobAccum >= KNOB_STEP_RAD) { knobAccum -= KNOB_STEP_RAD; ttSetVolume(TT.volume + TT.VOLUME_STEP); }
+      while (knobAccum <= -KNOB_STEP_RAD) { knobAccum += KNOB_STEP_RAD; ttSetVolume(TT.volume - TT.VOLUME_STEP); }
+    });
+    function knobUp(e) { knobPrev = null; if (e && e.pointerId != null) { try { ttKnob.releasePointerCapture(e.pointerId); } catch (_) {} } }
+    ttKnob.addEventListener('pointerup', knobUp);
+    ttKnob.addEventListener('pointercancel', knobUp);
+
+    // ---------- aux-cable plug physics ----------
+    const ttPlug = document.createElement('div');
+    ttPlug.className = 'spk-plug';
+    function stageEl() { return document.querySelector('.tt-stage'); }
+    function ttPlaceInit() {
+      const stage = stageEl();
+      if (!stage.contains(ttPlug)) stage.appendChild(ttPlug);
+      ttSnapPlug();
+      ropeInit();
+    }
+    function jackCenter() {
+      const stage = stageEl(), j = document.getElementById('spkJack');
+      const sr = stage.getBoundingClientRect(), jr = j.getBoundingClientRect();
+      return { x: jr.left - sr.left + jr.width/2, y: jr.top - sr.top + jr.height/2 };
+    }
+    function deviceAnchor() {
+      // jack on the left side of the device, kept just outside the body so the
+      // rope's pinned start visually sits *next to* the device rather than on it
+      const stage = stageEl(), d = document.querySelector('.tt-device');
+      const sr = stage.getBoundingClientRect(), dr = d.getBoundingClientRect();
+      return { x: dr.left - sr.left - 5, y: dr.top - sr.top + dr.height*0.78 };
+    }
+    function deviceRect() {
+      const stage = stageEl(), d = document.querySelector('.tt-device');
+      const sr = stage.getBoundingClientRect(), dr = d.getBoundingClientRect();
+      // matches the CSS border-top-left-radius (kept concentric with the platter)
+      return { x: dr.left - sr.left, y: dr.top - sr.top, w: dr.width, h: dr.height, cornerR: 98 };
+    }
+    // push a single point outside the rounded-rect device shape, with a margin
+    function pushOutOfDevice(p, r) {
+      const m = 3;
+      const left = r.x - m, right = r.x + r.w + m;
+      const top  = r.y - m, bottom = r.y + r.h + m;
+      if (p.x < left || p.x > right || p.y < top || p.y > bottom) return;
+      // top-left rounded corner: arc centered at (r.x + R, r.y + R)
+      if (p.x < r.x + r.cornerR && p.y < r.y + r.cornerR) {
+        const cx = r.x + r.cornerR, cy = r.y + r.cornerR;
+        const dx = p.x - cx, dy = p.y - cy;
+        const d = Math.hypot(dx, dy) || 0.0001;
+        if (d < r.cornerR + m) {
+          const t = (r.cornerR + m) / d;
+          p.x = cx + dx * t; p.y = cy + dy * t;
+        }
+        return;
+      }
+      // straight edges: push to the closest one
+      const dL = p.x - left, dR = right - p.x, dT = p.y - top, dB = bottom - p.y;
+      const k = Math.min(dL, dR, dT, dB);
+      if      (k === dL) p.x = left;
+      else if (k === dR) p.x = right;
+      else if (k === dT) p.y = top;
+      else               p.y = bottom;
+    }
+    function ttSnapPlug() {
+      const j = jackCenter();
+      TT.plug.x = j.x; TT.plug.y = j.y; TT.plug.placed = true; TT.connected = true;
+      ttApplyConnection(); ttPositionPlug();
+    }
+    function ttPositionPlug() { ttPlug.style.left = TT.plug.x + 'px'; ttPlug.style.top = TT.plug.y + 'px'; }
+    ttPlug.addEventListener('pointerdown', e => {
+      e.preventDefault(); ttEnsureAudio();
+      TT.plug.dragging = true; ttPlug.setPointerCapture(e.pointerId);
+    });
+    ttPlug.addEventListener('pointermove', e => {
+      if (!TT.plug.dragging) return;
+      const sr = stageEl().getBoundingClientRect();
+      TT.plug.x = e.clientX - sr.left; TT.plug.y = e.clientY - sr.top;
+      ttPositionPlug();
+      const j = jackCenter();
+      TT.connected = Math.hypot(TT.plug.x - j.x, TT.plug.y - j.y) < 36;
+      ttApplyConnection();
+    });
+    function plugUp(e) {
+      if (!TT.plug.dragging) return;
+      TT.plug.dragging = false;
+      if (e && e.pointerId != null) { try { ttPlug.releasePointerCapture(e.pointerId); } catch (_) {} }
+      const j = jackCenter();
+      if (Math.hypot(TT.plug.x - j.x, TT.plug.y - j.y) < 40) ttSnapPlug();   // snap back if close
+      else { TT.connected = false; ttApplyConnection(); }
+      ttPlug.classList.toggle('loose', !TT.connected);
+    }
+    ttPlug.addEventListener('pointerup', plugUp);
+    ttPlug.addEventListener('pointercancel', plugUp);
+
+    // ----- verlet rope -----
+    // The cable is a chain of point masses connected by length constraints.
+    // Endpoints are pinned (device anchor + the plug the user drags). Middle
+    // points fall under gravity, swing on grab, and are pushed out of the
+    // device's rounded body so the cable can't intersect it.
+    const ROPE = { N: 26, iters: 14, rest: 6, points: [] };
+    function ropeInit() {
+      // start as a straight line between anchor and plug — no initial sag
+      const a = deviceAnchor(), j = jackCenter();
+      ROPE.points = [];
+      for (let i = 0; i < ROPE.N; i++) {
+        const t = i / (ROPE.N - 1);
+        const x = a.x + (j.x - a.x) * t;
+        const y = a.y + (j.y - a.y) * t;
+        ROPE.points.push({ x, y });
+      }
+      const straight = Math.hypot(j.x - a.x, j.y - a.y);
+      ROPE.rest = (straight * 1.05) / (ROPE.N - 1);     // taut: just barely longer than straight
+    }
+    function ropeStep() {
+      if (!ROPE.points.length) return;
+      const a = deviceAnchor(), p = TT.plug;
+      // pin endpoints (no integration / momentum — the cable is purely kinematic)
+      ROPE.points[0].x = a.x; ROPE.points[0].y = a.y;
+      ROPE.points[ROPE.N-1].x = p.x; ROPE.points[ROPE.N-1].y = p.y;
+      // satisfy constraints: equalize segment lengths + keep points off the device
+      const rect = deviceRect();
+      for (let it = 0; it < ROPE.iters; it++) {
+        for (let i = 0; i < ROPE.N - 1; i++) {
+          const a_ = ROPE.points[i], b_ = ROPE.points[i+1];
+          const dx = b_.x - a_.x, dy = b_.y - a_.y;
+          const d = Math.hypot(dx, dy) || 0.0001;
+          const diff = (d - ROPE.rest) / d * 0.5;
+          const mx = dx * diff, my = dy * diff;
+          if (i !== 0)        { a_.x += mx; a_.y += my; }
+          if (i !== ROPE.N-2) { b_.x -= mx; b_.y -= my; }
+        }
+        for (let i = 1; i < ROPE.N - 1; i++) pushOutOfDevice(ROPE.points[i], rect);
+      }
+    }
+    function ttDrawCable() {
+      const stage = stageEl(); if (!stage) return;
+      const r = stage.getBoundingClientRect();
+      if (ttCable.width !== r.width || ttCable.height !== r.height) {
+        ttCable.width = r.width; ttCable.height = r.height;
+      }
+      const g = ttCable.getContext('2d');
+      g.clearRect(0, 0, ttCable.width, ttCable.height);
+      if (!ROPE.points.length) return;
+      g.strokeStyle = TT.connected ? '#2c3137' : '#a84a3c';
+      g.lineWidth = 5; g.lineCap = 'round'; g.lineJoin = 'round';
+      g.beginPath();
+      g.moveTo(ROPE.points[0].x, ROPE.points[0].y);
+      for (let i = 1; i < ROPE.points.length - 1; i++) {
+        const cur = ROPE.points[i], nxt = ROPE.points[i+1];
+        g.quadraticCurveTo(cur.x, cur.y, (cur.x + nxt.x) / 2, (cur.y + nxt.y) / 2);
+      }
+      const last = ROPE.points[ROPE.points.length - 1];
+      g.lineTo(last.x, last.y);
+      g.stroke();
+    }
+
+    // ---------- main animation loop ----------
+    function ttFrame(ts) {
+      if (!hapticActive()) { TT.raf = null; return; }
+      const dt = Math.min(0.05, TT.lastTs ? (ts - TT.lastTs) / 1000 : 0.016);
+      TT.lastTs = ts;
+
+      // disc rest velocity matches the audio rate: stopped when paused, fast
+      // forward while catching up, reverse while scrubbing back. FF only spins
+      // the disc fast while we're still behind; once we hit live, the platter
+      // eases back to normal so it matches the resumed 1x playback.
+      let restVel = TT.playing ? TT.TARGET_VELOCITY : 0;
+      if (TT.scrub === 'ff' && TT.behind > 0.3) restVel = TT.TARGET_VELOCITY * TT.MAX_RATE;
+      if (TT.scrub === 'rew')                   restVel = -TT.TARGET_VELOCITY;
+      if (TT.state === 'IDLE') {
+        TT.vel += (restVel - TT.vel) * TT.IDLE_EASE;         // fast spin-up / spin-down
+        TT.angle += TT.vel * dt;
+      } else if (TT.state === 'RELEASING') {
+        const t = (ts - TT.releaseStart) / TT.SPRING_BACK_MS;
+        if (t >= 1) { TT.vel = restVel; TT.state = 'IDLE'; }
+        else { const e = 1 - (1 - t) * (1 - t); TT.vel = TT.releaseVel + (restVel - TT.releaseVel) * e; }
+        TT.angle += TT.vel * dt;
+      }
+      // GRABBED: angle/vel are driven by the pointer handler
+
+      let raw = TT.vel / TT.TARGET_VELOCITY;
+      raw = Math.max(-TT.MAX_RATE, Math.min(TT.MAX_RATE, raw));
+      TT.smoothedRate += TT.RATE_SMOOTHING_ALPHA * (raw - TT.smoothedRate);
+      // hold-to-scrub overrides the rate while behind: skip-forward fast-forwards
+      // until caught up, then drops to 1x so live playback resumes seamlessly;
+      // skip-back plays in reverse at real-time -1x
+      let outRate = TT.smoothedRate;
+      if (TT.scrub === 'ff' && TT.behind > 0.3) outRate = TT.MAX_RATE;
+      if (TT.scrub === 'rew')                   outRate = -1;
+      if (TT.ring) TT.ring.parameters.get('rate').value = outRate;
+
+      // output level meter (post everything the user hears)
+      if (TT.analyser) {
+        TT.analyser.getFloatTimeDomainData(TT.meterBuf);
+        let sum = 0; for (let i=0;i<TT.meterBuf.length;i++) sum += TT.meterBuf[i]*TT.meterBuf[i];
+        const rms = Math.sqrt(sum / TT.meterBuf.length);
+        TT.level += ((Math.min(1, rms*3)) - TT.level) * 0.3;
+        document.getElementById('spkMeter').style.width = (TT.level*100).toFixed(1) + '%';
+      }
+
+      ttDrawPlatter();
+      ropeStep();
+      ttDrawCable();
+      TT.raf = requestAnimationFrame(ttFrame);
+    }
+
+    function initTurntable() {
+      requestAnimationFrame(() => {
+        ttSizePlatter();
+        ttPlaceInit();
+        if (!TT.raf) { TT.lastTs = 0; TT.raf = requestAnimationFrame(ttFrame); }
+        if (!TT.oledTimer) TT.oledTimer = setInterval(ttDrawOled, Math.round(1000 / TT.DISPLAY_FPS));
+        if (!TT.booted) {
+          // now-playing labels
+          TT.tracksMeta = [['Soul', 'Ketsa'], ['Beautiful Day', 'Mr Smith']];
+          document.getElementById('npTitle').textContent = TT.tracksMeta[0][0];
+          document.getElementById('npArtist').textContent = TT.tracksMeta[0][1];
+          // phone transport: back · play/pause · forward
+          document.getElementById('phPrev').addEventListener('click', () => { ttEnsureAudio(); ttSkip(-1); });
+          document.getElementById('phPlay').addEventListener('click', () => {
+            ttEnsureAudio();
+            if (TT.meeting) { TT.musicWasPlaying = !TT.musicWasPlaying; return; }   // music transport stays "paused" during a meeting
+            ttSetPlaying(!TT.playing);
+          });
+          document.getElementById('phNext').addEventListener('click', () => { ttEnsureAudio(); ttSkip(1); });
+          document.getElementById('phPrev').innerHTML = ICON.prev;
+          document.getElementById('phNext').innerHTML = ICON.next;
+          // phone meeting notification — join routes the meeting to the device
+          // (phone music pauses), leave returns to the music source
+          document.getElementById('phMeeting').addEventListener('click', () => {
+            ttEnsureAudio();
+            const joining = !TT.meeting;
+            if (joining) { TT.musicWasPlaying = TT.playing; ttSetMeeting(true); ttSetPlaying(true); }
+            else { ttSetMeeting(false); ttSetPlaying(!!TT.musicWasPlaying); }
+          });
+          // phone volume slider — mirrors the device knob
+          document.getElementById('phVol').addEventListener('input', e => { ttEnsureAudio(); ttSetVolume(+e.target.value); });
+          // device button row: mute · skip back · play/pause · skip forward · bluetooth
+          document.getElementById('ttMute').addEventListener('click', () => { TT.muted = !TT.muted; ttApplyMute(); });
+          // skip back / skip forward — press-and-hold scrubs when behind:
+          //   • behind → hold next to fast-forward toward live, hold prev to play in reverse
+          //   • at live → a tap is a track skip (the scrub just doesn't engage)
+          const armScrub = (btnId, mode, dir) => {
+            const b = document.getElementById(btnId);
+            const release = () => { if (TT.scrub === mode) TT.scrub = null; };
+            b.addEventListener('pointerdown', e => {
+              ttEnsureAudio();
+              if (TT.behind > 0.3) { TT.scrub = mode; b.setPointerCapture(e.pointerId); }
+              else { ttSkip(dir); }
+            });
+            b.addEventListener('pointerup', release);
+            b.addEventListener('pointercancel', release);
+            b.addEventListener('pointerleave', release);
+          };
+          armScrub('ttPrev', 'rew', -1);
+          armScrub('ttNext', 'ff', 1);
+          document.getElementById('ttPlay').addEventListener('click', () => { ttEnsureAudio(); ttSetPlaying(!TT.playing); });
+          // bluetooth button is decorative only — no behavior
+          // initial glyphs (before audio is initialized)
+          document.getElementById('ttPrev').innerHTML = ICON.prev;
+          document.getElementById('ttNext').innerHTML = ICON.next;
+          document.getElementById('ttBt').innerHTML = ICON.bt;
+          ttApplyMute(); ttApplyPlaying(); ttApplyLink();
+          TT.booted = true;
+        }
+      });
+    }
+    function stopTurntable() {
+      if (TT.raf) { cancelAnimationFrame(TT.raf); TT.raf = null; }
+      if (TT.oledTimer) { clearInterval(TT.oledTimer); TT.oledTimer = null; }
+      if (TT.playing) ttSetPlaying(false);     // pause audio when you leave the page
+    }
+    window.addEventListener('resize', () => {
+      if (hapticActive()) { ttSizePlatter(); ttPlaceInit(); }
+    });
+
+  // open the home page (now that the turntable code above is defined)
+  showPage('home');
   </script>
 </body>
 </html>
