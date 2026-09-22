@@ -725,17 +725,17 @@
   // content and never collides with or snaps to it
   const SUB_X = SIDEBAR_X + SIDEBAR_W + GAP;
   const cards = [
-    new Block(SUB_X, 120, 124, 63, { cls: 'sub', locked: true, floating: true, html: 'haptic audio<br>controller', onClick: () => showPage('haptic') }),
-    new Block(SUB_X, 190, 127, 63, { cls: 'sub', locked: true, floating: true, html: 'Strava ghost<br>runners',     onClick: () => showPage('ghostrun') }),
-    new Block(SUB_X, 260, 140, 63, { cls: 'sub', locked: true, floating: true, html: 'thermal printer<br>camera',   onClick: () => showPage('thermal') })
+    new Block(SUB_X, 120, 142, 63, { cls: 'sub', locked: true, floating: true, html: 'haptic audio<br>controller', onClick: () => showPage('haptic') }),
+    new Block(SUB_X, 190, 142, 63, { cls: 'sub', locked: true, floating: true, html: 'Strava ghost<br>runners',     onClick: () => showPage('ghostrun') }),
+    new Block(SUB_X, 260, 142, 63, { cls: 'sub', locked: true, floating: true, html: 'thermal printer<br>camera',   onClick: () => showPage('thermal') })
   ];
 
   // sub-menu cards under "creative work"
   const creativeCards = [
     new Block(SUB_X, 428, 142, 63, { cls: 'sub', locked: true, floating: true, html: 'beauty as data<br>compression', onClick: () => showPage('vision') }),
-    new Block(SUB_X, 498, 61, 44, { cls: 'sub', locked: true, floating: true, html: 'film',                        onClick: () => showPage('film') }),
-    new Block(SUB_X, 549, 94, 44, { cls: 'sub', locked: true, floating: true, html: 'on trash',                    onClick: () => showPage('trash') }),
-    new Block(SUB_X, 600, 121, 44, { cls: 'sub', locked: true, floating: true, html: 'this website',                onClick: () => showPage('website') })
+    new Block(SUB_X, 498, 142, 44, { cls: 'sub', locked: true, floating: true, html: 'film',                        onClick: () => showPage('film') }),
+    new Block(SUB_X, 549, 142, 44, { cls: 'sub', locked: true, floating: true, html: 'on trash',                    onClick: () => showPage('trash') }),
+    new Block(SUB_X, 600, 142, 44, { cls: 'sub', locked: true, floating: true, html: 'this website',                onClick: () => showPage('website') })
   ];
 
   // "alex gold" — big on home (left of the picture); small top-right on every other page.
