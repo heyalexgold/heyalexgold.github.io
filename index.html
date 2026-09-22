@@ -27,7 +27,7 @@
     .block.locked { cursor: default; touch-action: auto; }   /* click-only / static content — let touch scroll the page instead of being captured as a drag */
     .block.locked.nav { cursor: pointer; }            /* menu items are click-only */
     .block.locked > .handle { cursor: default; }
-    .block.plain { cursor: default; }                 /* ordinary body text/images — never draggable, no corner squares */
+    .block.plain { cursor: default; }                 /* ordinary body text/images — never draggable */
 
     /* the active-menu indicator: a red bar living in the left gutter, between
        the two black corner squares. z-index 0 so it slides UNDER the blocks. */
@@ -523,8 +523,7 @@
       this.locked = !!opts.locked;                     // locked = not draggable/resizable
       this.page = opts.page || null;                   // null = shown on every page
       this.floating = !!opts.floating;                 // floating = ignored by others' collision/snap (sits in its own plane above content)
-      this.plain = !!opts.plain;                        // plain = ordinary body text/images — no corner squares, no drag affordance at all
-      this.groupId = opts.groupId || null;              // group = ignores collision/snap against its own group-mates
+      this.plain = !!opts.plain;                        // plain = ordinary body text/images — no drag affordance at all
       this.follow = opts.follow || null;                // { of: Block, calc(of) => {x,y,w?,h?} } — recomputed whenever `of` redraws
       this.el = document.createElement('div');
       this.el.className = 'block' + (opts.cls ? ' ' + opts.cls : '') + (this.plain ? ' plain' : '') + (this.locked ? ' locked' : '');
@@ -532,13 +531,11 @@
       this.content.className = 'content' + (opts.bare ? ' bare' : '');
       this.content.innerHTML = opts.html || '';
       this.el.appendChild(this.content);
-      if (!this.plain) {
-        for (const c of CORNERS) {
-          const hd = document.createElement('span');
-          hd.className = 'handle ' + c;
-          hd.dataset.corner = c;
-          this.el.appendChild(hd);
-        }
+      for (const c of CORNERS) {                        // corner squares render on every block, purely as a visual marker —
+        const hd = document.createElement('span');      // locked/plain blocks still ignore them functionally (see onDown)
+        hd.className = 'handle ' + c;
+        hd.dataset.corner = c;
+        this.el.appendChild(hd);
       }
       this.el.addEventListener('pointerdown', e => this.onDown(e));
       document.body.appendChild(this.el);
@@ -565,9 +562,12 @@
     }
 
     others() {
-      // a hidden block (a different page's content) never obstructs — only visible,
-      // non-floating, non-group-mate blocks are real collision/snap targets
-      return Block.all.filter(b => b !== this && !b.floating && b.el.style.display !== 'none' && !(this.groupId && b.groupId === this.groupId));
+      // a hidden block (a different page's content) never obstructs. Nor does a
+      // block that FOLLOWS this one — it's computed from this block's position, not
+      // an independent obstacle, so this one must be free to move/resize without
+      // "colliding" with its own followers. Followers themselves keep normal
+      // snapping/collision against their anchor and everything else.
+      return Block.all.filter(b => b !== this && !b.floating && b.el.style.display !== 'none' && !(b.follow && b.follow.of === this));
     }
     hitsAny() { return this.others().some(b => this.hits(b)); }
     hits(o) {
@@ -739,12 +739,12 @@
   ];
 
   // "alex gold" — big on home (left of the picture); small top-right on every other page.
-  // groupId ties title/portrait/bio together: dragging or resizing the title (the
-  // group's anchor) carries the other two along via `follow`, and none of the three
-  // treat each other as collision obstacles — so they can be repositioned as one unit.
-  const HEAD_GROUP = 'home-head';
-  const title = new Block(486, 40, 335, 104, { cls: 'title', page: 'home', groupId: HEAD_GROUP, html: '<h1>alex gold</h1>' });
-  new Block(828, 40, 176, 56, { cls: 'title title-side', page: '_side', groupId: HEAD_GROUP, html: '<h1>alex gold</h1>' });
+  // `follow` ties portrait/bio to the title below: dragging or resizing the title
+  // (the anchor) carries the other two along as one unit, since the title ignores
+  // its own followers as obstacles — but portrait/bio still snap to and collide
+  // with the title (and each other) normally when dragged independently.
+  const title = new Block(486, 40, 335, 104, { cls: 'title', page: 'home', html: '<h1>alex gold</h1>' });
+  new Block(828, 40, 176, 56, { cls: 'title title-side', page: '_side', html: '<h1>alex gold</h1>' });
 
   // per-page title blocks — black, sized to the text, sharing the body's top-left corner
   new Block(CONTENT_X, 171,  92, 52, { cls: 'title title-page', page: 'tesla',    html: '<h1>tesla</h1>' });
@@ -760,10 +760,10 @@
   new Block(CONTENT_X, 171, 184, 52, { cls: 'title title-page', page: 'website',  html: '<h1>this website</h1>' });
 
   // ---- HOME page: bio + portrait (linked to the title above) + about ----
-  new Block(586, 151, 235, 120, { page: 'home', groupId: HEAD_GROUP,
+  new Block(586, 151, 235, 120, { page: 'home',
     follow: { of: title, calc: t => ({ x: t.x + t.w - 235, y: t.y + t.h + GAP }) },
     html: 'mechanical engineer<br>multi-disciplinarian<br>busy bee' });
-  new Block(828, 40, 176, 274, { page: 'home', cls: 'portrait', bare: true, groupId: HEAD_GROUP,
+  new Block(828, 40, 176, 274, { page: 'home', cls: 'portrait', bare: true,
     follow: { of: title, calc: t => ({ x: t.x + t.w + GAP, y: t.y }) },
     html: '<img src="images/profile.jpg" alt="alex gold">' });
   new Block(CONTENT_X, 415, 105, 52, { cls: 'title title-page', page: 'home', html: '<h1>about</h1>' });
