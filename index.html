@@ -87,6 +87,20 @@
     /* the turntable simulation, dropped between the haptic text blocks */
     .tt-host { position: absolute; left: 292px; top: 560px; width: 800px; z-index: 1; }
     .tt-host .tt-stage { background: transparent; padding: 0.5rem 0; min-height: 0; }
+
+    /* Ghost Run widget: static street map + animated ghost dots */
+    .gr-host { position: absolute; left: 384px; top: 400px; width: 700px; z-index: 1; }
+    .gr-map { position: relative; width: 700px; height: 700px; border-radius: 4px; overflow: hidden; background: #fff; box-shadow: 0 1px 0 rgba(0,0,0,0.08); }
+    .gr-map img, .gr-map canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .gr-controls { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+    .gr-playbtn { width: 32px; height: 32px; border-radius: 50%; border: none; background: #111; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; }
+    .gr-playbtn svg { width: 13px; height: 13px; fill: currentColor; display: block; }
+    .gr-slider { flex: 1; accent-color: #e5392b; }
+    .gr-time { font-variant-numeric: tabular-nums; font-size: 0.85rem; color: #444; min-width: 90px; text-align: right; }
+    .gr-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; font-size: 0.78rem; color: #444; }
+    .gr-legend .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+    .gr-attrib { margin-top: 10px; font-size: 0.7rem; color: #999; }
+    .gr-attrib a { color: inherit; }
     .tt-stage {
       position: relative;
       width: 100%; min-height: 460px;
@@ -366,6 +380,27 @@
 </head>
 <body>
 
+  <div class="gr-host" data-page="ghostrun">
+    <div class="gr-map">
+      <img src="ghost-run/basemap.svg" alt="">
+      <canvas id="grCanvas"></canvas>
+    </div>
+    <div class="gr-controls">
+      <button id="grPlayBtn" class="gr-playbtn" title="Play / pause"></button>
+      <input id="grSlider" class="gr-slider" type="range" min="0" max="1000" value="0">
+      <span id="grTime" class="gr-time">0:00 / 0:00</span>
+    </div>
+    <div class="gr-legend">
+      <span><span class="dot" style="background:#e5392b"></span>PR</span>
+      <span><span class="dot" style="background:#c99a2e"></span>Top 10</span>
+      <span><span class="dot" style="background:#3f8f5a"></span>Median</span>
+      <span><span class="dot" style="background:#2f6fb0"></span>Last 5</span>
+      <span><span class="dot" style="background:#a86b6b"></span>Worst 5</span>
+      <span><span class="dot" style="background:#111;opacity:.35"></span>Pack</span>
+    </div>
+    <div class="gr-attrib">Map data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &middot; 178 runs of my normal loop, Aug 2024&ndash;Aug 2026</div>
+  </div>
+
   <div class="tt-host" data-page="haptic">
       <div class="tt-stage">
         <canvas class="tt-cable" id="ttCable"></canvas>
@@ -637,6 +672,8 @@
     activateNav(pageNav[page] || cwo);
     if (page === 'haptic') { if (typeof initTurntable === 'function') initTurntable(); }
     else if (typeof stopTurntable === 'function') stopTurntable();
+    if (page === 'ghostrun') { if (typeof initGhostRun === 'function') initGhostRun(); }
+    else if (typeof stopGhostRun === 'function') stopGhostRun();
   }
 
   const sp = '<span class="sp"></span>';   // paragraph gap
@@ -656,7 +693,7 @@
   // sub-menu cards under "currently working on" — each opens a project page
   const cards = [
     new Block(187, 120, 150, 60, { cls: 'sub', locked: true, html: 'haptic audio<br>controller', onClick: () => showPage('haptic') }),
-    new Block(187, 187, 150, 60, { cls: 'sub', locked: true, html: 'strava ghost<br>runners',     onClick: () => showPage('strava') }),
+    new Block(187, 187, 150, 60, { cls: 'sub', locked: true, html: 'ghost run',                   onClick: () => showPage('ghostrun') }),
     new Block(187, 254, 150, 60, { cls: 'sub', locked: true, html: 'thermal printer<br>camera',   onClick: () => showPage('thermal') })
   ];
 
@@ -671,7 +708,7 @@
   new Block(384, 171, 251, 52, { cls: 'title title-page', page: 'resume',   html: '<h1>resume / contact</h1>' });
   new Block(384, 171, 206, 52, { cls: 'title title-page', page: 'creative', html: '<h1>creative work</h1>' });
   new Block(384, 171, 323, 52, { cls: 'title title-page', page: 'haptic',   html: '<h1>haptic audio controller</h1>' });
-  new Block(384, 171, 299, 52, { cls: 'title title-page', page: 'strava',   html: '<h1>strava ghost runners</h1>' });
+  new Block(384, 171, 155, 52, { cls: 'title title-page', page: 'ghostrun', html: '<h1>ghost run</h1>' });
   new Block(384, 171, 327, 52, { cls: 'title title-page', page: 'thermal',  html: '<h1>thermal printer camera</h1>' });
 
   // ---- HOME page: bio + portrait + about (these stay draggable) ----
@@ -706,7 +743,9 @@
   // Resume / Creative / Strava / Thermal — placeholders for now
   new Block(384, 230, 623, 120, { page: 'resume',   locked: true, html: 'content incoming…' });
   new Block(384, 230, 623, 120, { page: 'creative', locked: true, html: 'content incoming…' });
-  new Block(384, 230, 623, 120, { page: 'strava',   locked: true, html: 'content incoming…' });
+  new Block(384, 230, 623, 150, { page: 'ghostrun', locked: true, html:
+    'An iOS app I\'m building. It replays my past runs as "ghosts" on a live map while I run — like Mario Kart time-trial ghosts. This demo just loops all 178 runs of my normal loop, animated on the actual streets.' });
+  // (the interactive widget itself is the .gr-host element up top, shown on this page)
   new Block(384, 230, 623, 120, { page: 'thermal',  locked: true, html: 'content incoming…' });
 
   // ---- HAPTIC page: text blocks with the turntable simulation between them ----
@@ -777,7 +816,7 @@
   // which nav block lights up for each page (project pages ride "currently working on")
   Object.assign(pageNav, {
     home, tesla: teslaNav, fsae: fsaeNav, news: newsNav, resume: resumeNav,
-    creative: creativeNav, haptic: cwo, strava: cwo, thermal: cwo
+    creative: creativeNav, haptic: cwo, ghostrun: cwo, thermal: cwo
   });
   activeNav = home;
   placeBar(home, false);
@@ -1484,7 +1523,110 @@
     }
     window.addEventListener('resize', () => {
       if (hapticActive()) { ttSizePlatter(); ttPlaceInit(); }
+      if (currentPage === 'ghostrun') grResize();
     });
+
+    // ---------- Ghost Run: static street map + looping ghost dots ----------
+    const GR_SPEED = 25;              // playback multiplier (1888s longest run -> ~75s loop)
+    const GR_COLORS = { pr:'#e5392b', top10:'#c99a2e', median:'#3f8f5a', last5:'#2f6fb0', worst5:'#a86b6b', other:'#111' };
+    const GR_ICON_PLAY  = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+    const GR_ICON_PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
+    const GR = { data: null, playing: true, elapsed: 0, lastTs: 0, raf: null, scrubbing: false, booted: false };
+    const grCanvas  = document.getElementById('grCanvas');
+    const grPlayBtn = document.getElementById('grPlayBtn');
+    const grSlider  = document.getElementById('grSlider');
+    const grTimeEl  = document.getElementById('grTime');
+
+    function grFmt(s) {
+      s = Math.max(0, Math.round(s));
+      return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    }
+
+    function grResize() {
+      const box = grCanvas.getBoundingClientRect();
+      if (!box.width) return;
+      const dpr = window.devicePixelRatio || 1;
+      grCanvas.width = box.width * dpr; grCanvas.height = box.height * dpr;
+      grCanvas.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    // position of one run's dot at elapsed time t (ghost-space units), + whether it has finished
+    function grPosAt(run, t) {
+      const dt = GR.data.dt, xy = run.xy;
+      const lastIdx = xy.length / 2 - 1;
+      if (t - run.t0 >= run.duration - run.t0) {
+        return { x: xy[lastIdx * 2], y: xy[lastIdx * 2 + 1], finished: true };
+      }
+      let localT = Math.max(0, t - run.t0);
+      const idxF = localT / dt;
+      let i = Math.min(Math.floor(idxF), lastIdx - 1);
+      const frac = idxF - i;
+      const x0 = xy[i * 2], y0 = xy[i * 2 + 1], x1 = xy[(i + 1) * 2], y1 = xy[(i + 1) * 2 + 1];
+      return { x: x0 + (x1 - x0) * frac, y: y0 + (y1 - y0) * frac, finished: false };
+    }
+
+    function grDraw() {
+      if (!GR.data) return;
+      const ctx = grCanvas.getContext('2d');
+      const box = grCanvas.getBoundingClientRect();
+      const scale = box.width / GR.data.viewBox[0];        // ghost-space units -> CSS px
+      ctx.clearRect(0, 0, box.width, box.height);
+      const t = GR.elapsed;
+      const splitByRoute = {}; GR.data.routes.forEach(r => splitByRoute[r.id] = r.splitT);
+      for (const run of GR.data.runs) {                     // already back-to-front sorted
+        const p = grPosAt(run, t);
+        let opacity = p.finished ? 0.4 : 1;
+        const split = splitByRoute[run.route];
+        if (run.route !== 1 && split != null && t > split) opacity *= 0.7;
+        ctx.globalAlpha = run.group === 'other' ? opacity * 0.25 : opacity;
+        ctx.fillStyle = GR_COLORS[run.group] || GR_COLORS.other;
+        ctx.beginPath();
+        ctx.arc(p.x * scale, p.y * scale, run.group === 'pr' ? 6 : 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function grLoop(ts) {
+      if (!GR.lastTs) GR.lastTs = ts;
+      const realDt = (ts - GR.lastTs) / 1000;
+      GR.lastTs = ts;
+      if (GR.playing && !GR.scrubbing && GR.data) {
+        GR.elapsed = (GR.elapsed + realDt * GR_SPEED) % GR.data.durationMax;
+      }
+      grDraw();
+      if (GR.data) {
+        grSlider.value = Math.round(GR.elapsed);
+        grTimeEl.textContent = grFmt(GR.elapsed) + ' / ' + grFmt(GR.data.durationMax);
+      }
+      GR.raf = requestAnimationFrame(grLoop);
+    }
+
+    function initGhostRun() {
+      grResize();
+      requestAnimationFrame(grResize);           // fallback once layout settles
+      if (!GR.booted) {
+        GR.booted = true;
+        grPlayBtn.innerHTML = GR_ICON_PAUSE;
+        grPlayBtn.addEventListener('click', () => {
+          GR.playing = !GR.playing;
+          grPlayBtn.innerHTML = GR.playing ? GR_ICON_PAUSE : GR_ICON_PLAY;
+        });
+        grSlider.addEventListener('pointerdown', () => { GR.scrubbing = true; });
+        grSlider.addEventListener('input', () => { GR.elapsed = +grSlider.value; grDraw(); });
+        const endScrub = () => { GR.scrubbing = false; };
+        grSlider.addEventListener('pointerup', endScrub);
+        grSlider.addEventListener('change', endScrub);
+        fetch('ghost-run/ghosts.json').then(r => r.json()).then(d => {
+          GR.data = d;
+          grSlider.max = d.durationMax;
+        }).catch(e => console.error('ghost run data failed to load', e));
+      }
+      if (!GR.raf) { GR.lastTs = 0; GR.raf = requestAnimationFrame(grLoop); }
+    }
+    function stopGhostRun() {
+      if (GR.raf) { cancelAnimationFrame(GR.raf); GR.raf = null; }
+    }
 
   // open the home page (now that the turntable code above is defined)
   showPage('home');
