@@ -566,9 +566,9 @@
       this.el.setPointerCapture(e.pointerId);
       let moved = false;
       const move = ev => {
+        if (this.locked) return;                        // menu boxes: click only — never treat jitter as a drag
         const dx = ev.clientX - s.px, dy = ev.clientY - s.py;
         if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
-        if (this.locked) return;                        // menu boxes: click only, no drag/resize
         corner ? this.resize(s, corner, dx, dy) : this.move(s.x + dx, s.y + dy);
       };
       const up = () => {
@@ -697,7 +697,7 @@
   // sub-menu cards under "currently working on" — each opens a project page
   const cards = [
     new Block(187, 120, 150, 60, { cls: 'sub', locked: true, html: 'haptic audio<br>controller', onClick: () => showPage('haptic') }),
-    new Block(187, 187, 150, 60, { cls: 'sub', locked: true, html: 'ghost run',                   onClick: () => showPage('ghostrun') }),
+    new Block(187, 187, 150, 60, { cls: 'sub', locked: true, html: 'Strava ghost run',            onClick: () => showPage('ghostrun') }),
     new Block(187, 254, 150, 60, { cls: 'sub', locked: true, html: 'thermal printer<br>camera',   onClick: () => showPage('thermal') })
   ];
 
@@ -712,7 +712,7 @@
   new Block(384, 171, 251, 52, { cls: 'title title-page', page: 'resume',   html: '<h1>resume / contact</h1>' });
   new Block(384, 171, 206, 52, { cls: 'title title-page', page: 'creative', html: '<h1>creative work</h1>' });
   new Block(384, 171, 323, 52, { cls: 'title title-page', page: 'haptic',   html: '<h1>haptic audio controller</h1>' });
-  new Block(384, 171, 155, 52, { cls: 'title title-page', page: 'ghostrun', html: '<h1>ghost run</h1>' });
+  new Block(384, 171, 246, 52, { cls: 'title title-page', page: 'ghostrun', html: '<h1>Strava ghost run</h1>' });
   new Block(384, 171, 327, 52, { cls: 'title title-page', page: 'thermal',  html: '<h1>thermal printer camera</h1>' });
 
   // ---- HOME page: bio + portrait + about (these stay draggable) ----
