@@ -719,7 +719,7 @@
   const fsaeNav   = new Block(SIDEBAR_X, 239, SIDEBAR_W, 63, { cls: 'nav', locked: true, html: 'fsae<br>formula e',      onClick: () => showPage('fsae') });
   const newsNav   = new Block(SIDEBAR_X, 309, SIDEBAR_W, 42, { cls: 'nav', locked: true, html: 'in the news?',          onClick: () => showPage('news') });
   const resumeNav = new Block(SIDEBAR_X, 358, SIDEBAR_W, 63, { cls: 'nav', locked: true, html: 'resume/<br>contact me', onClick: () => showPage('resume') });
-  const creativeNav = new Block(SIDEBAR_X, 428, SIDEBAR_W, 63, { cls: 'nav', locked: true, html: 'creative<br>work',    onClick: () => showPage('creative') });
+  const creativeNav = new Block(SIDEBAR_X, 428, SIDEBAR_W, 63, { cls: 'nav', locked: true, html: 'creative<br>work' });
 
   // sub-menu cards under "currently working on" — each opens a project page
   // floating: true — this popout sits in its own plane above the (now closer) body
@@ -729,6 +729,14 @@
     new Block(SUB_X, 120, 150, 60, { cls: 'sub', locked: true, floating: true, html: 'haptic audio<br>controller', onClick: () => showPage('haptic') }),
     new Block(SUB_X, 187, 150, 60, { cls: 'sub', locked: true, floating: true, html: 'Strava ghost<br>runners',     onClick: () => showPage('ghostrun') }),
     new Block(SUB_X, 254, 150, 60, { cls: 'sub', locked: true, floating: true, html: 'thermal printer<br>camera',   onClick: () => showPage('thermal') })
+  ];
+
+  // sub-menu cards under "creative work"
+  const creativeCards = [
+    new Block(SUB_X, 428, 190, 60, { cls: 'sub', locked: true, floating: true, html: 'vision compression<br>model', onClick: () => showPage('vision') }),
+    new Block(SUB_X, 495, 190, 60, { cls: 'sub', locked: true, floating: true, html: 'film',                        onClick: () => showPage('film') }),
+    new Block(SUB_X, 562, 190, 60, { cls: 'sub', locked: true, floating: true, html: 'on trash',                    onClick: () => showPage('trash') }),
+    new Block(SUB_X, 629, 190, 60, { cls: 'sub', locked: true, floating: true, html: 'this website',                onClick: () => showPage('website') })
   ];
 
   // "alex gold" — big on home (left of the picture); small top-right on every other page.
@@ -744,10 +752,13 @@
   new Block(CONTENT_X, 171, 216, 52, { cls: 'title title-page', page: 'fsae',     html: '<h1>fsae formula e</h1>' });
   new Block(CONTENT_X, 171, 180, 52, { cls: 'title title-page', page: 'news',     html: '<h1>in the news</h1>' });
   new Block(CONTENT_X, 171, 251, 52, { cls: 'title title-page', page: 'resume',   html: '<h1>resume / contact</h1>' });
-  new Block(CONTENT_X, 171, 206, 52, { cls: 'title title-page', page: 'creative', html: '<h1>creative work</h1>' });
   new Block(CONTENT_X, 171, 323, 52, { cls: 'title title-page', page: 'haptic',   html: '<h1>haptic audio controller</h1>' });
   new Block(CONTENT_X, 171, 246, 52, { cls: 'title title-page', page: 'ghostrun', html: '<h1>Strava ghost run</h1>' });
   new Block(CONTENT_X, 171, 327, 52, { cls: 'title title-page', page: 'thermal',  html: '<h1>thermal printer camera</h1>' });
+  new Block(CONTENT_X, 171, 370, 52, { cls: 'title title-page', page: 'vision',   html: '<h1>vision compression model</h1>' });
+  new Block(CONTENT_X, 171,  84, 52, { cls: 'title title-page', page: 'film',     html: '<h1>film</h1>' });
+  new Block(CONTENT_X, 171, 142, 52, { cls: 'title title-page', page: 'trash',    html: '<h1>on trash</h1>' });
+  new Block(CONTENT_X, 171, 190, 52, { cls: 'title title-page', page: 'website',  html: '<h1>this website</h1>' });
 
   // ---- HOME page: bio + portrait (linked to the title above) + about ----
   new Block(586, 151, 235, 120, { page: 'home', groupId: HEAD_GROUP,
@@ -783,7 +794,10 @@
 
   // Resume / Creative / Strava / Thermal — placeholders for now
   new Block(CONTENT_X, 230, 623, 65, { page: 'resume',   locked: true, plain: true, html: 'content incoming…' });
-  new Block(CONTENT_X, 230, 623, 65, { page: 'creative', locked: true, plain: true, html: 'content incoming…' });
+  new Block(CONTENT_X, 230, 623, 65, { page: 'vision',   locked: true, plain: true, html: 'content incoming…' });
+  new Block(CONTENT_X, 230, 623, 65, { page: 'film',     locked: true, plain: true, html: 'content incoming…' });
+  new Block(CONTENT_X, 230, 623, 65, { page: 'trash',    locked: true, plain: true, html: 'content incoming…' });
+  new Block(CONTENT_X, 230, 623, 65, { page: 'website',  locked: true, plain: true, html: 'content incoming…' });
   // one block for all the consecutive text (not broken up by an image/widget)
   new Block(CONTENT_X, 230, 623, 350, { page: 'ghostrun', locked: true, plain: true, html:
     'I am a man of habit. I run the same 2.3 mile loop around the neighborhood several days a week before work. On a recent run, I thought about how enjoyable it would be to run among all the past versions of myself. I requested my data from Strava and used Xcode to create a visualization app that I could use while running.' + sp +
@@ -810,66 +824,77 @@
   // ----- sub-menu pop-up · MODE C -----
   // The top card slides + grows out from under the parent. Each card below then
   // slides STRAIGHT DOWN, emerging from under the card above it, once it's out.
-  let subOpen = false;
+  // Reusable so any nav item can own its own popout (e.g. "currently working on",
+  // "creative work") — each gets independent open/close state.
   const setBox = (el, b) => {
     el.style.left = b.x + 'px'; el.style.top = b.y + 'px';
     el.style.width = b.w + 'px'; el.style.height = b.h + 'px';
   };
   const openBox = c => ({ x: c.x, y: c.y, w: c.w, h: c.h });
-  const restBox = () => ({ x: cwo.x, y: cwo.y, w: cwo.w, h: cwo.h });   // hidden home: behind the parent
   const CARD_MOVE = 'left .17s cubic-bezier(.2,.7,.3,1), top .17s cubic-bezier(.2,.7,.3,1), width .17s cubic-bezier(.2,.7,.3,1), height .17s cubic-bezier(.2,.7,.3,1)';
 
   const jumpTo = (el, box) => { el.style.transition = 'none'; setBox(el, box); void el.offsetWidth; };
   const glideTo = (el, box) => { el.style.transition = CARD_MOVE; setBox(el, box); };
 
-  function showTop() {                       // top card: slide + grow out from under the parent
-    const el = cards[0].el;
-    el.style.zIndex = 500;                   // elevate only THIS card now, so it can't be
-    el.classList.add('open');                // out-ranked by a lower card still sitting hidden
-    jumpTo(el, restBox()); glideTo(el, openBox(cards[0])); el.style.pointerEvents = '';
-  }
-  function showLower() {                      // the two below: start behind the top card, slide straight down together
-    for (let i = 1; i < cards.length; i++) {
-      const el = cards[i].el;
-      el.style.zIndex = 500 + i;             // elevated only once it actually starts moving into view
-      el.classList.add('open');
-      jumpTo(el, openBox(cards[0])); glideTo(el, openBox(cards[i])); el.style.pointerEvents = '';
-    }
-  }
-  function hideLower() {                     // the two below: slide straight up, back behind the top card
-    for (let i = 1; i < cards.length; i++) {
-      const el = cards[i].el;
-      glideTo(el, openBox(cards[0])); el.style.pointerEvents = 'none';
-    }
-  }
-  function hideTop() {                        // top card retracts under the parent; lowers tuck home behind it
-    glideTo(cards[0].el, restBox()); cards[0].el.style.pointerEvents = 'none';
-    for (let i = 1; i < cards.length; i++) jumpTo(cards[i].el, restBox());
-  }
-  function openSub() {
-    if (subOpen) return; subOpen = true;
-    showTop();
-    setTimeout(() => { if (subOpen) showLower(); }, 160);      // once the top is out
-  }
-  function closeSub() {                       // the exact reverse of openSub
-    if (!subOpen) return; subOpen = false;
-    hideLower();
-    setTimeout(() => {
-      if (!subOpen) { hideTop(); cards.forEach((c, i) => { c.el.style.zIndex = -i; c.el.classList.remove('open'); }); }
-    }, 160);       // once the lowers are back up
-  }
+  const submenus = [];
+  function makeSubmenu(parent, cards) {
+    let open = false;
+    const restBox = () => ({ x: parent.x, y: parent.y, w: parent.w, h: parent.h });   // hidden home: behind the parent
 
-  // all cards start hidden behind the parent (nothing shows until it's clicked)
-  cards.forEach((c, i) => { c.el.style.zIndex = -i; jumpTo(c.el, restBox()); c.el.style.pointerEvents = 'none'; });
-  cwo.onClick = () => subOpen ? closeSub() : openSub();
-  document.addEventListener('pointerdown', e => {
-    if (subOpen && !cwo.el.contains(e.target) && !cards.some(c => c.el.contains(e.target))) closeSub();
-  });
+    function showTop() {                       // top card: slide + grow out from under the parent
+      const el = cards[0].el;
+      el.style.zIndex = 500;                   // elevate only THIS card now, so it can't be
+      el.classList.add('open');                // out-ranked by a lower card still sitting hidden
+      jumpTo(el, restBox()); glideTo(el, openBox(cards[0])); el.style.pointerEvents = '';
+    }
+    function showLower() {                      // the rest: start behind the top card, slide straight down together
+      for (let i = 1; i < cards.length; i++) {
+        const el = cards[i].el;
+        el.style.zIndex = 500 + i;             // elevated only once it actually starts moving into view
+        el.classList.add('open');
+        jumpTo(el, openBox(cards[0])); glideTo(el, openBox(cards[i])); el.style.pointerEvents = '';
+      }
+    }
+    function hideLower() {                     // the rest: slide straight up, back behind the top card
+      for (let i = 1; i < cards.length; i++) {
+        const el = cards[i].el;
+        glideTo(el, openBox(cards[0])); el.style.pointerEvents = 'none';
+      }
+    }
+    function hideTop() {                        // top card retracts under the parent; lowers tuck home behind it
+      glideTo(cards[0].el, restBox()); cards[0].el.style.pointerEvents = 'none';
+      for (let i = 1; i < cards.length; i++) jumpTo(cards[i].el, restBox());
+    }
+    function openSub() {
+      if (open) return; open = true;
+      showTop();
+      setTimeout(() => { if (open) showLower(); }, 160);      // once the top is out
+    }
+    function closeSub() {                       // the exact reverse of openSub
+      if (!open) return; open = false;
+      hideLower();
+      setTimeout(() => {
+        if (!open) { hideTop(); cards.forEach((c, i) => { c.el.style.zIndex = -i; c.el.classList.remove('open'); }); }
+      }, 160);       // once the lowers are back up
+    }
 
-  // which nav block lights up for each page (project pages ride "currently working on")
+    // all cards start hidden behind the parent (nothing shows until it's clicked)
+    cards.forEach((c, i) => { c.el.style.zIndex = -i; jumpTo(c.el, restBox()); c.el.style.pointerEvents = 'none'; });
+    parent.onClick = () => open ? closeSub() : openSub();
+    document.addEventListener('pointerdown', e => {
+      if (open && !parent.el.contains(e.target) && !cards.some(c => c.el.contains(e.target))) closeSub();
+    });
+    submenus.push({ close: closeSub });
+  }
+  makeSubmenu(cwo, cards);
+  makeSubmenu(creativeNav, creativeCards);
+  function closeSub() { submenus.forEach(s => s.close()); }   // showPage() closes whichever popout is open
+
+  // which nav block lights up for each page (project pages ride their parent's popout)
   Object.assign(pageNav, {
     home, tesla: teslaNav, fsae: fsaeNav, news: newsNav, resume: resumeNav,
-    creative: creativeNav, haptic: cwo, ghostrun: cwo, thermal: cwo
+    haptic: cwo, ghostrun: cwo, thermal: cwo,
+    vision: creativeNav, film: creativeNav, trash: creativeNav, website: creativeNav
   });
   activeNav = home;
   placeBar(home, false);
