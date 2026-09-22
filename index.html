@@ -599,9 +599,8 @@
         this.el.removeEventListener('pointerup', up);
         this.el.removeEventListener('pointercancel', up);
         if (!moved) {                                   // a click (not a drag)
-          if (this.nav) activateNav(this);
-          if (this.onClick) this.onClick();
-        }
+          if (this.onClick) this.onClick();              // showPage() moves the bar on an actual page change;
+        }                                                 // a menu toggle (e.g. opening a sub-menu) doesn't
       };
       this.el.addEventListener('pointermove', move);
       this.el.addEventListener('pointerup', up);
