@@ -732,7 +732,7 @@
 
   // sub-menu cards under "creative work"
   const creativeCards = [
-    new Block(SUB_X, 428, 190, 60, { cls: 'sub', locked: true, floating: true, html: 'vision compression<br>model', onClick: () => showPage('vision') }),
+    new Block(SUB_X, 428, 190, 60, { cls: 'sub', locked: true, floating: true, html: 'beauty as data<br>compression', onClick: () => showPage('vision') }),
     new Block(SUB_X, 495, 190, 60, { cls: 'sub', locked: true, floating: true, html: 'film',                        onClick: () => showPage('film') }),
     new Block(SUB_X, 562, 190, 60, { cls: 'sub', locked: true, floating: true, html: 'on trash',                    onClick: () => showPage('trash') }),
     new Block(SUB_X, 629, 190, 60, { cls: 'sub', locked: true, floating: true, html: 'this website',                onClick: () => showPage('website') })
@@ -747,17 +747,17 @@
   new Block(828, 40, 176, 56, { cls: 'title title-side', page: '_side', groupId: HEAD_GROUP, html: '<h1>alex gold</h1>' });
 
   // per-page title blocks — black, sized to the text, sharing the body's top-left corner
-  new Block(CONTENT_X, 171,  94, 52, { cls: 'title title-page', page: 'tesla',    html: '<h1>tesla</h1>' });
-  new Block(CONTENT_X, 171, 216, 52, { cls: 'title title-page', page: 'fsae',     html: '<h1>fsae formula e</h1>' });
-  new Block(CONTENT_X, 171, 180, 52, { cls: 'title title-page', page: 'news',     html: '<h1>in the news</h1>' });
-  new Block(CONTENT_X, 171, 251, 52, { cls: 'title title-page', page: 'resume',   html: '<h1>resume / contact</h1>' });
-  new Block(CONTENT_X, 171, 323, 52, { cls: 'title title-page', page: 'haptic',   html: '<h1>haptic audio controller</h1>' });
-  new Block(CONTENT_X, 171, 246, 52, { cls: 'title title-page', page: 'ghostrun', html: '<h1>Strava ghost run</h1>' });
-  new Block(CONTENT_X, 171, 327, 52, { cls: 'title title-page', page: 'thermal',  html: '<h1>thermal printer camera</h1>' });
-  new Block(CONTENT_X, 171, 370, 52, { cls: 'title title-page', page: 'vision',   html: '<h1>vision compression model</h1>' });
-  new Block(CONTENT_X, 171,  84, 52, { cls: 'title title-page', page: 'film',     html: '<h1>film</h1>' });
-  new Block(CONTENT_X, 171, 142, 52, { cls: 'title title-page', page: 'trash',    html: '<h1>on trash</h1>' });
-  new Block(CONTENT_X, 171, 190, 52, { cls: 'title title-page', page: 'website',  html: '<h1>this website</h1>' });
+  new Block(CONTENT_X, 171,  92, 52, { cls: 'title title-page', page: 'tesla',    html: '<h1>tesla</h1>' });
+  new Block(CONTENT_X, 171, 212, 52, { cls: 'title title-page', page: 'fsae',     html: '<h1>fsae formula e</h1>' });
+  new Block(CONTENT_X, 171, 176, 52, { cls: 'title title-page', page: 'news',     html: '<h1>in the news</h1>' });
+  new Block(CONTENT_X, 171, 246, 52, { cls: 'title title-page', page: 'resume',   html: '<h1>resume / contact</h1>' });
+  new Block(CONTENT_X, 171, 316, 52, { cls: 'title title-page', page: 'haptic',   html: '<h1>haptic audio controller</h1>' });
+  new Block(CONTENT_X, 171, 241, 52, { cls: 'title title-page', page: 'ghostrun', html: '<h1>Strava ghost run</h1>' });
+  new Block(CONTENT_X, 171, 320, 52, { cls: 'title title-page', page: 'thermal',  html: '<h1>thermal printer camera</h1>' });
+  new Block(CONTENT_X, 171, 391, 52, { cls: 'title title-page', page: 'vision',   html: '<h1>beauty as data compression</h1>' });
+  new Block(CONTENT_X, 171,  78, 52, { cls: 'title title-page', page: 'film',     html: '<h1>film</h1>' });
+  new Block(CONTENT_X, 171, 136, 52, { cls: 'title title-page', page: 'trash',    html: '<h1>on trash</h1>' });
+  new Block(CONTENT_X, 171, 184, 52, { cls: 'title title-page', page: 'website',  html: '<h1>this website</h1>' });
 
   // ---- HOME page: bio + portrait (linked to the title above) + about ----
   new Block(586, 151, 235, 120, { page: 'home', groupId: HEAD_GROUP,
@@ -766,7 +766,7 @@
   new Block(828, 40, 176, 274, { page: 'home', cls: 'portrait', bare: true, groupId: HEAD_GROUP,
     follow: { of: title, calc: t => ({ x: t.x + t.w + GAP, y: t.y }) },
     html: '<img src="images/profile.jpg" alt="alex gold">' });
-  new Block(CONTENT_X, 415, 100, 52, { cls: 'title title-page', page: 'home', html: '<h1>about</h1>' });
+  new Block(CONTENT_X, 415, 105, 52, { cls: 'title title-page', page: 'home', html: '<h1>about</h1>' });
   new Block(CONTENT_X, 474, 623, 210, { page: 'home', html:
     'alex gold is a bay area based mechanical engineer who is currently working as a design engineer at <a href="#">Tesla</a>.' + sp +
     'alex has got a couple active side projects going on like <a href="#">this</a> and <a href="#">that</a> with interactive displays' + sp +
