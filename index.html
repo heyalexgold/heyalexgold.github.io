@@ -81,7 +81,7 @@
     .block .sp { display: block; height: 0.9em; }   /* paragraph spacer */
 
     /* ---- page content ---- */
-    body { min-height: 2400px; }
+    body { min-height: 2100px; }
     .block .phead { display: block; font-size: 1.5rem; font-weight: 600; color: #111; margin-bottom: 0.55rem; letter-spacing: -0.01em; }
     .block ul { margin: 0.4em 0 0 1.15em; padding: 0; }
     .block li { margin-bottom: 0.3em; }
@@ -92,17 +92,19 @@
     .tt-host .tt-stage { background: transparent; padding: 0.5rem 0; min-height: 0; }
 
     /* Ghost Run widget: static street map + animated ghost dots */
-    .gr-host { position: absolute; left: 384px; top: 755px; width: 700px; z-index: 1; }
-    .gr-map { position: relative; width: 700px; height: 700px; border-radius: 4px; overflow: hidden; background: #fff; box-shadow: 0 1px 0 rgba(0,0,0,0.08); }
+    .gr-host { position: absolute; left: 384px; top: 675px; width: 623px; z-index: 1; }
+    .gr-map { position: relative; width: 623px; height: 623px; border-radius: 4px; overflow: hidden; background: #fff; box-shadow: 0 1px 0 rgba(0,0,0,0.08); }
     .gr-map img, .gr-map canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-    .gr-controls { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
-    .gr-playbtn { width: 32px; height: 32px; border-radius: 50%; border: none; background: #111; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; }
-    .gr-playbtn svg { width: 13px; height: 13px; fill: currentColor; display: block; }
+    /* controls + legend + attribution sit as one overlay on top of the map, bottom-anchored */
+    .gr-overlay { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; background: rgba(255,255,255,0.88); backdrop-filter: blur(3px); padding: 10px 14px 12px; }
+    .gr-controls { display: flex; align-items: center; gap: 10px; }
+    .gr-playbtn { width: 30px; height: 30px; border-radius: 50%; border: none; background: #111; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; }
+    .gr-playbtn svg { width: 12px; height: 12px; fill: currentColor; display: block; }
     .gr-slider { flex: 1; accent-color: #e5392b; }
-    .gr-time { font-variant-numeric: tabular-nums; font-size: 0.85rem; color: #444; min-width: 90px; text-align: right; }
-    .gr-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; font-size: 0.78rem; color: #444; }
-    .gr-legend .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
-    .gr-attrib { margin-top: 10px; font-size: 0.7rem; color: #999; }
+    .gr-time { font-variant-numeric: tabular-nums; font-size: 0.8rem; color: #444; min-width: 84px; text-align: right; }
+    .gr-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 8px; font-size: 0.72rem; color: #444; }
+    .gr-legend .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+    .gr-attrib { margin-top: 6px; font-size: 0.64rem; color: #999; }
     .gr-attrib a { color: inherit; }
     .tt-stage {
       position: relative;
@@ -387,18 +389,20 @@
     <div class="gr-map">
       <img src="ghost-run/basemap.svg" alt="">
       <canvas id="grCanvas"></canvas>
+      <div class="gr-overlay">
+        <div class="gr-controls">
+          <button id="grPlayBtn" class="gr-playbtn" title="Play / pause"></button>
+          <input id="grSlider" class="gr-slider" type="range" min="0" max="1000" value="0">
+          <span id="grTime" class="gr-time">0:00 / 0:00</span>
+        </div>
+        <div class="gr-legend">
+          <span><span class="dot" style="background:#f1c40f"></span>PR</span>
+          <span><span class="dot" style="background:#3f8f5a"></span>Median</span>
+          <span><span class="dot" style="background:#111;opacity:.35"></span>Pack</span>
+        </div>
+        <div class="gr-attrib">Map data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &middot; 178 runs of my normal loop, Aug 2024&ndash;Aug 2026</div>
+      </div>
     </div>
-    <div class="gr-controls">
-      <button id="grPlayBtn" class="gr-playbtn" title="Play / pause"></button>
-      <input id="grSlider" class="gr-slider" type="range" min="0" max="1000" value="0">
-      <span id="grTime" class="gr-time">0:00 / 0:00</span>
-    </div>
-    <div class="gr-legend">
-      <span><span class="dot" style="background:#e5392b"></span>PR</span>
-      <span><span class="dot" style="background:#3f8f5a"></span>Median</span>
-      <span><span class="dot" style="background:#111;opacity:.35"></span>Pack</span>
-    </div>
-    <div class="gr-attrib">Map data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &middot; 178 runs of my normal loop, Aug 2024&ndash;Aug 2026</div>
   </div>
 
   <div class="tt-host" data-page="haptic">
@@ -743,17 +747,16 @@
   // Resume / Creative / Strava / Thermal — placeholders for now
   new Block(384, 230, 623, 120, { page: 'resume',   locked: true, html: 'content incoming…' });
   new Block(384, 230, 623, 120, { page: 'creative', locked: true, html: 'content incoming…' });
-  new Block(384, 230, 623, 200, { page: 'ghostrun', locked: true, html:
-    'I am a man of habit. I run the same 2.3 mile loop around the neighborhood several days a week before work. On a recent run, I thought about how enjoyable it would be to run among all the past versions of myself. I requested my data from Strava and used Xcode to create a visualization app that I could use while running.' });
-  new Block(384, 450, 623, 175, { page: 'ghostrun', locked: true, html:
+  // one block for all the consecutive text (not broken up by an image/widget)
+  new Block(384, 230, 623, 428, { page: 'ghostrun', locked: true, html:
+    'I am a man of habit. I run the same 2.3 mile loop around the neighborhood several days a week before work. On a recent run, I thought about how enjoyable it would be to run among all the past versions of myself. I requested my data from Strava and used Xcode to create a visualization app that I could use while running.' + sp +
     'Technical motivations for this project:' +
-    '<ul><li>iOS app development through Xcode</li><li>API integration</li><li>Functional design and UI</li></ul>' });
-  new Block(384, 645, 400, 90, { page: 'ghostrun', locked: true, html:
-    '<span class="caption">Visualization of the exported Strava data from my daily run:</span>' });
+    '<ul><li>iOS app development through Xcode</li><li>API integration</li><li>Functional design and UI</li></ul>' +
+    '<span class="caption" style="margin-top:0.7em">Visualization of the exported Strava data from my daily run:</span>' });
   // (the interactive widget itself is the .gr-host element up top, shown on this page)
-  new Block(384, 1574, 400, 70, { page: 'ghostrun', locked: true, html:
+  new Block(384, 1318, 623, 60, { page: 'ghostrun', locked: true, html:
     '<span class="caption">Actual screenshot of the app taken mid-run:</span>' });
-  new Block(384, 1664, 300, 650, { page: 'ghostrun', locked: true, bare: true,
+  new Block(546, 1398, 300, 650, { page: 'ghostrun', locked: true, bare: true,
     html: '<img src="images/ghost-run-app.png" alt="Ghost Run app showing a live in-run leaderboard over a map">' });
   new Block(384, 230, 623, 120, { page: 'thermal',  locked: true, html: 'content incoming…' });
 
@@ -1537,13 +1540,18 @@
 
     // ---------- Ghost Run: static street map + looping ghost dots ----------
     const GR_SPEED = 50;               // playback multiplier (2x — 1888s longest run -> ~38s loop)
-    const GR_COLORS = { pr:'#e5392b', median:'#3f8f5a', other:'#111' };
-    // top10/last5/worst5 are folded into the plain gray pack visually (still in the data,
-    // just not called out) — only PR and median get their own color + larger size.
-    function grVisualGroup(g) { return (g === 'pr' || g === 'median') ? g : 'other'; }
+    const GR_COLORS = { pr:'#f1c40f', median:'#3f8f5a', other:'#111' };
+    // Only ONE dot each is called out: the single closest-to-median run on the main route,
+    // and the main route's PR (other routes' PRs fold into the plain gray pack, like
+    // top10/last5/worst5 already do).
+    function grVisualGroup(run) {
+      if (run.id === GR.prId) return 'pr';
+      if (run.id === GR.medianId) return 'median';
+      return 'other';
+    }
     const GR_ICON_PLAY  = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
     const GR_ICON_PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
-    const GR = { data: null, playing: true, elapsed: 0, lastTs: 0, raf: null, scrubbing: false, booted: false };
+    const GR = { data: null, playing: true, elapsed: 0, lastTs: 0, raf: null, scrubbing: false, booted: false, prId: null, medianId: null };
     const grCanvas  = document.getElementById('grCanvas');
     const grPlayBtn = document.getElementById('grPlayBtn');
     const grSlider  = document.getElementById('grSlider');
@@ -1586,7 +1594,7 @@
       const t = GR.elapsed;
       const splitByRoute = {}; GR.data.routes.forEach(r => splitByRoute[r.id] = r.splitT);
       for (const run of GR.data.runs) {                     // re-sorted so pack -> median -> pr (pr always on top)
-        const vg = grVisualGroup(run.group);
+        const vg = grVisualGroup(run);
         const p = grPosAt(run, t);
         let opacity = p.finished ? 0.4 : 1;
         const split = splitByRoute[run.route];
@@ -1631,8 +1639,27 @@
         grSlider.addEventListener('pointerup', endScrub);
         grSlider.addEventListener('change', endScrub);
         fetch('ghost-run/ghosts.json').then(r => r.json()).then(d => {
-          const rank = { other: 0, top10: 0, last5: 0, worst5: 0, median: 1, pr: 2 };
-          d.runs.sort((a, b) => rank[a.group] - rank[b.group]);   // pack -> median -> pr, so pr/median always draw on top
+          // the main route = whichever has the most runs ("my normal loop")
+          const counts = {}; d.runs.forEach(r => counts[r.route] = (counts[r.route] || 0) + 1);
+          const mainRoute = +Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+          // single PR dot: the main route's PR only (other routes' PRs fold into the gray pack)
+          const prRun = d.runs.find(r => r.route === mainRoute && r.group === 'pr');
+          GR.prId = prRun ? prRun.id : null;
+          // single median dot: of the main route's "median" candidates, the one closest to
+          // the route's true median duration
+          const durs = d.runs.filter(r => r.route === mainRoute).map(r => r.duration).sort((a, b) => a - b);
+          const trueMedian = durs[Math.floor(durs.length / 2)];
+          let medianRun = null, bestDiff = Infinity;
+          d.runs.forEach(r => {
+            if (r.route === mainRoute && r.group === 'median') {
+              const diff = Math.abs(r.duration - trueMedian);
+              if (diff < bestDiff) { bestDiff = diff; medianRun = r; }
+            }
+          });
+          GR.medianId = medianRun ? medianRun.id : null;
+
+          const rank = r => r.id === GR.prId ? 2 : r.id === GR.medianId ? 1 : 0;
+          d.runs.sort((a, b) => rank(a) - rank(b));   // pack -> median -> pr, so pr/median always draw on top
           GR.data = d;
           grSlider.max = d.durationMax;
         }).catch(e => console.error('ghost run data failed to load', e));
