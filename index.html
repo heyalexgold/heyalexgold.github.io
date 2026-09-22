@@ -631,11 +631,16 @@
       }
       if (R - L < MIN) { if (left) L = R - MIN; else R = L + MIN; }
       if (B - T < MIN) { if (top)  T = B - MIN; else B = T + MIN; }
-      const o = { x: this.x, y: this.y, w: this.w, h: this.h };
-      this.x = L; this.w = R - L; if (this.hitsAny()) { this.x = o.x; this.w = o.w; }
-      this.y = T; this.h = B - T; if (this.hitsAny()) { this.y = o.y; this.h = o.h; }
+      // each axis is validated (collision, then content-fit) and reverted independently,
+      // so hitting a hard limit on one axis doesn't also block further input on the other
+      const ox = this.x, ow = this.w, oy = this.y, oh = this.h;
+      this.x = L; this.w = R - L;
+      if (this.hitsAny()) { this.x = ox; this.w = ow; }
+      else { this.draw(); if (this.overflowing()) { this.x = ox; this.w = ow; } }
+      this.y = T; this.h = B - T;
+      if (this.hitsAny()) { this.y = oy; this.h = oh; }
+      else { this.draw(); if (this.overflowing()) { this.y = oy; this.h = oh; } }
       this.draw();
-      if (this.overflowing()) { Object.assign(this, o); this.draw(); }
     }
   }
 
