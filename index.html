@@ -767,7 +767,7 @@
     follow: { of: title, calc: t => ({ x: t.x + t.w + GAP, y: t.y }) },
     html: '<img src="images/profile.jpg" alt="alex gold">' });
   new Block(CONTENT_X, 415, 105, 52, { cls: 'title title-page', page: 'home', html: '<h1>about</h1>' });
-  new Block(CONTENT_X, 474, 623, 210, { page: 'home', html:
+  new Block(CONTENT_X, 474, 623, 210, { page: 'home', locked: true, plain: true, html:
     'alex gold is a bay area based mechanical engineer who is currently working as a design engineer at <a href="#">Tesla</a>.' + sp +
     'alex has got a couple active side projects going on like <a href="#">this</a> and <a href="#">that</a> with interactive displays' + sp +
     'he recently thought about trash and got a roll of film developed' });
