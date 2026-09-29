@@ -83,7 +83,7 @@
     .block .sp { display: block; height: 0.9em; }   /* paragraph spacer */
 
     /* ---- page content ---- */
-    body { min-height: 2100px; }
+    body { min-height: 2300px; }
     .block .phead { display: block; font-size: 1.5rem; font-weight: 600; color: #111; margin-bottom: 0.55rem; letter-spacing: -0.01em; }
     .block ul { margin: 0.4em 0 0 1.15em; padding: 0; }
     .block li { margin-bottom: 0.3em; }
@@ -825,8 +825,8 @@
     'I was a founding member of the Formula SAE Electric team at BYU. Starting from scratch — no car, no budget, no playbook — we built a fully electric formula-style racecar and sent it to competition within two years.' });
 
   // In the news
-  figBlock(0, 230, 623, { page: 'news', src: 'images/news-tornado.jpg', ratio: 982 / 655,
-    alt: 'A cold air funnel over the mountains near Lehi, Utah, shared by KSL NewsRadio' });
+  figBlock(0, 230, 623, { page: 'news', src: 'images/weather_report.JPG', ratio: 1125 / 1627,
+    alt: 'KSL NewsRadio tweet sharing a photo of a cold air funnel over Lehi, Utah' });
 
   // Resume / Creative / Strava / Thermal — placeholders for now
   colBlock(0, 230, 623, 65, { page: 'resume',   locked: true, plain: true, html: 'content incoming…' });
@@ -840,8 +840,8 @@
     'Technical motivations for this project:' +
     '<ul><li>iOS app development through Xcode</li><li>API integration</li><li>Functional design and UI</li></ul>' });
   // (the interactive widget itself is the .gr-host element up top, shown on this page)
-  figBlock(0, 1230, 623, { page: 'ghostrun', src: 'images/ghost-run-crop.jpg', ratio: 1179 / 1514,
-    alt: 'Ghost Run app mid-run: position in pack and a map of nearby ghost runners',
+  figBlock(0, 1230, Math.round(CONTENT_W * 2 / 3), { page: 'ghostrun', src: 'images/ghost-run-app.png', ratio: 1179 / 2556,
+    alt: 'Ghost Run app mid-run: position in pack, a map of nearby ghost runners, and race controls',
     caption: 'Actual screenshot of the app, taken mid-run' });
   colBlock(0, 230, 623, 65, { page: 'thermal',  locked: true, plain: true, html: 'content incoming…' });
 
