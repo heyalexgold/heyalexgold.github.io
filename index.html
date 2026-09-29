@@ -817,8 +817,7 @@
     'I work on developing new vehicle programs — from high-level planning and integration with large groups, to detailed part design, to reliability spec generation and validation, to ramping and producing at massive scale.' + sp +
     'I am the design owner of the Cybercab high-voltage charge port, which I took from early design to production. It\'s an intricate system with an integrated actuator and several integrated sensors.' + sp +
     'I took over in the prototype phase and led a small team through a complete design overhaul for hyper-scaling — focused on reliability and manufacturing simplicity — pushed into full production with very low failure rates.' });
-  colBlock(0, 650, 420, 300, { page: 'tesla', locked: true, plain: true, bare: true,
-    html: '<img src="images/Tesla-Cybercab-2.jpeg" alt="Tesla Cybercab">' });
+  figBlock(0, 637, 623, { page: 'tesla', src: 'images/Tesla-Cybercab-2.jpeg', ratio: 2726 / 1342, alt: 'Tesla Cybercab' });
 
   // FSAE
   colBlock(0, 230, 623, 145, { page: 'fsae', locked: true, plain: true, html:
@@ -840,7 +839,7 @@
     'Technical motivations for this project:' +
     '<ul><li>iOS app development through Xcode</li><li>API integration</li><li>Functional design and UI</li></ul>' });
   // (the interactive widget itself is the .gr-host element up top, shown on this page)
-  figBlock(0, 1230, Math.round(CONTENT_W * 2 / 3), { page: 'ghostrun', src: 'images/ghost-run-app.png', ratio: 1179 / 2556,
+  figBlock(Math.round(CONTENT_W / 6), 1230, Math.round(CONTENT_W * 2 / 3), { page: 'ghostrun', src: 'images/ghost-run-app.png', ratio: 1179 / 2556,
     alt: 'Ghost Run app mid-run: position in pack, a map of nearby ghost runners, and race controls',
     caption: 'Actual screenshot of the app, taken mid-run' });
   colBlock(0, 230, 623, 65, { page: 'thermal',  locked: true, plain: true, html: 'content incoming…' });
