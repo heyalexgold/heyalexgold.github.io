@@ -741,9 +741,10 @@
   const FIG_PAD = 12, FIG_GAP = 10, FIG_LINE = 19;
   const figBlock = (dx, y, w, { page, src, alt, ratio, caption, lines = 1 }) => {
     const imgH = Math.round((w - 2 * FIG_PAD) / ratio);
-    return colBlock(dx, y, w, FIG_PAD * 2 + imgH + FIG_GAP + lines * FIG_LINE, {
+    const capH = caption ? FIG_GAP + lines * FIG_LINE : 0;
+    return colBlock(dx, y, w, FIG_PAD * 2 + imgH + capH, {
       page, cls: 'figure', locked: true, plain: true,
-      html: `<img src="${src}" alt="${alt}" style="height:${imgH}px"><div class="figcap">${caption}</div>` });
+      html: `<img src="${src}" alt="${alt}" style="height:${imgH}px">` + (caption ? `<div class="figcap">${caption}</div>` : '') });
   };
 
   // ---- sidebar (constant across pages; locked = click-only) ----
@@ -824,11 +825,8 @@
     'I was a founding member of the Formula SAE Electric team at BYU. Starting from scratch — no car, no budget, no playbook — we built a fully electric formula-style racecar and sent it to competition within two years.' });
 
   // In the news
-  colBlock(0, 230, 623, 92, { page: 'news', locked: true, plain: true, html:
-    'KSL NewsRadio shared a photo I took of a cold air funnel spotted over Lehi, Utah.' });
-  figBlock(0, 329, 623, { page: 'news', src: 'images/news-tornado.jpg', ratio: 982 / 655,
-    alt: 'A cold air funnel over the mountains near Lehi, Utah',
-    caption: 'Cold air funnel over Lehi, Utah — shared by KSL NewsRadio, June 15, 2023' });
+  figBlock(0, 230, 623, { page: 'news', src: 'images/news-tornado.jpg', ratio: 982 / 655,
+    alt: 'A cold air funnel over the mountains near Lehi, Utah, shared by KSL NewsRadio' });
 
   // Resume / Creative / Strava / Thermal — placeholders for now
   colBlock(0, 230, 623, 65, { page: 'resume',   locked: true, plain: true, html: 'content incoming…' });
@@ -842,7 +840,7 @@
     'Technical motivations for this project:' +
     '<ul><li>iOS app development through Xcode</li><li>API integration</li><li>Functional design and UI</li></ul>' });
   // (the interactive widget itself is the .gr-host element up top, shown on this page)
-  figBlock(0, 1230, 308, { page: 'ghostrun', src: 'images/ghost-run-crop.jpg', ratio: 1179 / 1514,
+  figBlock(0, 1230, 623, { page: 'ghostrun', src: 'images/ghost-run-crop.jpg', ratio: 1179 / 1514,
     alt: 'Ghost Run app mid-run: position in pack and a map of nearby ghost runners',
     caption: 'Actual screenshot of the app, taken mid-run' });
   colBlock(0, 230, 623, 65, { page: 'thermal',  locked: true, plain: true, html: 'content incoming…' });
