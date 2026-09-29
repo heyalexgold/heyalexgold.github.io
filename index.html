@@ -90,11 +90,11 @@
     .block .caption { display: block; color: #444; font-size: 0.9rem; margin-bottom: 0.5rem; }
     .block b { font-weight: 700; }
     /* the turntable simulation, dropped between the haptic text blocks */
-    .tt-host { position: absolute; left: 168px; top: 560px; width: 800px; z-index: 1; }
+    .tt-host { position: absolute; top: 560px; width: 800px; z-index: 1; }
     .tt-host .tt-stage { background: transparent; padding: 0.5rem 0; min-height: 0; }
 
     /* Ghost Run widget: static street map + animated ghost dots */
-    .gr-host { position: absolute; left: 220px; top: 600px; width: 623px; z-index: 1; }
+    .gr-host { position: absolute; top: 600px; width: 623px; z-index: 1; }
     .gr-map { position: relative; width: 623px; height: 623px; border-radius: 4px; overflow: hidden; background: #fff; box-shadow: 0 1px 0 rgba(0,0,0,0.08); }
     .gr-map img, .gr-map canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
     /* controls + legend + attribution sit as one overlay on top of the map, bottom-anchored */
@@ -525,6 +525,7 @@
       this.floating = !!opts.floating;                 // floating = ignored by others' collision/snap (sits in its own plane above content)
       this.plain = !!opts.plain;                        // plain = ordinary body text/images — no drag affordance at all
       this.follow = opts.follow || null;                // { of: Block, calc(of) => {x,y,w?,h?} } — recomputed whenever `of` redraws
+      this.place = opts.place || null;                  // (layout, block) => {x} — re-applied by relayout() whenever the window resizes
       this.el = document.createElement('div');
       this.el.className = 'block' + (opts.cls ? ' ' + opts.cls : '') + (this.plain ? ' plain' : '') + (this.locked ? ' locked' : '');
       this.content = document.createElement('div');
@@ -710,10 +711,27 @@
 
   // ---------- the site, as blocks (positions mirror the mockup) ----------
 
-  // sidebar geometry + content column, as constants — so the two groups below
-  // (and anything anchored off them) can be shifted as a unit later, e.g. for mobile
+  // ---- fluid layout (desktop widths) ----
+  // Three zones: the sidebar stays EDGE px from the left; the header (title/portrait/bio, or
+  // the small title on other pages) stays EDGE px from the right; the fixed-width content
+  // column sits centered in the gap between them. Below FLOOR_W the layout stops shrinking
+  // and the page scrolls horizontally instead.
   const SIDEBAR_X = 20, SIDEBAR_W = 140;
-  const CONTENT_X = 220;
+  const SIDEBAR_RIGHT = SIDEBAR_X + SIDEBAR_W;
+  const EDGE = 20, FLOOR_W = 1024;
+  const CONTENT_W = 623, WIDGET_W = 800;             // content column / the wider haptic widget
+
+  const layoutFor = () => {
+    const right = Math.max(document.documentElement.clientWidth, FLOOR_W) - EDGE;
+    const centered = w => Math.round(SIDEBAR_RIGHT + (right - SIDEBAR_RIGHT - w) / 2);
+    return { right, contentX: centered(CONTENT_W), widgetX: centered(WIDGET_W) };
+  };
+  let LAYOUT = layoutFor();
+
+  // a block in the centered content column, `dx` px from the column's left edge
+  const colBlock = (dx, y, w, h, opts) =>
+    new Block(LAYOUT.contentX + dx, y, w, h, { ...opts, place: L => ({ x: L.contentX + dx }) });
+  const pinRight = (L, b) => ({ x: L.right - b.w });
 
   // ---- sidebar (constant across pages; locked = click-only) ----
   new Block(SIDEBAR_X,  40, SIDEBAR_W, 24, { cls: 'redcap', locked: true });                  // red cap on top
@@ -748,82 +766,96 @@
   // (the anchor) carries the other two along as one unit, since the title ignores
   // its own followers as obstacles — but portrait/bio still snap to and collide
   // with the title (and each other) normally when dragged independently.
-  const title = new Block(486, 40, 335, 104, { cls: 'title', page: 'home', html: '<h1>alex gold</h1>' });
-  new Block(828, 40, 176, 56, { cls: 'title title-side', page: '_side', html: '<h1>alex gold</h1>' });
+  // The cluster's right edge (the portrait's) is what's pinned EDGE px from the window's right.
+  const title = new Block(486, 40, 335, 104, { cls: 'title', page: 'home', html: '<h1>alex gold</h1>',
+    place: (L, b) => ({ x: L.right - (b.w + GAP + portrait.w) }) });
+  new Block(828, 40, 176, 56, { cls: 'title title-side', page: '_side', html: '<h1>alex gold</h1>', place: pinRight });
 
   // per-page title blocks — black, sized to the text, sharing the body's top-left corner
-  new Block(CONTENT_X, 171,  92, 52, { cls: 'title title-page', page: 'tesla',    html: '<h1>tesla</h1>' });
-  new Block(CONTENT_X, 171, 212, 52, { cls: 'title title-page', page: 'fsae',     html: '<h1>fsae formula e</h1>' });
-  new Block(CONTENT_X, 171, 176, 52, { cls: 'title title-page', page: 'news',     html: '<h1>in the news</h1>' });
-  new Block(CONTENT_X, 171, 246, 52, { cls: 'title title-page', page: 'resume',   html: '<h1>resume / contact</h1>' });
-  new Block(CONTENT_X, 171, 316, 52, { cls: 'title title-page', page: 'haptic',   html: '<h1>haptic audio controller</h1>' });
-  new Block(CONTENT_X, 171, 241, 52, { cls: 'title title-page', page: 'ghostrun', html: '<h1>Strava ghost run</h1>' });
-  new Block(CONTENT_X, 171, 320, 52, { cls: 'title title-page', page: 'thermal',  html: '<h1>thermal printer camera</h1>' });
-  new Block(CONTENT_X, 171, 391, 52, { cls: 'title title-page', page: 'vision',   html: '<h1>beauty as data compression</h1>' });
-  new Block(CONTENT_X, 171,  78, 52, { cls: 'title title-page', page: 'film',     html: '<h1>film</h1>' });
-  new Block(CONTENT_X, 171, 136, 52, { cls: 'title title-page', page: 'trash',    html: '<h1>on trash</h1>' });
-  new Block(CONTENT_X, 171, 184, 52, { cls: 'title title-page', page: 'website',  html: '<h1>this website</h1>' });
+  colBlock(0, 171,  92, 52, { cls: 'title title-page', page: 'tesla',    html: '<h1>tesla</h1>' });
+  colBlock(0, 171, 212, 52, { cls: 'title title-page', page: 'fsae',     html: '<h1>fsae formula e</h1>' });
+  colBlock(0, 171, 176, 52, { cls: 'title title-page', page: 'news',     html: '<h1>in the news</h1>' });
+  colBlock(0, 171, 246, 52, { cls: 'title title-page', page: 'resume',   html: '<h1>resume / contact</h1>' });
+  colBlock(0, 171, 316, 52, { cls: 'title title-page', page: 'haptic',   html: '<h1>haptic audio controller</h1>' });
+  colBlock(0, 171, 241, 52, { cls: 'title title-page', page: 'ghostrun', html: '<h1>Strava ghost run</h1>' });
+  colBlock(0, 171, 320, 52, { cls: 'title title-page', page: 'thermal',  html: '<h1>thermal printer camera</h1>' });
+  colBlock(0, 171, 391, 52, { cls: 'title title-page', page: 'vision',   html: '<h1>beauty as data compression</h1>' });
+  colBlock(0, 171,  78, 52, { cls: 'title title-page', page: 'film',     html: '<h1>film</h1>' });
+  colBlock(0, 171, 136, 52, { cls: 'title title-page', page: 'trash',    html: '<h1>on trash</h1>' });
+  colBlock(0, 171, 184, 52, { cls: 'title title-page', page: 'website',  html: '<h1>this website</h1>' });
 
   // ---- HOME page: bio + portrait (linked to the title above) + about ----
   new Block(586, 151, 235, 120, { page: 'home',
     follow: { of: title, calc: t => ({ x: t.x + t.w - 235, y: t.y + t.h + GAP }) },
     html: 'mechanical engineer<br>multi-disciplinarian<br>busy bee' });
-  new Block(828, 40, 176, 274, { page: 'home', cls: 'portrait', bare: true,
+  const portrait = new Block(828, 40, 176, 274, { page: 'home', cls: 'portrait', bare: true,
     follow: { of: title, calc: t => ({ x: t.x + t.w + GAP, y: t.y }) },
     html: '<img src="images/profile.jpg" alt="alex gold">' });
-  new Block(CONTENT_X, 415, 105, 52, { cls: 'title title-page', page: 'home', html: '<h1>about</h1>' });
-  new Block(CONTENT_X, 474, 623, 210, { page: 'home', locked: true, plain: true, html:
+  colBlock(0, 415, 105, 52, { cls: 'title title-page', page: 'home', html: '<h1>about</h1>' });
+  colBlock(0, 474, 623, 210, { page: 'home', locked: true, plain: true, html:
     'alex gold is a bay area based mechanical engineer who is currently working as a design engineer at <a href="#">Tesla</a>.' + sp +
     'alex has got a couple active side projects going on like <a href="#">this</a> and <a href="#">that</a> with interactive displays' + sp +
     'he recently thought about trash and got a roll of film developed' });
 
   // ---- SIDE pages: locked text blocks; interactive bits live between them ----
   // Tesla
-  new Block(CONTENT_X, 230, 623, 400, { page: 'tesla', locked: true, plain: true, html:
+  colBlock(0, 230, 623, 400, { page: 'tesla', locked: true, plain: true, html:
     'I work on developing new vehicle programs — from high-level planning and integration with large groups, to detailed part design, to reliability spec generation and validation, to ramping and producing at massive scale.' + sp +
     'I am the design owner of the Cybercab high-voltage charge port, which I took from early design to production. It\'s an intricate system with an integrated actuator and several integrated sensors.' + sp +
     'I took over in the prototype phase and led a small team through a complete design overhaul for hyper-scaling — focused on reliability and manufacturing simplicity — pushed into full production with very low failure rates.' });
-  new Block(CONTENT_X, 650, 420, 300, { page: 'tesla', locked: true, plain: true, bare: true,
+  colBlock(0, 650, 420, 300, { page: 'tesla', locked: true, plain: true, bare: true,
     html: '<img src="images/Tesla-Cybercab-2.jpeg" alt="Tesla Cybercab">' });
 
   // FSAE
-  new Block(CONTENT_X, 230, 623, 145, { page: 'fsae', locked: true, plain: true, html:
+  colBlock(0, 230, 623, 145, { page: 'fsae', locked: true, plain: true, html:
     'I was a founding member of the Formula SAE Electric team at BYU. Starting from scratch — no car, no budget, no playbook — we built a fully electric formula-style racecar and sent it to competition within two years.' });
 
   // In the news
-  new Block(CONTENT_X, 230, 623, 92, { page: 'news', locked: true, plain: true, html:
+  colBlock(0, 230, 623, 92, { page: 'news', locked: true, plain: true, html:
     'KSL NewsRadio shared a photo I took of a cold air funnel spotted over Lehi, Utah.' });
-  new Block(CONTENT_X, 350, 360, 470, { page: 'news', locked: true, plain: true, bare: true,
+  colBlock(0, 350, 360, 470, { page: 'news', locked: true, plain: true, bare: true,
     html: '<img src="images/weather_report.JPG" alt="KSL NewsRadio tweet">' });
 
   // Resume / Creative / Strava / Thermal — placeholders for now
-  new Block(CONTENT_X, 230, 623, 65, { page: 'resume',   locked: true, plain: true, html: 'content incoming…' });
-  new Block(CONTENT_X, 230, 623, 65, { page: 'vision',   locked: true, plain: true, html: 'content incoming…' });
-  new Block(CONTENT_X, 230, 623, 65, { page: 'film',     locked: true, plain: true, html: 'content incoming…' });
-  new Block(CONTENT_X, 230, 623, 65, { page: 'trash',    locked: true, plain: true, html: 'content incoming…' });
-  new Block(CONTENT_X, 230, 623, 65, { page: 'website',  locked: true, plain: true, html: 'content incoming…' });
+  colBlock(0, 230, 623, 65, { page: 'resume',   locked: true, plain: true, html: 'content incoming…' });
+  colBlock(0, 230, 623, 65, { page: 'vision',   locked: true, plain: true, html: 'content incoming…' });
+  colBlock(0, 230, 623, 65, { page: 'film',     locked: true, plain: true, html: 'content incoming…' });
+  colBlock(0, 230, 623, 65, { page: 'trash',    locked: true, plain: true, html: 'content incoming…' });
+  colBlock(0, 230, 623, 65, { page: 'website',  locked: true, plain: true, html: 'content incoming…' });
   // one block for all the consecutive text (not broken up by an image/widget)
-  new Block(CONTENT_X, 230, 623, 350, { page: 'ghostrun', locked: true, plain: true, html:
+  colBlock(0, 230, 623, 350, { page: 'ghostrun', locked: true, plain: true, html:
     'I am a man of habit. I run the same 2.3 mile loop around the neighborhood several days a week before work. On a recent run, I thought about how enjoyable it would be to run among all the past versions of myself. I requested my data from Strava and used Xcode to create a visualization app that I could use while running.' + sp +
     'Technical motivations for this project:' +
     '<ul><li>iOS app development through Xcode</li><li>API integration</li><li>Functional design and UI</li></ul>' });
   // (the interactive widget itself is the .gr-host element up top, shown on this page)
-  new Block(CONTENT_X, 1243, 440, 60, { page: 'ghostrun', locked: true, plain: true, html: 'Actual screenshot of the app taken mid-run:' });
-  new Block(382, 1323, 300, 650, { page: 'ghostrun', locked: true, plain: true, bare: true,
+  colBlock(0, 1243, 440, 60, { page: 'ghostrun', locked: true, plain: true, html: 'Actual screenshot of the app taken mid-run:' });
+  colBlock(162, 1323, 300, 650, { page: 'ghostrun', locked: true, plain: true, bare: true,
     html: '<img src="images/ghost-run-app.png" alt="Ghost Run app showing a live in-run leaderboard over a map">' });
-  new Block(CONTENT_X, 230, 623, 65, { page: 'thermal',  locked: true, plain: true, html: 'content incoming…' });
+  colBlock(0, 230, 623, 65, { page: 'thermal',  locked: true, plain: true, html: 'content incoming…' });
 
   // ---- HAPTIC page: text blocks with the turntable simulation between them ----
-  new Block(CONTENT_X, 230, 623, 300, { page: 'haptic', locked: true, plain: true, html:
+  colBlock(0, 230, 623, 300, { page: 'haptic', locked: true, plain: true, html:
     'A bluetooth device that sits on my desk and gives physical interfaces to basic audio controls for music and meetings. A little turntable-style platter turns as audio plays through it and can scratch back over a song or a meeting (inspired by Teenage Engineering OB-4).' + sp +
     'My main motivation was buttery-smooth haptic interfacing — using a brushless DC motor as both input and output via field controls — plus seamless bluetooth and low-latency (&lt;10ms) audio.' });
   // (the turntable widget itself is the .tt-host element below, shown on this page)
-  new Block(CONTENT_X, 1074, 623, 430, { page: 'haptic', locked: true, plain: true, html:
+  colBlock(0, 1074, 623, 430, { page: 'haptic', locked: true, plain: true, html:
     '<span class="phead">architecture</span>' +
     '<b>ESP32</b> dual-core — core 0 handles motor control and feedback, core 1 handles the audio buffer, bluetooth, screen and input.' + sp +
     'A brushless DC <b>gimbal motor</b> driven by simpleFOC, chosen for tight integration and precise low-speed control. Lots of tuning to keep cogging low — high-frequency wobble you can\'t feel shows up as audible distortion.' + sp +
     'USB-C powered, with a boost converter for the motor; closed-loop control runs at &lt;0.1W. Audio streams over bluetooth into a 2-minute ring buffer, read out by a pointer that follows the motor\'s position and velocity.' + sp +
     'This project is in process.' });
+
+  // re-apply every block's `place` (and the two DOM widgets) for the current window width
+  const ttHost = document.querySelector('.tt-host'), grHost = document.querySelector('.gr-host');
+  function relayout() {
+    LAYOUT = layoutFor();
+    for (const b of Block.all) if (b.place) { Object.assign(b, b.place(LAYOUT, b)); b.draw(); }
+    ttHost.style.left = LAYOUT.widgetX + 'px';
+    grHost.style.left = LAYOUT.contentX + 'px';
+  }
+  document.body.style.minWidth = FLOOR_W + 'px';       // below the floor the page scrolls sideways
+  window.addEventListener('resize', relayout);
+  relayout();
 
   // ----- sub-menu pop-up · MODE C -----
   // The top card slides + grows out from under the parent. Each card below then
