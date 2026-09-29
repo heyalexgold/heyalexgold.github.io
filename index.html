@@ -87,6 +87,10 @@
     .block .phead { display: block; font-size: 1.5rem; font-weight: 600; color: #111; margin-bottom: 0.55rem; letter-spacing: -0.01em; }
     .block ul { margin: 0.4em 0 0 1.15em; padding: 0; }
     .block li { margin-bottom: 0.3em; }
+    /* figure: a photo inset in a white block (like a print in a mat), with a caption line */
+    .block.figure > .content { padding: 12px; }
+    .block.figure img { display: block; width: 100%; object-fit: cover; }
+    .block.figure .figcap { margin-top: 10px; font-size: 13px; line-height: 19px; color: #444; }
     .block .caption { display: block; color: #444; font-size: 0.9rem; margin-bottom: 0.5rem; }
     .block b { font-weight: 700; }
     /* the turntable simulation, dropped between the haptic text blocks */
@@ -733,6 +737,15 @@
     new Block(LAYOUT.contentX + dx, y, w, h, { ...opts, place: L => ({ x: L.contentX + dx }) });
   const pinRight = (L, b) => ({ x: L.right - b.w });
 
+  // a figure block: image inset in a white block with a caption; height follows the image ratio
+  const FIG_PAD = 12, FIG_GAP = 10, FIG_LINE = 19;
+  const figBlock = (dx, y, w, { page, src, alt, ratio, caption, lines = 1 }) => {
+    const imgH = Math.round((w - 2 * FIG_PAD) / ratio);
+    return colBlock(dx, y, w, FIG_PAD * 2 + imgH + FIG_GAP + lines * FIG_LINE, {
+      page, cls: 'figure', locked: true, plain: true,
+      html: `<img src="${src}" alt="${alt}" style="height:${imgH}px"><div class="figcap">${caption}</div>` });
+  };
+
   // ---- sidebar (constant across pages; locked = click-only) ----
   new Block(SIDEBAR_X,  40, SIDEBAR_W, 24, { cls: 'redcap', locked: true });                  // red cap on top
   const home      = new Block(SIDEBAR_X,  71, SIDEBAR_W, 42, { cls: 'nav', locked: true, html: 'home',                  onClick: () => showPage('home') });
@@ -813,8 +826,9 @@
   // In the news
   colBlock(0, 230, 623, 92, { page: 'news', locked: true, plain: true, html:
     'KSL NewsRadio shared a photo I took of a cold air funnel spotted over Lehi, Utah.' });
-  colBlock(0, 350, 360, 470, { page: 'news', locked: true, plain: true, bare: true,
-    html: '<img src="images/weather_report.JPG" alt="KSL NewsRadio tweet">' });
+  figBlock(0, 329, 623, { page: 'news', src: 'images/news-tornado.jpg', ratio: 982 / 655,
+    alt: 'A cold air funnel over the mountains near Lehi, Utah',
+    caption: 'Cold air funnel over Lehi, Utah — shared by KSL NewsRadio, June 15, 2023' });
 
   // Resume / Creative / Strava / Thermal — placeholders for now
   colBlock(0, 230, 623, 65, { page: 'resume',   locked: true, plain: true, html: 'content incoming…' });
@@ -828,9 +842,9 @@
     'Technical motivations for this project:' +
     '<ul><li>iOS app development through Xcode</li><li>API integration</li><li>Functional design and UI</li></ul>' });
   // (the interactive widget itself is the .gr-host element up top, shown on this page)
-  colBlock(0, 1243, 440, 60, { page: 'ghostrun', locked: true, plain: true, html: 'Actual screenshot of the app taken mid-run:' });
-  colBlock(162, 1323, 300, 650, { page: 'ghostrun', locked: true, plain: true, bare: true,
-    html: '<img src="images/ghost-run-app.png" alt="Ghost Run app showing a live in-run leaderboard over a map">' });
+  figBlock(0, 1230, 308, { page: 'ghostrun', src: 'images/ghost-run-crop.jpg', ratio: 1179 / 1514,
+    alt: 'Ghost Run app mid-run: position in pack and a map of nearby ghost runners',
+    caption: 'Actual screenshot of the app, taken mid-run' });
   colBlock(0, 230, 623, 65, { page: 'thermal',  locked: true, plain: true, html: 'content incoming…' });
 
   // ---- HAPTIC page: text blocks with the turntable simulation between them ----
