@@ -83,10 +83,10 @@
     .block .sp { display: block; height: 0.9em; }   /* paragraph spacer */
 
     /* ---- page content ---- */
-    body { min-height: 2300px; }
     .block .phead { display: block; font-size: 1.5rem; font-weight: 600; color: #111; margin-bottom: 0.55rem; letter-spacing: -0.01em; }
     .block ul { margin: 0.4em 0 0 1.15em; padding: 0; }
     .block li { margin-bottom: 0.3em; }
+    .block ul.long li { margin-bottom: 0.8em; }
     /* figure: a photo inset in a white block (like a print in a mat), with a caption line */
     .block.figure > .content { padding: 12px; }
     .block.figure img { display: block; width: 100%; object-fit: cover; }
@@ -585,6 +585,7 @@
     }
 
     onDown(e) {
+      if (e.target.closest('a')) return;               // let real links work
       e.preventDefault();
       this.el.style.zIndex = ++topZ;
       const corner = e.target.dataset.corner || null;
@@ -705,10 +706,21 @@
     document.querySelectorAll('[data-page]').forEach(el => { el.style.display = el.dataset.page === page ? '' : 'none'; });
     if (typeof closeSub === 'function') closeSub();
     activateNav(pageNav[page] || cwo);
+    fitPageHeight();
     if (page === 'haptic') { if (typeof initTurntable === 'function') initTurntable(); }
     else if (typeof stopTurntable === 'function') stopTurntable();
     if (page === 'ghostrun') { if (typeof initGhostRun === 'function') initGhostRun(); }
     else if (typeof stopGhostRun === 'function') stopGhostRun();
+  }
+
+  // the page is as tall as its content (plus room below)
+  function fitPageHeight() {
+    let bottom = 0;
+    for (const b of Block.all) if (b.el.style.display !== 'none' && !b.floating) bottom = Math.max(bottom, b.y + b.h);
+    document.querySelectorAll('[data-page]').forEach(el => {
+      if (el.style.display !== 'none') bottom = Math.max(bottom, el.offsetTop + el.offsetHeight);
+    });
+    document.body.style.minHeight = (bottom + 120) + 'px';
   }
 
   const sp = '<span class="sp"></span>';   // paragraph gap
@@ -746,6 +758,32 @@
       page, cls: 'figure', locked: true, plain: true,
       html: `<img src="${src}" alt="${alt}" style="height:${imgH}px">` + (caption ? `<div class="figcap">${caption}</div>` : '') });
   };
+
+  // a text block in the column; its height is measured from its own text
+  const HALF = (CONTENT_W - GAP) / 2;
+  function textBlock(page, y, html) {
+    const b = colBlock(0, y, CONTENT_W, 40, { page, locked: true, plain: true, html });
+    b.el.style.height = 'auto'; b.content.style.position = 'static';
+    b.h = Math.ceil(b.content.offsetHeight);
+    b.content.style.position = ''; b.draw();
+    return b;
+  }
+  // stack blocks down a page, GAP apart; returns the y just below the last one.
+  //   { html }           a text block          { fig, w }   a figure (w px wide, centered)
+  //   { pair: [fig,fig] } two half-width figures side by side
+  function flow(page, y, items) {
+    for (const it of items) {
+      if (it.html) y += textBlock(page, y, it.html).h + GAP;
+      else if (it.pair) {
+        const bs = it.pair.map((f, i) => figBlock(i * (HALF + GAP), y, HALF, { page, ...f }));
+        y += Math.max(...bs.map(b => b.h)) + GAP;
+      } else {
+        const w = it.w || CONTENT_W;
+        y += figBlock(Math.round((CONTENT_W - w) / 2), y, w, { page, ...it.fig }).h + GAP;
+      }
+    }
+    return y;
+  }
 
   // ---- sidebar (constant across pages; locked = click-only) ----
   new Block(SIDEBAR_X,  40, SIDEBAR_W, 24, { cls: 'redcap', locked: true });                  // red cap on top
@@ -806,22 +844,53 @@
     follow: { of: title, calc: t => ({ x: t.x + t.w + GAP, y: t.y }) },
     html: '<img src="images/profile.jpg" alt="alex gold">' });
   colBlock(0, 415, 105, 52, { cls: 'title title-page', page: 'home', html: '<h1>about</h1>' });
-  colBlock(0, 474, 623, 210, { page: 'home', locked: true, plain: true, html:
-    'alex gold is a bay area based mechanical engineer who is currently working as a design engineer at <a href="#">Tesla</a>.' + sp +
-    'alex has got a couple active side projects going on like <a href="#">this</a> and <a href="#">that</a> with interactive displays' + sp +
-    'he recently thought about trash and got a roll of film developed' });
+  textBlock('home', 474,
+    `Hey, I'm Alex Gold.${sp}` +
+    `I'm an engineer who loves to spin CAD, despises CTE mismatches, and doesn't mind frying a resistor.${sp}` +
+    `I currently work at Tesla in Palo Alto, California as a mechanical design engineer on the high voltage distribution team, working on high volume part design and actuators. I studied mechanical engineering at BYU with a focus on high voltage electronics, mechatronics, and battery chemistry. I'm passionate about interdisciplinary engineering and mechatronic systems. Above all else I just want to build, build, build!`);
 
   // ---- SIDE pages: locked text blocks; interactive bits live between them ----
   // Tesla
-  colBlock(0, 230, 623, 400, { page: 'tesla', locked: true, plain: true, html:
-    'I work on developing new vehicle programs — from high-level planning and integration with large groups, to detailed part design, to reliability spec generation and validation, to ramping and producing at massive scale.' + sp +
-    'I am the design owner of the Cybercab high-voltage charge port, which I took from early design to production. It\'s an intricate system with an integrated actuator and several integrated sensors.' + sp +
-    'I took over in the prototype phase and led a small team through a complete design overhaul for hyper-scaling — focused on reliability and manufacturing simplicity — pushed into full production with very low failure rates.' });
-  figBlock(0, 637, 623, { page: 'tesla', src: 'images/Tesla-Cybercab-2.jpeg', ratio: 2726 / 1342, alt: 'Tesla Cybercab' });
+  const H = t => `${sp}<span class="phead">${t}</span>`;
+  flow('tesla', 230, [
+    { html:
+      `I am currently working as a mechanical design engineer on the drive systems team, I work on several vehicles. I am the design owner of multiple parts including the next generation charge port for Cybercab and future vehicles.${sp}` +
+      `I work on developing new vehicle programs, from high level planning and integration with large groups, to detailed, innovative part design, to ramping and manufacturing at a massive scale.` +
+      H('Actuator integration') +
+      `I own the design and integration of an actuator system, which I have iterated from an existing design to a more robust and reliable state. I have dealt with every issue you can think of: electrical contact degradation, poor sealing, corrosion, environmental wear, motor burnout, fatigue failures, signal corruption, supplier inconsistencies, not enough grease, too much grease, the wrong kind of grease, and on and on. I have soldered custom electronics to test the actuator, have spent hours analyzing oscilloscope traces, and many more hours decoding CAN signals to characterize field failures.${sp}` +
+      `The work is ongoing as I investigate new designs and actuator types to increase reliability, decrease cost, and improve performance.` +
+      H('Ramping to massive scale') +
+      `My parts do not die as ideas and prototypes, they are actively ramping.${sp}` +
+      `I have learned that the ramping process is far more intense than the design process. Turns out 0->1 is a breeze compared to 1->1,000,000. The manufacturing process involves more sources of error. The magnification teases out the 5%, 1%, and 0.1% failures.` +
+      H('Early design and prototyping') +
+      `Speed is the name of the game. I have found the sooner you can have a working model running representative firmware, the closer you are to rev 2. I 3D print it, destroy it, modify it, and print it again.` +
+      H('Innovative and careful design for manufacturing') +
+      `Anything that can go wrong in production will go wrong. Carefully making an engineering drawing that lists every part requirement and lays out a precise and efficient testing strategy at the tier 1 and tier 2+ suppliers is an effort that pays itself back 50x later in the manufacturing process.` +
+      H('Full vehicle development') +
+      `I was deeply involved in the early development stages of a future vehicle, working with a group of other subsystem owners to establish the vehicle architecture from the ground up to meet the design objectives. I learned to voice our requirements and flag issues early, and that people are much more likely to compromise on their designs to give you what you need through an in-person talk than over messages. It is a tight balance of using existing proven technologies and …` },
+    { fig: { src: 'images/Tesla-Cybercab-2.jpeg', ratio: 2726 / 1342, alt: 'Tesla Cybercab' } },
+    { html:
+      `I am the design owner of the Cybercab high voltage charge port, which I have taken from early design to production. It's an intricate system with an integrated actuator and several integrated sensors. It has electrical, mechanical, and thermal requirements and it is built with new manufacturing techniques.${sp}` +
+      `I took over this system in the prototype phase, and was responsible for leading a small team to do a complete design overhaul to prepare for hyper scaling. The focus was reliability and manufacturing simplicity. Design decisions were made in conjunction with the upstream supplier and the downstream manufacturing team. The design was completed and pushed into full production with very low failure rates.` },
+  ]);
 
   // FSAE
-  colBlock(0, 230, 623, 145, { page: 'fsae', locked: true, plain: true, html:
-    'I was a founding member of the Formula SAE Electric team at BYU. Starting from scratch — no car, no budget, no playbook — we built a fully electric formula-style racecar and sent it to competition within two years.' });
+  flow('fsae', 230, [
+    { html: `I was a founding member of the FSAE Formula Electric team at BYU. Within two years, we built a functional car and sent it to competition and it passed accumulator safety check (a very difficult task for a rookie team).` },
+    { fig: { src: 'images/fsae-car.jpg', ratio: 1400 / 1050, alt: 'The FSAE Formula Electric car' } },
+    { html:
+      `<span class="phead">Year 1</span>` +
+      `In the first year, me and a group of equally ambitious and unqualified students designed the electric powertrain and built it for a trial chassis. We used a custom designed and built-to-spec pack and an off the shelf inverter and motor. Year 1 was super scrappy, it was nowhere close to rules compliant, and we were barely able to get the motor spinning, but it did spin! It was the necessary foundation for the next year and exposed the areas that I needed more knowledge in.` +
+      `${sp}<span class="phead">Year 2</span>` +
+      `This is when it got real. Me and a group of 8 other engineers designed and built a custom 400v accumulator (battery pack) from scratch. Me and a friend Landon were the only ones part of the high voltage team in year one.${sp}` +
+      `The areas I owned were overall pack layout, collector plates with integrated fuses, thermal sensing, and BMS integration. In each of these areas I led design discussions, performed experiments and simulations, made decisions, and documented my work.` },
+    { fig: { src: 'images/fsae-pack.jpg', ratio: 1400 / 1050, alt: 'The assembled accumulator with its orange high voltage connector' } },
+    { html: `Here is some of my work for the collector plates I did. One key FSAE rule was that every cell must have its own fuse to prevent parallel groups from igniting if one cell has an internal short. I integrated these fuses into the collector plates to save significant cost and assembly time. To design and validate these collectors, I wrote matlab functions which simulated the thermal model from first principals. I used these results as a starting point, and used a custom (and sketchy) testing rig to precisely verify the fusing time of my prototypes at different currents. Please note the handmade water cooled stainless steel coil resistor with adjustable resistance. Much consideration was also put towards manufacturing, spot welding compatibility, and cost.` },
+    { pair: [
+      { src: 'images/fsae-fuse-rig.jpg', ratio: 1400 / 1050, alt: 'Fuse time testing rig', caption: 'Fuse time testing rig' },
+      { src: 'images/fsae-collector.jpg', ratio: 1400 / 1050, alt: 'A finished copper collector plate', caption: 'The final product' } ] },
+    { fig: { src: 'images/fsae-modules.jpg', ratio: 1400 / 1355, alt: 'Assembling battery modules', caption: 'I also assembled many, many modules.' }, w: Math.round(CONTENT_W * 2 / 3) },
+  ]);
 
   // In the news
   figBlock(0, 230, 623, { page: 'news', src: 'images/weather_report.JPG', ratio: 1125 / 1627,
@@ -829,10 +898,18 @@
 
   // Resume / Creative / Strava / Thermal — placeholders for now
   colBlock(0, 230, 623, 65, { page: 'resume',   locked: true, plain: true, html: 'content incoming…' });
-  colBlock(0, 230, 623, 65, { page: 'vision',   locked: true, plain: true, html: 'content incoming…' });
+  flow('vision', 230, [
+    { html: `I recently read and was deeply influenced by this paper written by a researcher named Jurgen Schmidhuber in 2009. The title is <a href="https://arxiv.org/pdf/0812.4360" target="_blank" rel="noopener">"Driven by Compression Progress: A Simple Principle Explains Essential Aspects of Subjective Beauty, Novelty, Surprise, Interestingness, Attention, Curiosity, Creativity, Art, Science, Music, Jokes"</a>. The paper is worth the read, but in summary, Schmidhuber lays out a general mathematical definition of beauty, defining it as something whose data is able to be compressed in a way where it can be described in much fewer bits. He claims this describes why we find beauty in patterns and symmetrical faces. Interestingness, by this framework, is the derivative of beauty. If something is helping us to understand and describe our inputs and memories, it is interesting until it is no longer useful in improving our compression method.${sp}` +
+      `To further understand and apply the idea, I built a single level, linear neural net that processes vision data and gives an output of the perceived beauty and interestingness of each picture, and uses the image to train its internal data compression scheme. For my input vision data, I used the phenocam database, which comes from a collection of thousands of stationary cameras pointing at nature all around the world which capture 16-48 images a day. It's mostly pictures of crops; this data is primarily used to analyze vegetation cycles. Here is an example interface to the neural net and a demonstration of it training itself over time and developing a unique taste for what it finds interesting and beautiful:` },
+    { html: 'interactive demo incoming…' },
+    { html: `A possible future of this project is to build several solar powered long-lifetime vision/compute units that I can place in a nice spot and they will stay there for 30+ years. They will watch and analyze the world for beauty, selectively looking at what they find interesting, training their unique data compression models. They will be disconnected from any radio frequency antennas so there can not be any output. I think beauty only exists when perceived, so maybe increasing the compute power dedicated to perceiving beauty will increase the amount of beauty in the world.` },
+  ]);
   colBlock(0, 230, 623, 65, { page: 'film',     locked: true, plain: true, html: 'content incoming…' });
   colBlock(0, 230, 623, 65, { page: 'trash',    locked: true, plain: true, html: 'content incoming…' });
-  colBlock(0, 230, 623, 65, { page: 'website',  locked: true, plain: true, html: 'content incoming…' });
+  flow('website', 230, [
+    { html: `This website was designed by me as a project. The design was based around these physics-based blocks that interact with each other in predictable ways. This allows for smooth animations and interactions throughout. It is written in plain HTML, CSS, and JavaScript, which allows silky smooth integration of all of the interactive bits.${sp}` +
+      `My technical motivations for the project:<ul><li>Website design</li><li>UX planning</li><li>Integration of interactive components</li></ul>` },
+  ]);
   // one block for all the consecutive text (not broken up by an image/widget)
   colBlock(0, 230, 623, 350, { page: 'ghostrun', locked: true, plain: true, html:
     'I am a man of habit. I run the same 2.3 mile loop around the neighborhood several days a week before work. On a recent run, I thought about how enjoyable it would be to run among all the past versions of myself. I requested my data from Strava and used Xcode to create a visualization app that I could use while running.' + sp +
@@ -845,16 +922,24 @@
   colBlock(0, 230, 623, 65, { page: 'thermal',  locked: true, plain: true, html: 'content incoming…' });
 
   // ---- HAPTIC page: text blocks with the turntable simulation between them ----
-  colBlock(0, 230, 623, 300, { page: 'haptic', locked: true, plain: true, html:
-    'A bluetooth device that sits on my desk and gives physical interfaces to basic audio controls for music and meetings. A little turntable-style platter turns as audio plays through it and can scratch back over a song or a meeting (inspired by Teenage Engineering OB-4).' + sp +
-    'My main motivation was buttery-smooth haptic interfacing — using a brushless DC motor as both input and output via field controls — plus seamless bluetooth and low-latency (&lt;10ms) audio.' });
-  // (the turntable widget itself is the .tt-host element below, shown on this page)
-  colBlock(0, 1074, 623, 430, { page: 'haptic', locked: true, plain: true, html:
-    '<span class="phead">architecture</span>' +
-    '<b>ESP32</b> dual-core — core 0 handles motor control and feedback, core 1 handles the audio buffer, bluetooth, screen and input.' + sp +
-    'A brushless DC <b>gimbal motor</b> driven by simpleFOC, chosen for tight integration and precise low-speed control. Lots of tuning to keep cogging low — high-frequency wobble you can\'t feel shows up as audible distortion.' + sp +
-    'USB-C powered, with a boost converter for the motor; closed-loop control runs at &lt;0.1W. Audio streams over bluetooth into a 2-minute ring buffer, read out by a pointer that follows the motor\'s position and velocity.' + sp +
-    'This project is in process.' });
+  const ttBottomOfText = flow('haptic', 230, [
+    { html:
+      `I am working on a bluetooth device that sits on my desk and gives physical interfaces to basic audio controls for music and meetings. I am incorporating a little turntable-style platter that turns as audio plays through it and can be used to scratch back over a song or meeting you are in (inspired by Teenage Engineering OB-4). I'm always listening to music and connecting to meetings through my phone, but I don't want to have it out all the time to handle controls.${sp}` +
+      `My technical motivations for the project:` +
+      `<ul><li>Buttery smooth haptic interfacing</li><li>Use field controls on a brushless DC motor</li><li>Low latency communication and processing (&lt;10ms)</li><li>PCBA design</li><li>Industrial design for the housing</li></ul>` },
+  ]);
+  // (the turntable widget itself is the .tt-host element, shown on this page, 514px tall)
+  const TT_TOP = ttBottomOfText - GAP + 30;
+  document.querySelector('.tt-host').style.top = TT_TOP + 'px';
+  flow('haptic', TT_TOP + 514, [
+    { html:
+      `<span class="phead">Architecture</span><ul class="long">` +
+      `<li>Built around an ESP32 — dual cores were a key requirement (core 0 strictly handles motor control and feedback, core 1 handles audio buffer, bluetooth, screen, and user input).</li>` +
+      `<li>Motor is a brushless DC gimbal motor controlled with a simpleFOC chip. This is something I debated for a while, and considered using a small brushed motor with physical gearing and clutch, similar to a real turntable, but I decided on a gimbal motor because of the total integration and small packaging of the motor, magnetic encoder, and mechanical structure. Also I found the simpleFOC chip which unlocked precise control at very low speeds and has an active community which I referenced for the firmware. I've spent a long time tuning the control method and filtering for this to make the feel correct with very low cogging. I found this matters a lot when you tie an audio output to it; high frequency wobble you can't physically feel shows up as noticeable audio distortion in the highs and lows.</li>` +
+      `<li>I want this to be powered by a USB-C connection that can be plugged into a laptop, so the power draw is limited. This governed the max reaction torque of the platter motor, and required me to add a boost converter to bump up the voltage for my motor. During normal operation the closed-loop motor controls run at shockingly low power (&lt;0.1 watts) so system cooling is not a concern.</li>` +
+      `<li>Firmware is based around two main processing systems. I'm a firmware novice so Claude helped implement the code once I had laid out the high level architecture. In one core, audio is pulled in through a bluetooth connection and fed into a ring buffer which overwrites itself every two minutes. The audio is fed out through a DAC to a lined connection, the position and rate of output is set by a pointer which references the motor position and velocity. In another core, the motor is controlled using a closed loop system using field controls that reference the resolver. This system took a lot of refining, it has filtering and the motor goes through a calibration cycle during boot to measure cogging due to the permanent magnets, which it then compensates for. Thanks to the simpleFOC community for that one. I really wanted to do bluetooth in and bluetooth out to airpods, but airpods make this so unfriendly, and it added too much complexity and mostly would have made the latency too high to be usable in a meeting or get a responsive feel at the turntable.</li></ul>` +
+      `${sp}This project is in process.` },
+  ]);
 
   // re-apply every block's `place` (and the two DOM widgets) for the current window width
   const ttHost = document.querySelector('.tt-host'), grHost = document.querySelector('.gr-host');
