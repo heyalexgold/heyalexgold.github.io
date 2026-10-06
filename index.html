@@ -80,6 +80,48 @@
     .block > .content.bare img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
     .block a, .block .accent { color: var(--red); text-decoration: none; }
+    /* ---- viewer: a large window over the page (documents, photo galleries) ---- */
+    html { scrollbar-gutter: stable; }
+    .block button.link { color: var(--red); background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
+    .block .thumb { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; font: inherit; }
+    .block .thumb:hover img { opacity: 0.9; }
+    .block a:focus-visible, .block button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+    .block .doc-card { display: flex; gap: 20px; align-items: flex-start; }
+    .block .doc-card .thumb { flex: 0 0 200px; width: 200px; }
+    .block .doc-card .thumb img { display: block; width: 200px; box-shadow: 0 0 0 1px #d8d8d8; }
+    .block .doc-meta .phead { margin-bottom: 0.3rem; }
+    .block .doc-meta .doc-actions { margin-top: 0.7em; display: flex; gap: 22px; }
+
+    #viewer { position: fixed; inset: 0; z-index: 100000; display: none; background: #e8e8e8; }
+    #viewer.open { display: block; animation: vw-in .14s ease; }
+    @keyframes vw-in { from { opacity: 0; } to { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { #viewer.open { animation: none; } }
+    .vw-bar { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; align-items: center; gap: 30px; color: #111; font-size: 15px; }
+    .vw-title { font-weight: 600; }
+    .vw-count { color: #666; }
+    .vw-spacer { flex: 1; }
+    .vw-btn { position: relative; background: #fff; color: #111; border: 0; padding: 9px 16px; font: 15px/1.2 inherit; text-decoration: none; cursor: pointer; }
+    .vw-btn::before { content: ''; position: absolute; inset: -7px; pointer-events: none;
+      background: linear-gradient(#000,#000) top left / 7px 7px no-repeat, linear-gradient(#000,#000) top right / 7px 7px no-repeat,
+                  linear-gradient(#000,#000) bottom left / 7px 7px no-repeat, linear-gradient(#000,#000) bottom right / 7px 7px no-repeat; }
+    .vw-btn:hover { color: var(--red); }
+    .vw-btn:focus-visible, .vw-doc:focus-visible { outline: 2px solid var(--red); outline-offset: 10px; }
+    .vw-nav { position: absolute; top: 50%; width: 44px; height: 64px; margin-top: -32px; padding: 0; font-size: 22px; }
+    .vw-prev { left: 28px; } .vw-next { right: 28px; }
+    .vw-nav:disabled { visibility: hidden; }
+    .vw-stage { position: absolute; inset: 84px 92px 36px; display: flex; align-items: center; justify-content: center; }
+    .vw-frame { position: relative; margin: 0; background: #fff; padding: 12px; }
+    .vw-frame::before { content: ''; position: absolute; inset: -7px; pointer-events: none;
+      background: linear-gradient(#000,#000) top left / 7px 7px no-repeat, linear-gradient(#000,#000) top right / 7px 7px no-repeat,
+                  linear-gradient(#000,#000) bottom left / 7px 7px no-repeat, linear-gradient(#000,#000) bottom right / 7px 7px no-repeat; }
+    .vw-img { display: block; }
+    .vw-cap { margin-top: 10px; font-size: 13px; line-height: 19px; color: #444; }
+    .vw-cap:empty { display: none; }
+    .vw-doc { display: none; position: absolute; top: 84px; bottom: 0; left: 0; right: 0; margin: 0 auto; width: min(900px, calc(100vw - 40px)); overflow-y: auto; outline: none; }
+    .vw-doc img { display: block; width: 100%; height: auto; background: #fff; margin: 0 0 7px; }
+    #viewer.mode-doc .vw-doc { display: block; }
+    #viewer.mode-doc .vw-stage, #viewer.mode-doc .vw-nav { display: none; }
+
     .block .sp { display: block; height: 0.9em; }   /* paragraph spacer */
 
     /* ---- page content ---- */
@@ -585,7 +627,7 @@
     }
 
     onDown(e) {
-      if (e.target.closest('a')) return;               // let real links work
+      if (e.target.closest('a, button, [data-viewer]')) return;   // links/buttons inside a block keep their own clicks
       e.preventDefault();
       this.el.style.zIndex = ++topZ;
       const corner = e.target.dataset.corner || null;
@@ -751,12 +793,18 @@
 
   // a figure block: image inset in a white block with a caption; height follows the image ratio
   const FIG_PAD = 12, FIG_GAP = 10, FIG_LINE = 19;
-  const figBlock = (dx, y, w, { page, src, alt, ratio, caption, lines = 1 }) => {
+  const esc = t => String(t).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  const figBlock = (dx, y, w, { page, src, alt, ratio, caption, lines = 1, viewer, full }) => {
     const imgH = Math.round((w - 2 * FIG_PAD) / ratio);
     const capH = caption ? FIG_GAP + lines * FIG_LINE : 0;
+    const img = `<img src="${src}" alt="${esc(alt)}" style="height:${imgH}px">`;
+    // viewer: a group name — clicking opens the photo large, with prev/next through the group
+    const media = viewer
+      ? `<button class="thumb" data-viewer="${esc(viewer)}" data-full="${esc(full || src)}" data-caption="${esc(caption || '')}" aria-label="View larger: ${esc(alt)}">${img}</button>`
+      : img;
     return colBlock(dx, y, w, FIG_PAD * 2 + imgH + capH, {
       page, cls: 'figure', locked: true, plain: true,
-      html: `<img src="${src}" alt="${alt}" style="height:${imgH}px">` + (caption ? `<div class="figcap">${caption}</div>` : '') });
+      html: media + (caption ? `<div class="figcap">${caption}</div>` : '') });
   };
 
   // a text block in the column; its height is measured from its own text
@@ -851,27 +899,27 @@
 
   // ---- SIDE pages: locked text blocks; interactive bits live between them ----
   // Tesla
-  const H = t => `${sp}<span class="phead">${t}</span>`;
+  const hd = t => `<span class="phead">${t}</span>`;
   flow('tesla', 230, [
     { html:
-      `I am currently working as a mechanical design engineer on the drive systems team, I work on several vehicles. I am the design owner of multiple parts including the next generation charge port for Cybercab and future vehicles.${sp}` +
-      `I work on developing new vehicle programs, from high level planning and integration with large groups, to detailed, innovative part design, to ramping and manufacturing at a massive scale.` +
-      H('Actuator integration') +
-      `I own the design and integration of an actuator system, which I have iterated from an existing design to a more robust and reliable state. I have dealt with every issue you can think of: electrical contact degradation, poor sealing, corrosion, environmental wear, motor burnout, fatigue failures, signal corruption, supplier inconsistencies, not enough grease, too much grease, the wrong kind of grease, and on and on. I have soldered custom electronics to test the actuator, have spent hours analyzing oscilloscope traces, and many more hours decoding CAN signals to characterize field failures.${sp}` +
-      `The work is ongoing as I investigate new designs and actuator types to increase reliability, decrease cost, and improve performance.` +
-      H('Ramping to massive scale') +
-      `My parts do not die as ideas and prototypes, they are actively ramping.${sp}` +
-      `I have learned that the ramping process is far more intense than the design process. Turns out 0->1 is a breeze compared to 1->1,000,000. The manufacturing process involves more sources of error. The magnification teases out the 5%, 1%, and 0.1% failures.` +
-      H('Early design and prototyping') +
-      `Speed is the name of the game. I have found the sooner you can have a working model running representative firmware, the closer you are to rev 2. I 3D print it, destroy it, modify it, and print it again.` +
-      H('Innovative and careful design for manufacturing') +
-      `Anything that can go wrong in production will go wrong. Carefully making an engineering drawing that lists every part requirement and lays out a precise and efficient testing strategy at the tier 1 and tier 2+ suppliers is an effort that pays itself back 50x later in the manufacturing process.` +
-      H('Full vehicle development') +
-      `I was deeply involved in the early development stages of a future vehicle, working with a group of other subsystem owners to establish the vehicle architecture from the ground up to meet the design objectives. I learned to voice our requirements and flag issues early, and that people are much more likely to compromise on their designs to give you what you need through an in-person talk than over messages. It is a tight balance of using existing proven technologies and …` },
+      `I am currently working as a mechanical design engineer on the drive systems team, focusing on high voltage distribution. I am the design owner of multiple parts including the next generation charge port for Cybercab and future vehicles.${sp}` +
+      `I work on developing new vehicle programs, from high level planning and integration with large groups, to detailed, innovative part design, to ramping and manufacturing at a massive scale.` },
     { fig: { src: 'images/Tesla-Cybercab-2.jpeg', ratio: 2726 / 1342, alt: 'Tesla Cybercab' } },
     { html:
-      `I am the design owner of the Cybercab high voltage charge port, which I have taken from early design to production. It's an intricate system with an integrated actuator and several integrated sensors. It has electrical, mechanical, and thermal requirements and it is built with new manufacturing techniques.${sp}` +
-      `I took over this system in the prototype phase, and was responsible for leading a small team to do a complete design overhaul to prepare for hyper scaling. The focus was reliability and manufacturing simplicity. Design decisions were made in conjunction with the upstream supplier and the downstream manufacturing team. The design was completed and pushed into full production with very low failure rates.` },
+      hd('Actuator integration') +
+      `I own the design and integration of an actuator system, which I have developed from an existing design to a better, more reliable product. I have dealt with every issue you can think of: electrical contact degradation, poor sealing, corrosion, environmental wear, motor burnout, fatigue failures, signal corruption, supplier inconsistencies, not enough grease, too much grease, the wrong kind of grease, and on and on.${sp}` +
+      `I have designed and soldered custom electronics to test actuators, have spent hours analyzing oscilloscope traces, and many more hours decoding CAN signals to characterize field failures.${sp}` +
+      `The work is ongoing as I investigate new designs and actuator types to increase reliability, decrease cost, and improve performance.${sp}` +
+      hd('Ramping to massive scale') +
+      `My parts do not die as ideas and prototypes, they are actively scaling.${sp}` +
+      `I have learned that the ramping process is far more intense than the design process. Turns out 0->1 is a breeze compared to 1->1,000,000. The manufacturing process magnifies weak points and teases out the 5%, 1%, and 0.1% failures. Identifying them and fixing them early and rapidly is key. An example of this:${sp}` +
+      `During ramp, the factory flagged a design problem with a part that caused a vehicle EOL issue. I dropped everything and spent the next few days designing a tester to screen out affected parts. A teammate flew a prototype to the factory and got feedback, and I hand soldered a production-worthy version which I flew to our upstream assembler and then trained line workers to use it. This contained the issue and allowed me to validate a robust design change which would get rid of the problem completely.${sp}` +
+      hd('Early design and prototyping') +
+      `Speed is the name of the game. I have found the sooner you can have a working model running representative firmware, the closer you are to rev 2. I 3D print it, destroy it, modify it, and print it again. I have also learned to be bold with designs.${sp}` +
+      hd('Innovative and careful design for manufacturing') +
+      `Anything that can go wrong in production will go wrong. Taking the effort to carefully make an engineering drawing that lists every part requirement and lays out a precise testing strategy at the tier 1 and tier 2+ suppliers is something that pays itself back 50x later in the manufacturing process.${sp}` +
+      hd('Full vehicle development') +
+      `I was deeply involved in the early development stages of a future vehicle, working with a group of other subsystem owners to establish the vehicle architecture from the ground up to meet the design objectives. I learned to voice our requirements and flag issues early, and that people are much more likely to compromise on their designs to give you what you need through an in-person talk than over messages. It is a tight balance of using existing proven technologies and taking a risk on something new for meaningful performance gains.` },
   ]);
 
   // FSAE
@@ -897,7 +945,39 @@
     alt: 'KSL NewsRadio tweet sharing a photo of a cold air funnel over Lehi, Utah' });
 
   // Resume / Creative / Strava / Thermal — placeholders for now
-  colBlock(0, 230, 623, 65, { page: 'resume',   locked: true, plain: true, html: 'content incoming…' });
+  const RESUME_PAGES = ['images/resume-1.jpg', 'images/resume-2.jpg', 'images/resume-3.jpg'];
+  const RESUME_PDF = 'files/Alex_Gold_Resume.pdf';
+  const jobBlock = (name, learned, skills) =>
+    `<span class="phead">${name}</span>The job where I learned:<ul>${learned.map(t => `<li>${t}</li>`).join('')}</ul>` +
+    (skills ? `${sp}${skills[0]}<ul>${skills[1].map(t => `<li>${t}</li>`).join('')}</ul>` : '');
+  flow('resume', 230, [
+    { html:   // the formal resume: preview, view (opens the viewer), download
+      `<div class="doc-card">` +
+        `<button class="thumb" data-viewer="resume" data-doc="${RESUME_PAGES.join(',')}" data-title="Resume" data-download="${RESUME_PDF}" aria-label="View the resume">` +
+          `<img src="${RESUME_PAGES[0]}" alt="First page of Alex Gold's resume" style="height:259px"></button>` +
+        `<div class="doc-meta"><span class="phead">Resume</span>${RESUME_PAGES.length} pages · PDF` +
+          `<div class="doc-actions">` +
+            `<button class="link" data-viewer="resume" data-doc="${RESUME_PAGES.join(',')}" data-title="Resume" data-download="${RESUME_PDF}">View</button>` +
+            `<a href="${RESUME_PDF}" download="Alex_Gold_Resume.pdf">Download</a>` +
+          `</div></div></div>` },
+    { html: `<span class="phead">Informal resume</span>That the time difference between "knowing absolutely nothing" about something and "knowing enough to be useful" is only a few hard-working weeks.` },
+    { html: jobBlock('Tesla', [
+        'How to make beautiful, robust, usable CAD',
+        'To work with very large groups to design a full vehicle from nothing',
+        'How to plan engineering timelines for realistic design cycles and manage my priorities when I have too much work',
+        'How to work with layers of suppliers to produce parts that meet our specifications, and track down issues when problems arise'],
+      ['Key skills:', ['Complex part design using CATIA 3DX and Ansys', 'Hands on experience with almost every manufacturing technique out there', 'Data analysis using python, matlab, AI']]) },
+    { html: jobBlock('BYU Racing', [
+        'How to design a full sized battery pack for an electric vehicle',
+        'Knowing the requirements first is a super critical key',
+        'Real life testing beats computer models 4 times out of 5',
+        'How to work collaboratively with a large engineering team'],
+      ['Key skills:', ['High voltage system design', 'Design choice documentation', 'DAQ instrumentation for experimental data']]) },
+    { html: jobBlock('Market Basket', [
+        'How to pack a grocery bag (eggs on top)',
+        'You can come back from anything, even dropping a customer\'s cheesecake facedown on the checkout conveyor'],
+      ['Skills:', ['Organizing cereal boxes into extremely straight rows']]) },
+  ]);
   flow('vision', 230, [
     { html: `I recently read and was deeply influenced by this paper written by a researcher named Jurgen Schmidhuber in 2009. The title is <a href="https://arxiv.org/pdf/0812.4360" target="_blank" rel="noopener">"Driven by Compression Progress: A Simple Principle Explains Essential Aspects of Subjective Beauty, Novelty, Surprise, Interestingness, Attention, Curiosity, Creativity, Art, Science, Music, Jokes"</a>. The paper is worth the read, but in summary, Schmidhuber lays out a general mathematical definition of beauty, defining it as something whose data is able to be compressed in a way where it can be described in much fewer bits. He claims this describes why we find beauty in patterns and symmetrical faces. Interestingness, by this framework, is the derivative of beauty. If something is helping us to understand and describe our inputs and memories, it is interesting until it is no longer useful in improving our compression method.${sp}` +
       `To further understand and apply the idea, I built a single level, linear neural net that processes vision data and gives an output of the perceived beauty and interestingness of each picture, and uses the image to train its internal data compression scheme. For my input vision data, I used the phenocam database, which comes from a collection of thousands of stationary cameras pointing at nature all around the world which capture 16-48 images a day. It's mostly pictures of crops; this data is primarily used to analyze vegetation cycles. Here is an example interface to the neural net and a demonstration of it training itself over time and developing a unique taste for what it finds interesting and beautiful:` },
@@ -952,6 +1032,118 @@
   document.body.style.minWidth = FLOOR_W + 'px';       // below the floor the page scrolls sideways
   window.addEventListener('resize', relayout);
   relayout();
+
+
+  // ---------- viewer: opens a document or photo large, over the page ----------
+  // Anything with data-viewer="group" opens it: a `data-doc` list of page images opens a scrolling
+  // document; otherwise the element's `data-full` (or its <img>) joins a gallery with the other
+  // elements of the same group, with prev/next, keys (Esc, arrows) and swipe.
+  const Viewer = (() => {
+    const root = document.createElement('div');
+    root.id = 'viewer';
+    root.setAttribute('role', 'dialog'); root.setAttribute('aria-modal', 'true'); root.setAttribute('aria-label', 'Viewer');
+    root.innerHTML =
+      '<div class="vw-bar"><span class="vw-title"></span><span class="vw-count"></span><span class="vw-spacer"></span>' +
+      '<a class="vw-btn vw-dl" hidden>Download</a><button class="vw-btn vw-close" type="button">Close</button></div>' +
+      '<button class="vw-btn vw-nav vw-prev" type="button" aria-label="Previous">&larr;</button>' +
+      '<button class="vw-btn vw-nav vw-next" type="button" aria-label="Next">&rarr;</button>' +
+      '<div class="vw-stage"><figure class="vw-frame"><img class="vw-img" alt=""><figcaption class="vw-cap"></figcaption></figure></div>' +
+      '<div class="vw-doc" tabindex="0"></div>';
+    document.body.appendChild(root);
+    const $ = sel => root.querySelector(sel);
+    const title = $('.vw-title'), count = $('.vw-count'), dl = $('.vw-dl'), closeBtn = $('.vw-close');
+    const prevBtn = $('.vw-prev'), nextBtn = $('.vw-next'), stage = $('.vw-stage'), img = $('.vw-img'), cap = $('.vw-cap'), doc = $('.vw-doc');
+    let items = [], idx = 0, mode = 'gallery', opener = null, token = 0, isOpen = false;
+
+    function fit() {                                   // scale the photo to fill the stage, never past its natural size
+      if (mode !== 'gallery' || !img.naturalWidth) return;
+      const aw = stage.clientWidth - 24, ah = stage.clientHeight - 24 - (cap.textContent ? 48 : 0);
+      const k = Math.min(1, aw / img.naturalWidth, ah / img.naturalHeight);
+      img.style.width = Math.round(img.naturalWidth * k) + 'px';
+      img.style.height = Math.round(img.naturalHeight * k) + 'px';
+    }
+    function show(i) {
+      idx = Math.max(0, Math.min(items.length - 1, i));
+      const it = items[idx], mine = ++token;
+      cap.textContent = it.caption || '';
+      count.textContent = items.length > 1 ? `${idx + 1} / ${items.length}` : '';
+      prevBtn.disabled = idx === 0; nextBtn.disabled = idx === items.length - 1;
+      img.alt = it.alt || ''; img.style.visibility = 'hidden';
+      img.style.width = img.style.height = '';
+      img.onload = () => { if (mine !== token) return; fit(); img.style.visibility = ''; };
+      img.onerror = () => { if (mine !== token) return; cap.textContent = 'This image could not be loaded.'; };
+      img.src = it.src;
+      for (const j of [idx - 1, idx + 1]) if (items[j]) new Image().src = items[j].src;   // warm the neighbours
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') { e.preventDefault(); close(); }
+      else if (mode === 'gallery' && e.key === 'ArrowLeft') { e.preventDefault(); show(idx - 1); }
+      else if (mode === 'gallery' && e.key === 'ArrowRight') { e.preventDefault(); show(idx + 1); }
+      else if (e.key === 'Tab') {                      // keep focus inside the window
+        const f = [...root.querySelectorAll('button, a[href], [tabindex="0"]')].filter(el => !el.disabled && !el.hidden && el.offsetParent !== null);
+        if (!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (!root.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+        else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    }
+    function open(o) {
+      items = o.items; mode = o.mode || 'gallery'; opener = o.opener || null;
+      title.textContent = o.title || '';
+      dl.hidden = !o.download;
+      if (o.download) { dl.href = o.download; dl.setAttribute('download', ''); }
+      root.classList.toggle('mode-doc', mode === 'doc');
+      if (mode === 'doc') {
+        doc.innerHTML = items.map(it => `<img src="${it.src}" alt="${esc(it.alt || '')}">`).join('');
+        doc.scrollTop = 0;
+      } else show(o.index || 0);
+      root.classList.add('open'); isOpen = true;
+      document.documentElement.style.overflow = 'hidden';
+      document.addEventListener('keydown', onKey, true);
+      (mode === 'doc' ? doc : closeBtn).focus({ preventScroll: true });
+    }
+    function close() {
+      if (!isOpen) return;
+      isOpen = false; token++;
+      root.classList.remove('open');
+      document.documentElement.style.overflow = '';
+      document.removeEventListener('keydown', onKey, true);
+      img.removeAttribute('src');
+      if (opener && opener.isConnected) opener.focus({ preventScroll: true });
+    }
+
+    closeBtn.addEventListener('click', close);
+    prevBtn.addEventListener('click', () => show(idx - 1));
+    nextBtn.addEventListener('click', () => show(idx + 1));
+    root.addEventListener('click', e => { if (!e.target.closest('.vw-bar, .vw-nav, .vw-frame, .vw-doc img')) close(); });
+    window.addEventListener('resize', () => { if (isOpen) fit(); });
+    let sx = null, sy = null;                           // swipe left/right through a gallery
+    stage.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') { sx = e.clientX; sy = e.clientY; } });
+    stage.addEventListener('pointerup', e => {
+      if (sx === null) return;
+      const dx = e.clientX - sx, dy = e.clientY - sy; sx = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) show(idx + (dx < 0 ? 1 : -1));
+    });
+
+    document.addEventListener('click', e => {
+      const t = e.target.closest('[data-viewer]');
+      if (!t) return;
+      e.preventDefault();
+      if (t.dataset.doc) {
+        const name = t.dataset.title || 'Document';
+        open({ mode: 'doc', title: name, download: t.dataset.download, opener: t,
+          items: t.dataset.doc.split(',').map((src, n) => ({ src, alt: `${name}, page ${n + 1}` })) });
+        return;
+      }
+      const group = [...document.querySelectorAll('[data-viewer]')].filter(el => el.dataset.viewer === t.dataset.viewer && !el.dataset.doc);
+      open({ opener: t, index: group.indexOf(t), items: group.map(el => {
+        const im = el.querySelector('img');
+        return { src: el.dataset.full || (im && im.src), alt: im ? im.alt : '', caption: el.dataset.caption || '' };
+      }) });
+    });
+    return { open, close };
+  })();
 
   // ----- sub-menu pop-up · MODE C -----
   // The top card slides + grows out from under the parent. Each card below then
