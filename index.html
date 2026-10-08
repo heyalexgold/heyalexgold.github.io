@@ -817,14 +817,17 @@
     return b;
   }
   // stack blocks down a page, GAP apart; returns the y just below the last one.
-  //   { html }           a text block          { fig, w }   a figure (w px wide, centered)
-  //   { pair: [fig,fig] } two half-width figures side by side
+  //   { html }                text block          { fig, w }   a figure (w px wide, centered)
+  //   { grid: { cols, figs } } figures in `cols` equal columns, GAP apart
   function flow(page, y, items) {
     for (const it of items) {
       if (it.html) y += textBlock(page, y, it.html).h + GAP;
-      else if (it.pair) {
-        const bs = it.pair.map((f, i) => figBlock(i * (HALF + GAP), y, HALF, { page, ...f }));
-        y += Math.max(...bs.map(b => b.h)) + GAP;
+      else if (it.grid) {
+        const { cols, figs } = it.grid, w = (CONTENT_W - GAP * (cols - 1)) / cols;
+        for (let r = 0; r < figs.length; r += cols) {
+          const row = figs.slice(r, r + cols).map((f, i) => figBlock(i * (w + GAP), y, w, { page, ...f }));
+          y += Math.max(...row.map(b => b.h)) + GAP;
+        }
       } else {
         const w = it.w || CONTENT_W;
         y += figBlock(Math.round((CONTENT_W - w) / 2), y, w, { page, ...it.fig }).h + GAP;
@@ -934,9 +937,9 @@
       `The areas I owned were overall pack layout, collector plates with integrated fuses, thermal sensing, and BMS integration. In each of these areas I led design discussions, performed experiments and simulations, made decisions, and documented my work.` },
     { fig: { src: 'images/fsae-pack.jpg', ratio: 1400 / 1050, alt: 'The assembled accumulator with its orange high voltage connector' } },
     { html: `Here is some of my work for the collector plates I did. One key FSAE rule was that every cell must have its own fuse to prevent parallel groups from igniting if one cell has an internal short. I integrated these fuses into the collector plates to save significant cost and assembly time. To design and validate these collectors, I wrote matlab functions which simulated the thermal model from first principals. I used these results as a starting point, and used a custom (and sketchy) testing rig to precisely verify the fusing time of my prototypes at different currents. Please note the handmade water cooled stainless steel coil resistor with adjustable resistance. Much consideration was also put towards manufacturing, spot welding compatibility, and cost.` },
-    { pair: [
+    { grid: { cols: 2, figs: [
       { src: 'images/fsae-fuse-rig.jpg', ratio: 1400 / 1050, alt: 'Fuse time testing rig', caption: 'Fuse time testing rig' },
-      { src: 'images/fsae-collector.jpg', ratio: 1400 / 1050, alt: 'A finished copper collector plate', caption: 'The final product' } ] },
+      { src: 'images/fsae-collector.jpg', ratio: 1400 / 1050, alt: 'A finished copper collector plate', caption: 'The final product' } ] } },
     { fig: { src: 'images/fsae-modules.jpg', ratio: 1400 / 1355, alt: 'Assembling battery modules', caption: 'I also assembled many, many modules.' }, w: Math.round(CONTENT_W * 2 / 3) },
   ]);
 
@@ -984,7 +987,15 @@
     { html: 'interactive demo incoming…' },
     { html: `A possible future of this project is to build several solar powered long-lifetime vision/compute units that I can place in a nice spot and they will stay there for 30+ years. They will watch and analyze the world for beauty, selectively looking at what they find interesting, training their unique data compression models. They will be disconnected from any radio frequency antennas so there can not be any output. I think beauty only exists when perceived, so maybe increasing the compute power dedicated to perceiving beauty will increase the amount of beauty in the world.` },
   ]);
-  colBlock(0, 230, 623, 65, { page: 'film',     locked: true, plain: true, html: 'content incoming…' });
+  // film: thumbnails (images/film/h1-thumb.jpg) open the full photo (h1.jpg) in the viewer, one gallery per orientation
+  const filmFigs = (p, n, ratio) => Array.from({ length: n }, (_, i) => ({
+    src: `images/film/${p}${i + 1}-thumb.jpg`, full: `images/film/${p}${i + 1}.jpg`, ratio, viewer: `film-${p}`,
+    alt: `Film photograph ${i + 1} of ${n} (${p === 'h' ? 'horizontal' : 'vertical'})` }));
+  flow('film', 230, [
+    { html: `Hobby -> low-paying-side-gig -> hobby again.${sp}Almost exclusively shot on a Canon sureshot telemax and the fujifilm 400 sold at Walmart.` },
+    { grid: { cols: 2, figs: filmFigs('h', 14, 3 / 2) } },
+    { grid: { cols: 3, figs: filmFigs('v', 14, 2 / 3) } },
+  ]);
   colBlock(0, 230, 623, 65, { page: 'trash',    locked: true, plain: true, html: 'content incoming…' });
   flow('website', 230, [
     { html: `This website was designed by me as a project. The design was based around these physics-based blocks that interact with each other in predictable ways. This allows for smooth animations and interactions throughout. It is written in plain HTML, CSS, and JavaScript, which allows silky smooth integration of all of the interactive bits.${sp}` +
