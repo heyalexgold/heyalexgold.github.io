@@ -2,7 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Alex Gold</title>
+  <title>Alex Gold — Mechanical design engineer</title>
+  <meta name="description" content="Alex Gold is a mechanical design engineer at Tesla working on high voltage distribution and actuators. Projects: the Cybercab charge port, an FSAE Formula Electric accumulator, a haptic audio controller, and film photography.">
+  <link rel="canonical" href="https://heyalexgold.github.io/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Alex Gold">
+  <meta property="og:title" content="Alex Gold — Mechanical design engineer">
+  <meta property="og:description" content="Mechanical design engineer at Tesla: high voltage distribution, actuators and mechatronics. Cybercab charge port, FSAE Formula Electric, a haptic audio controller, film.">
+  <meta property="og:url" content="https://heyalexgold.github.io/">
+  <meta property="og:image" content="https://heyalexgold.github.io/images/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Alex Gold, mechanical design engineer">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Alex Gold — Mechanical design engineer">
+  <meta name="twitter:description" content="Mechanical design engineer at Tesla: high voltage distribution, actuators and mechatronics.">
+  <meta name="twitter:image" content="https://heyalexgold.github.io/images/og.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Alex Gold",
+    "url": "https://heyalexgold.github.io/",
+    "image": "https://heyalexgold.github.io/images/profile.jpg",
+    "jobTitle": "Mechanical Design Engineer",
+    "worksFor": { "@type": "Organization", "name": "Tesla" },
+    "alumniOf": { "@type": "CollegeOrUniversity", "name": "Brigham Young University" },
+    "knowsAbout": ["mechanical design", "high voltage systems", "actuators", "mechatronics", "battery systems"],
+    "sameAs": ["https://www.linkedin.com/in/alexgold36"]
+  }
+  </script>
+  <script>document.documentElement.classList.add('js')</script>
   <style>
     :root { --red: #e5392b; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -80,6 +110,26 @@
     .block > .content.bare img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
     .block a, .block .accent { color: var(--red); text-decoration: none; }
+
+    /* the static content layer (<main id="content">): what link previews, search engines and
+       non-JavaScript readers get. With JavaScript it is replaced by the blocks. */
+    #content { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; background: #fff; font-size: 17px; line-height: 1.5; }
+    .js #content { display: none; }
+    #content h1 { font-size: 2.4rem; color: var(--red); font-weight: 500; }
+    #content h2 { font-size: 1.7rem; margin: 2.2rem 0 0.8rem; }
+    #content h3 { font-size: 1.25rem; margin: 1.4rem 0 0.4rem; }
+    #content p, #content ul { margin: 0 0 0.9em; }
+    #content ul { padding-left: 1.3em; }
+    #content a { color: var(--red); }
+    #content nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 18px; padding: 0; margin: 1rem 0; }
+    #content img { max-width: 100%; height: auto; display: block; }
+    #content #portrait { width: 176px; margin: 1rem 0; }
+    #content figure { margin: 1rem 0; }
+    #content figcaption { font-size: 0.85rem; color: #444; margin-top: 0.3rem; }
+    #content .grid[data-cols="3"] { --cols: 3; }
+    #content .grid { display: grid; grid-template-columns: repeat(var(--cols, 2), 1fr); gap: 7px; margin: 1rem 0; }
+    #content .grid figure { margin: 0; }
+
     /* ---- viewer: a large window over the page (documents, photo galleries) ---- */
     html { scrollbar-gutter: stable; }
     .block button.link { color: var(--red); background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
@@ -122,9 +172,13 @@
     #viewer.mode-doc .vw-doc { display: block; }
     #viewer.mode-doc .vw-stage, #viewer.mode-doc .vw-nav { display: none; }
 
-    .block .sp { display: block; height: 0.9em; }   /* paragraph spacer */
 
     /* ---- page content ---- */
+    .block p { margin: 0; }
+    .block p + p { margin-top: 0.9em; }
+    .block ul + p { padding-top: 0.9em; }          /* padding, not margin: the last list item's own margin must add, not collapse */
+    .block h3 { display: block; font-size: 1.5rem; font-weight: 600; color: #111; margin: 18px 0 0.55rem; letter-spacing: -0.01em; }
+    .block h3:first-child { margin-top: 0; }
     .block .phead { display: block; font-size: 1.5rem; font-weight: 600; color: #111; margin-bottom: 0.55rem; letter-spacing: -0.01em; }
     .block ul { margin: 0.4em 0 0 1.15em; padding: 0; }
     .block li { margin-bottom: 0.3em; }
@@ -436,6 +490,266 @@
 </head>
 <body>
 
+<main id="content">
+  <header>
+    <h1>Alex Gold</h1>
+    <p id="bio">mechanical engineer<br>multi-disciplinarian<br>busy bee</p>
+    <img id="portrait" src="images/profile.jpg" width="1179" height="1712" alt="Alex Gold">
+  </header>
+  <nav aria-label="Pages">
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#tesla">Tesla</a></li>
+      <li><a href="#fsae">FSAE Formula E</a></li>
+      <li><a href="#news">In the news</a></li>
+      <li><a href="#resume">Resume / contact</a></li>
+      <li><a href="#turntable">Haptic audio controller</a></li>
+      <li><a href="#ghost-run">Strava ghost run</a></li>
+      <li><a href="#thermal-camera">Thermal printer camera</a></li>
+      <li><a href="#beauty-as-data-compression">Beauty as data compression</a></li>
+      <li><a href="#film">Film</a></li>
+      <li><a href="#on-trash">On trash</a></li>
+      <li><a href="#this-website">This website</a></li>
+    </ul>
+  </nav>
+
+  <article id="home" data-route="home" data-title="Alex Gold">
+    <h2>about</h2>
+    <div class="blk">
+      <p>Hey, I'm Alex Gold.</p>
+      <p>I'm an engineer who loves to spin CAD, despises CTE mismatches, and doesn't mind frying a resistor.</p>
+      <p>I currently work at Tesla in Palo Alto, California as a mechanical design engineer on the high voltage distribution team, working on high volume part design and actuators. I studied mechanical engineering at BYU with a focus on high voltage electronics, mechatronics, and battery chemistry. I'm passionate about interdisciplinary engineering and mechatronic systems. Above all else I just want to build, build, build!</p>
+    </div>
+  </article>
+
+  <article id="tesla" data-route="tesla" data-title="Tesla">
+    <h2>tesla</h2>
+    <div class="blk">
+      <p>I am currently working as a mechanical design engineer on the drive systems team, focusing on high voltage distribution. I am the design owner of multiple parts including the next generation charge port for Cybercab and future vehicles.</p>
+      <p>I work on developing new vehicle programs, from high level planning and integration with large groups, to detailed, innovative part design, to ramping and manufacturing at a massive scale.</p>
+    </div>
+    <figure><img src="images/Tesla-Cybercab-2.jpeg" width="2726" height="1342" alt="Tesla Cybercab" loading="lazy"></figure>
+    <div class="blk">
+      <h3>Actuator integration</h3>
+      <p>I own the design and integration of an actuator system, which I have developed from an existing design to a better, more reliable product. I have dealt with every issue you can think of: electrical contact degradation, poor sealing, corrosion, environmental wear, motor burnout, fatigue failures, signal corruption, supplier inconsistencies, not enough grease, too much grease, the wrong kind of grease, and on and on.</p>
+      <p>I have designed and soldered custom electronics to test actuators, have spent hours analyzing oscilloscope traces, and many more hours decoding CAN signals to characterize field failures.</p>
+      <p>The work is ongoing as I investigate new designs and actuator types to increase reliability, decrease cost, and improve performance.</p>
+      <h3>Ramping to massive scale</h3>
+      <p>My parts do not die as ideas and prototypes, they are actively scaling.</p>
+      <p>I have learned that the ramping process is far more intense than the design process. Turns out 0-&gt;1 is a breeze compared to 1-&gt;1,000,000. The manufacturing process magnifies weak points and teases out the 5%, 1%, and 0.1% failures. Identifying them and fixing them early and rapidly is key. An example of this:</p>
+      <p>During ramp, the factory flagged a design problem with a part that caused a vehicle EOL issue. I dropped everything and spent the next few days designing a tester to screen out affected parts. A teammate flew a prototype to the factory and got feedback, and I hand soldered a production-worthy version which I flew to our upstream assembler and then trained line workers to use it. This contained the issue and allowed me to validate a robust design change which would get rid of the problem completely.</p>
+      <h3>Early design and prototyping</h3>
+      <p>Speed is the name of the game. I have found the sooner you can have a working model running representative firmware, the closer you are to rev 2. I 3D print it, destroy it, modify it, and print it again. I have also learned to be bold with designs.</p>
+      <h3>Innovative and careful design for manufacturing</h3>
+      <p>Anything that can go wrong in production will go wrong. Taking the effort to carefully make an engineering drawing that lists every part requirement and lays out a precise testing strategy at the tier 1 and tier 2+ suppliers is something that pays itself back 50x later in the manufacturing process.</p>
+      <h3>Full vehicle development</h3>
+      <p>I was deeply involved in the early development stages of a future vehicle, working with a group of other subsystem owners to establish the vehicle architecture from the ground up to meet the design objectives. I learned to voice our requirements and flag issues early, and that people are much more likely to compromise on their designs to give you what you need through an in-person talk than over messages. It is a tight balance of using existing proven technologies and taking a risk on something new for meaningful performance gains.</p>
+    </div>
+  </article>
+
+  <article id="fsae" data-route="fsae" data-title="FSAE Formula E">
+    <h2>fsae formula e</h2>
+    <div class="blk">
+      <p>I was a founding member of the FSAE Formula Electric team at BYU. Within two years, we built a functional car and sent it to competition and it passed accumulator safety check (a very difficult task for a rookie team).</p>
+    </div>
+    <figure><img src="images/fsae-car.jpg" width="1400" height="1050" alt="The FSAE Formula Electric car" loading="lazy"></figure>
+    <div class="blk">
+      <h3>Year 1</h3>
+      <p>In the first year, me and a group of equally ambitious and unqualified students designed the electric powertrain and built it for a trial chassis. We used a custom designed and built-to-spec pack and an off the shelf inverter and motor. Year 1 was super scrappy, it was nowhere close to rules compliant, and we were barely able to get the motor spinning, but it did spin! It was the necessary foundation for the next year and exposed the areas that I needed more knowledge in.</p>
+      <h3>Year 2</h3>
+      <p>This is when it got real. Me and a group of 8 other engineers designed and built a custom 400v accumulator (battery pack) from scratch. Me and a friend Landon were the only ones part of the high voltage team in year one.</p>
+      <p>The areas I owned were overall pack layout, collector plates with integrated fuses, thermal sensing, and BMS integration. In each of these areas I led design discussions, performed experiments and simulations, made decisions, and documented my work.</p>
+    </div>
+    <figure><img src="images/fsae-pack.jpg" width="1400" height="1050" alt="The assembled accumulator with its orange high voltage connector" loading="lazy"></figure>
+    <div class="blk">
+      <p>Here is some of my work for the collector plates I did. One key FSAE rule was that every cell must have its own fuse to prevent parallel groups from igniting if one cell has an internal short. I integrated these fuses into the collector plates to save significant cost and assembly time. To design and validate these collectors, I wrote matlab functions which simulated the thermal model from first principals. I used these results as a starting point, and used a custom (and sketchy) testing rig to precisely verify the fusing time of my prototypes at different currents. Please note the handmade water cooled stainless steel coil resistor with adjustable resistance. Much consideration was also put towards manufacturing, spot welding compatibility, and cost.</p>
+    </div>
+    <div class="grid" data-cols="2">
+      <figure><img src="images/fsae-fuse-rig.jpg" width="1400" height="1050" alt="Fuse time testing rig" loading="lazy"><figcaption>Fuse time testing rig</figcaption></figure>
+      <figure><img src="images/fsae-collector.jpg" width="1400" height="1050" alt="A finished copper collector plate" loading="lazy"><figcaption>The final product</figcaption></figure>
+    </div>
+    <figure data-w="2/3"><img src="images/fsae-modules.jpg" width="1400" height="1355" alt="Assembling battery modules" loading="lazy"><figcaption>I also assembled many, many modules.</figcaption></figure>
+  </article>
+
+  <article id="news" data-route="news" data-title="In the news">
+    <h2>in the news</h2>
+    <figure><img src="images/weather_report.JPG" width="1125" height="1627" alt="KSL NewsRadio tweet sharing a photo of a cold air funnel over Lehi, Utah" loading="lazy"></figure>
+  </article>
+
+  <article id="resume" data-route="resume" data-title="Resume / contact">
+    <h2>resume / contact</h2>
+    <div class="blk" data-kind="doc" data-title="Resume" data-pages="images/resume-1.jpg,images/resume-2.jpg,images/resume-3.jpg" data-pdf="files/Alex_Gold_Resume.pdf">
+      <h3>Resume</h3>
+      <p><a href="files/Alex_Gold_Resume.pdf">Alex Gold — Resume (PDF, 3 pages)</a></p>
+    </div>
+    <div class="blk">
+      <h3>Informal resume</h3>
+      <p>That the time difference between "knowing absolutely nothing" about something and "knowing enough to be useful" is only a few hard-working weeks.</p>
+    </div>
+    <div class="blk">
+      <h3>Tesla</h3>
+      <p>The job where I learned:</p>
+      <ul>
+        <li>How to make beautiful, robust, usable CAD</li>
+        <li>To work with very large groups to design a full vehicle from nothing</li>
+        <li>How to plan engineering timelines for realistic design cycles and manage my priorities when I have too much work</li>
+        <li>How to work with layers of suppliers to produce parts that meet our specifications, and track down issues when problems arise</li>
+      </ul>
+      <p>Key skills:</p>
+      <ul>
+        <li>Complex part design using CATIA 3DX and Ansys</li>
+        <li>Hands on experience with almost every manufacturing technique out there</li>
+        <li>Data analysis using python, matlab, AI</li>
+      </ul>
+    </div>
+    <div class="blk">
+      <h3>BYU Racing</h3>
+      <p>The job where I learned:</p>
+      <ul>
+        <li>How to design a full sized battery pack for an electric vehicle</li>
+        <li>Knowing the requirements first is a super critical key</li>
+        <li>Real life testing beats computer models 4 times out of 5</li>
+        <li>How to work collaboratively with a large engineering team</li>
+      </ul>
+      <p>Key skills:</p>
+      <ul>
+        <li>High voltage system design</li>
+        <li>Design choice documentation</li>
+        <li>DAQ instrumentation for experimental data</li>
+      </ul>
+    </div>
+    <div class="blk">
+      <h3>Market Basket</h3>
+      <p>The job where I learned:</p>
+      <ul>
+        <li>How to pack a grocery bag (eggs on top)</li>
+        <li>You can come back from anything, even dropping a customer's cheesecake facedown on the checkout conveyor</li>
+      </ul>
+      <p>Skills:</p>
+      <ul>
+        <li>Organizing cereal boxes into extremely straight rows</li>
+      </ul>
+    </div>
+  </article>
+
+  <article id="turntable" data-route="haptic" data-title="Haptic audio controller">
+    <h2>haptic audio controller</h2>
+    <div class="blk">
+      <p>I am working on a bluetooth device that sits on my desk and gives physical interfaces to basic audio controls for music and meetings. I am incorporating a little turntable-style platter that turns as audio plays through it and can be used to scratch back over a song or meeting you are in (inspired by Teenage Engineering OB-4). I'm always listening to music and connecting to meetings through my phone, but I don't want to have it out all the time to handle controls.</p>
+      <p>My technical motivations for the project:</p>
+      <ul>
+        <li>Buttery smooth haptic interfacing</li>
+        <li>Use field controls on a brushless DC motor</li>
+        <li>Low latency communication and processing (&lt;10ms)</li>
+        <li>PCBA design</li>
+        <li>Industrial design for the housing</li>
+      </ul>
+    </div>
+    <div data-widget="tt" data-h="507" data-gap="30"></div>
+    <div class="blk">
+      <h3>Architecture</h3>
+      <ul class="long">
+        <li>Built around an ESP32 — dual cores were a key requirement (core 0 strictly handles motor control and feedback, core 1 handles audio buffer, bluetooth, screen, and user input).</li>
+        <li>Motor is a brushless DC gimbal motor controlled with a simpleFOC chip. This is something I debated for a while, and considered using a small brushed motor with physical gearing and clutch, similar to a real turntable, but I decided on a gimbal motor because of the total integration and small packaging of the motor, magnetic encoder, and mechanical structure. Also I found the simpleFOC chip which unlocked precise control at very low speeds and has an active community which I referenced for the firmware. I've spent a long time tuning the control method and filtering for this to make the feel correct with very low cogging. I found this matters a lot when you tie an audio output to it; high frequency wobble you can't physically feel shows up as noticeable audio distortion in the highs and lows.</li>
+        <li>I want this to be powered by a USB-C connection that can be plugged into a laptop, so the power draw is limited. This governed the max reaction torque of the platter motor, and required me to add a boost converter to bump up the voltage for my motor. During normal operation the closed-loop motor controls run at shockingly low power (&lt;0.1 watts) so system cooling is not a concern.</li>
+        <li>Firmware is based around two main processing systems. I'm a firmware novice so Claude helped implement the code once I had laid out the high level architecture. In one core, audio is pulled in through a bluetooth connection and fed into a ring buffer which overwrites itself every two minutes. The audio is fed out through a DAC to a lined connection, the position and rate of output is set by a pointer which references the motor position and velocity. In another core, the motor is controlled using a closed loop system using field controls that reference the resolver. This system took a lot of refining, it has filtering and the motor goes through a calibration cycle during boot to measure cogging due to the permanent magnets, which it then compensates for. Thanks to the simpleFOC community for that one. I really wanted to do bluetooth in and bluetooth out to airpods, but airpods make this so unfriendly, and it added too much complexity and mostly would have made the latency too high to be usable in a meeting or get a responsive feel at the turntable.</li>
+      </ul>
+      <p>This project is in process.</p>
+    </div>
+  </article>
+
+  <article id="ghost-run" data-route="ghostrun" data-title="Strava ghost run">
+    <h2>Strava ghost run</h2>
+    <div class="blk">
+      <p>I am a man of habit. I run the same 2.3 mile loop around the neighborhood several days a week before work. On a recent run, I thought about how enjoyable it would be to run among all the past versions of myself. I requested my data from Strava and used Xcode to create a visualization app that I could use while running.</p>
+      <p>Technical motivations for this project:</p>
+      <ul>
+        <li>iOS app development through Xcode</li>
+        <li>API integration</li>
+        <li>Functional design and UI</li>
+      </ul>
+    </div>
+    <div data-widget="gr" data-h="623" data-gap="26"></div>
+    <figure data-w="2/3"><img src="images/ghost-run-app.png" width="1179" height="2556" alt="Ghost Run app mid-run: position in pack, a map of nearby ghost runners, and race controls" loading="lazy"><figcaption>Actual screenshot of the app, taken mid-run</figcaption></figure>
+  </article>
+
+  <article id="thermal-camera" data-route="thermal" data-title="Thermal printer camera">
+    <h2>thermal printer camera</h2>
+    <div class="blk"><p>content incoming…</p></div>
+  </article>
+
+  <article id="beauty-as-data-compression" data-route="vision" data-title="Beauty as data compression">
+    <h2>beauty as data compression</h2>
+    <div class="blk">
+      <p>I recently read and was deeply influenced by this paper written by a researcher named Jurgen Schmidhuber in 2009. The title is <a href="https://arxiv.org/pdf/0812.4360" target="_blank" rel="noopener">"Driven by Compression Progress: A Simple Principle Explains Essential Aspects of Subjective Beauty, Novelty, Surprise, Interestingness, Attention, Curiosity, Creativity, Art, Science, Music, Jokes"</a>. The paper is worth the read, but in summary, Schmidhuber lays out a general mathematical definition of beauty, defining it as something whose data is able to be compressed in a way where it can be described in much fewer bits. He claims this describes why we find beauty in patterns and symmetrical faces. Interestingness, by this framework, is the derivative of beauty. If something is helping us to understand and describe our inputs and memories, it is interesting until it is no longer useful in improving our compression method.</p>
+      <p>To further understand and apply the idea, I built a single level, linear neural net that processes vision data and gives an output of the perceived beauty and interestingness of each picture, and uses the image to train its internal data compression scheme. For my input vision data, I used the phenocam database, which comes from a collection of thousands of stationary cameras pointing at nature all around the world which capture 16-48 images a day. It's mostly pictures of crops; this data is primarily used to analyze vegetation cycles. Here is an example interface to the neural net and a demonstration of it training itself over time and developing a unique taste for what it finds interesting and beautiful:</p>
+    </div>
+    <div class="blk"><p>interactive demo incoming…</p></div>
+    <div class="blk">
+      <p>A possible future of this project is to build several solar powered long-lifetime vision/compute units that I can place in a nice spot and they will stay there for 30+ years. They will watch and analyze the world for beauty, selectively looking at what they find interesting, training their unique data compression models. They will be disconnected from any radio frequency antennas so there can not be any output. I think beauty only exists when perceived, so maybe increasing the compute power dedicated to perceiving beauty will increase the amount of beauty in the world.</p>
+    </div>
+  </article>
+
+  <article id="film" data-route="film" data-title="Film">
+    <h2>film</h2>
+    <div class="blk">
+      <p>Hobby -&gt; low-paying-side-gig -&gt; hobby again.</p>
+      <p>Almost exclusively shot on a Canon sureshot telemax and the fujifilm 400 sold at Walmart.</p>
+    </div>
+    <div class="grid" data-cols="2" data-ratio="3/2">
+      <figure><a href="images/film/h1.jpg" data-gallery="film-h"><img src="images/film/h1-thumb.jpg" width="640" height="426" alt="Film photograph 1 of 14 (horizontal)" loading="lazy"></a></figure>
+      <figure><a href="images/film/h2.jpg" data-gallery="film-h"><img src="images/film/h2-thumb.jpg" width="640" height="426" alt="Film photograph 2 of 14 (horizontal)" loading="lazy"></a></figure>
+      <figure><a href="images/film/h3.jpg" data-gallery="film-h"><img src="images/film/h3-thumb.jpg" width="640" height="426" alt="Film photograph 3 of 14 (horizontal)" loading="lazy"></a></figure>
+      <figure><a href="images/film/h4.jpg" data-gallery="film-h"><img src="images/film/h4-thumb.jpg" width="640" height="429" alt="Film photograph 4 of 14 (horizontal)" loading="lazy"></a></figure>
+      <figure><a href="images/film/h5.jpg" data-gallery="film-h"><img src="images/film/h5-thumb.jpg" width="640" height="426" alt="Film photograph 5 of 14 (horizontal)" loading="lazy"></a></figure>
+      <figure><a href="images/film/h6.jpg" data-gallery="film-h"><img src="images/film/h6-thumb.jpg" width="640" height="428" alt="Film photograph 6 of 14 (horizontal)" loading="lazy"></a></figure>
+      <figure><a href="images/film/h7.jpg" data-gallery="film-h"><img src="images/film/h7-thumb.jpg" width="640" height="428" alt="Film photograph 7 of 14 (horizontal)" loading="lazy"></a></figure>
+      <figure><a href="images/film/h8.jpg" data-gallery="film-h"><img src="images/film/h8-thumb.jpg" width="640" height="426" alt="Film photograph 8 of 14 (horizontal)" loading="lazy"></a></figure>
+      <figure><a href="images/film/h9.jpg" data-gallery="film-h"><img src="images/film/h9-thumb.jpg" width="640" height="427" alt="Film photograph 9 of 14 (horizontal)" loading="lazy"></a></figure>
+      <figure><a href="images/film/h10.jpg" data-gallery="film-h"><img src="images/film/h10-thumb.jpg" width="640" height="428" alt="Film photograph 10 of 14 (horizontal)" loading="lazy"></a></figure>
+      <figure><a href="images/film/h11.jpg" data-gallery="film-h"><img src="images/film/h11-thumb.jpg" width="640" height="426" alt="Film photograph 11 of 14 (horizontal)" loading="lazy"></a></figure>
+      <figure><a href="images/film/h12.jpg" data-gallery="film-h"><img src="images/film/h12-thumb.jpg" width="640" height="426" alt="Film photograph 12 of 14 (horizontal)" loading="lazy"></a></figure>
+      <figure><a href="images/film/h13.jpg" data-gallery="film-h"><img src="images/film/h13-thumb.jpg" width="640" height="428" alt="Film photograph 13 of 14 (horizontal)" loading="lazy"></a></figure>
+      <figure><a href="images/film/h14.jpg" data-gallery="film-h"><img src="images/film/h14-thumb.jpg" width="640" height="426" alt="Film photograph 14 of 14 (horizontal)" loading="lazy"></a></figure>
+    </div>
+    <div class="grid" data-cols="3" data-ratio="2/3">
+      <figure><a href="images/film/v1.jpg" data-gallery="film-v"><img src="images/film/v1-thumb.jpg" width="401" height="600" alt="Film photograph 1 of 14 (vertical)" loading="lazy"></a></figure>
+      <figure><a href="images/film/v2.jpg" data-gallery="film-v"><img src="images/film/v2-thumb.jpg" width="400" height="600" alt="Film photograph 2 of 14 (vertical)" loading="lazy"></a></figure>
+      <figure><a href="images/film/v3.jpg" data-gallery="film-v"><img src="images/film/v3-thumb.jpg" width="399" height="600" alt="Film photograph 3 of 14 (vertical)" loading="lazy"></a></figure>
+      <figure><a href="images/film/v4.jpg" data-gallery="film-v"><img src="images/film/v4-thumb.jpg" width="401" height="600" alt="Film photograph 4 of 14 (vertical)" loading="lazy"></a></figure>
+      <figure><a href="images/film/v5.jpg" data-gallery="film-v"><img src="images/film/v5-thumb.jpg" width="399" height="600" alt="Film photograph 5 of 14 (vertical)" loading="lazy"></a></figure>
+      <figure><a href="images/film/v6.jpg" data-gallery="film-v"><img src="images/film/v6-thumb.jpg" width="401" height="600" alt="Film photograph 6 of 14 (vertical)" loading="lazy"></a></figure>
+      <figure><a href="images/film/v7.jpg" data-gallery="film-v"><img src="images/film/v7-thumb.jpg" width="401" height="600" alt="Film photograph 7 of 14 (vertical)" loading="lazy"></a></figure>
+      <figure><a href="images/film/v8.jpg" data-gallery="film-v"><img src="images/film/v8-thumb.jpg" width="401" height="600" alt="Film photograph 8 of 14 (vertical)" loading="lazy"></a></figure>
+      <figure><a href="images/film/v9.jpg" data-gallery="film-v"><img src="images/film/v9-thumb.jpg" width="401" height="600" alt="Film photograph 9 of 14 (vertical)" loading="lazy"></a></figure>
+      <figure><a href="images/film/v10.jpg" data-gallery="film-v"><img src="images/film/v10-thumb.jpg" width="399" height="600" alt="Film photograph 10 of 14 (vertical)" loading="lazy"></a></figure>
+      <figure><a href="images/film/v11.jpg" data-gallery="film-v"><img src="images/film/v11-thumb.jpg" width="401" height="600" alt="Film photograph 11 of 14 (vertical)" loading="lazy"></a></figure>
+      <figure><a href="images/film/v12.jpg" data-gallery="film-v"><img src="images/film/v12-thumb.jpg" width="401" height="600" alt="Film photograph 12 of 14 (vertical)" loading="lazy"></a></figure>
+      <figure><a href="images/film/v13.jpg" data-gallery="film-v"><img src="images/film/v13-thumb.jpg" width="401" height="600" alt="Film photograph 13 of 14 (vertical)" loading="lazy"></a></figure>
+      <figure><a href="images/film/v14.jpg" data-gallery="film-v"><img src="images/film/v14-thumb.jpg" width="401" height="600" alt="Film photograph 14 of 14 (vertical)" loading="lazy"></a></figure>
+    </div>
+  </article>
+
+  <article id="on-trash" data-route="trash" data-title="On trash">
+    <h2>on trash</h2>
+    <div class="blk"><p>content incoming…</p></div>
+  </article>
+
+  <article id="this-website" data-route="website" data-title="This website">
+    <h2>this website</h2>
+    <div class="blk">
+      <p>This website was designed by me as a project. The design was based around these physics-based blocks that interact with each other in predictable ways. This allows for smooth animations and interactions throughout. It is written in plain HTML, CSS, and JavaScript, which allows silky smooth integration of all of the interactive bits.</p>
+      <p>My technical motivations for the project:</p>
+      <ul>
+        <li>Website design</li>
+        <li>UX planning</li>
+        <li>Integration of interactive components</li>
+      </ul>
+    </div>
+  </article>
+</main>
+
+
   <div class="gr-host" data-page="ghostrun">
     <div class="gr-map">
       <img src="ghost-run/basemap.svg" alt="">
@@ -736,23 +1050,45 @@
   }
 
   // ---------- page routing: the sidebar + title stay, the middle swaps ----------
+  // Every page has its own address (#tesla, #turntable, ...). Navigating pushes a history entry, so
+  // back/forward work and a pasted link opens straight onto its page.
+  const SLUG = { home: 'home', tesla: 'tesla', fsae: 'fsae', news: 'news', resume: 'resume', haptic: 'turntable',
+    ghostrun: 'ghost-run', thermal: 'thermal-camera', vision: 'beauty-as-data-compression', film: 'film',
+    trash: 'on-trash', website: 'this-website' };
+  const PAGE_OF = { ...Object.fromEntries(Object.keys(SLUG).map(p => [p, p])),
+                    ...Object.fromEntries(Object.entries(SLUG).map(([p, s]) => [s, p])) };   // slug or page id -> page id
+  const pageFromHash = () => PAGE_OF[decodeURIComponent(location.hash.slice(1))] || 'home';
+  const PAGE_TITLE = {};
+  document.querySelectorAll('#content article').forEach(a => { PAGE_TITLE[a.dataset.route] = a.dataset.title; });
+  history.scrollRestoration = 'manual';
+
   let currentPage = 'home';
   const pageNav = {};                        // page -> the nav block the red bar rides
   function hapticActive() { return currentPage === 'haptic'; }
-  function showPage(page) {
+  function showPage(page, opts = {}) {
     currentPage = page;
+    if (opts.history !== false && pageFromHash() !== page)     // a navigation, not the browser's own back/forward
+      history.pushState(null, '', page === 'home' ? location.pathname + location.search : '#' + SLUG[page]);
+    document.title = page === 'home' ? 'Alex Gold — Mechanical design engineer' : `${PAGE_TITLE[page]} — Alex Gold`;
     for (const b of Block.all) {
       const vis = !b.page || b.page === page || (b.page === '_side' && page !== 'home');
       b.el.style.display = vis ? '' : 'none';
     }
     document.querySelectorAll('[data-page]').forEach(el => { el.style.display = el.dataset.page === page ? '' : 'none'; });
     if (typeof closeSub === 'function') closeSub();
-    activateNav(pageNav[page] || cwo);
+    if (typeof Viewer !== 'undefined') Viewer.close();
+    const target = pageNav[page] || cwo;
+    if (opts.instant) { activeNav = target; placeBar(target, false); } else activateNav(target);
+    window.scrollTo(0, 0);
     fitPageHeight();
     if (page === 'haptic') { if (typeof initTurntable === 'function') initTurntable(); }
     else if (typeof stopTurntable === 'function') stopTurntable();
     if (page === 'ghostrun') { if (typeof initGhostRun === 'function') initGhostRun(); }
     else if (typeof stopGhostRun === 'function') stopGhostRun();
+  }
+  function route() {                          // the address changed (back/forward, typed or pasted link)
+    const p = pageFromHash();
+    if (p !== currentPage) showPage(p, { history: false });
   }
 
   // the page is as tall as its content (plus room below)
@@ -764,8 +1100,6 @@
     });
     document.body.style.minHeight = (bottom + 120) + 'px';
   }
-
-  const sp = '<span class="sp"></span>';   // paragraph gap
 
   // ---------- the site, as blocks (positions mirror the mockup) ----------
 
@@ -816,26 +1150,6 @@
     b.content.style.position = ''; b.draw();
     return b;
   }
-  // stack blocks down a page, GAP apart; returns the y just below the last one.
-  //   { html }                text block          { fig, w }   a figure (w px wide, centered)
-  //   { grid: { cols, figs } } figures in `cols` equal columns, GAP apart
-  function flow(page, y, items) {
-    for (const it of items) {
-      if (it.html) y += textBlock(page, y, it.html).h + GAP;
-      else if (it.grid) {
-        const { cols, figs } = it.grid, w = (CONTENT_W - GAP * (cols - 1)) / cols;
-        for (let r = 0; r < figs.length; r += cols) {
-          const row = figs.slice(r, r + cols).map((f, i) => figBlock(i * (w + GAP), y, w, { page, ...f }));
-          y += Math.max(...row.map(b => b.h)) + GAP;
-        }
-      } else {
-        const w = it.w || CONTENT_W;
-        y += figBlock(Math.round((CONTENT_W - w) / 2), y, w, { page, ...it.fig }).h + GAP;
-      }
-    }
-    return y;
-  }
-
   // ---- sidebar (constant across pages; locked = click-only) ----
   new Block(SIDEBAR_X,  40, SIDEBAR_W, 24, { cls: 'redcap', locked: true });                  // red cap on top
   const home      = new Block(SIDEBAR_X,  71, SIDEBAR_W, 42, { cls: 'nav', locked: true, html: 'home',                  onClick: () => showPage('home') });
@@ -874,163 +1188,71 @@
     place: (L, b) => ({ x: L.right - (b.w + GAP + portrait.w) }) });
   new Block(828, 40, 176, 56, { cls: 'title title-side', page: '_side', html: '<h1>alex gold</h1>', place: pinRight });
 
-  // per-page title blocks — black, sized to the text, sharing the body's top-left corner
-  colBlock(0, 171,  92, 52, { cls: 'title title-page', page: 'tesla',    html: '<h1>tesla</h1>' });
-  colBlock(0, 171, 212, 52, { cls: 'title title-page', page: 'fsae',     html: '<h1>fsae formula e</h1>' });
-  colBlock(0, 171, 176, 52, { cls: 'title title-page', page: 'news',     html: '<h1>in the news</h1>' });
-  colBlock(0, 171, 246, 52, { cls: 'title title-page', page: 'resume',   html: '<h1>resume / contact</h1>' });
-  colBlock(0, 171, 316, 52, { cls: 'title title-page', page: 'haptic',   html: '<h1>haptic audio controller</h1>' });
-  colBlock(0, 171, 241, 52, { cls: 'title title-page', page: 'ghostrun', html: '<h1>Strava ghost run</h1>' });
-  colBlock(0, 171, 320, 52, { cls: 'title title-page', page: 'thermal',  html: '<h1>thermal printer camera</h1>' });
-  colBlock(0, 171, 391, 52, { cls: 'title title-page', page: 'vision',   html: '<h1>beauty as data compression</h1>' });
-  colBlock(0, 171,  78, 52, { cls: 'title title-page', page: 'film',     html: '<h1>film</h1>' });
-  colBlock(0, 171, 136, 52, { cls: 'title title-page', page: 'trash',    html: '<h1>on trash</h1>' });
-  colBlock(0, 171, 184, 52, { cls: 'title title-page', page: 'website',  html: '<h1>this website</h1>' });
+  // ---------- pages, laid out from the static <main id="content"> ----------
+  // The site's text, images and links live once, as plain HTML in <main id="content"> — what search
+  // engines, link previews and other non-JavaScript readers see. Everything below only arranges that
+  // content into blocks:  h2 -> page title block;  .blk -> text block;  figure -> figure;
+  // .grid[data-cols] -> figures in columns;  [data-widget] -> room for a live widget.
+  const SRC = document.getElementById('content');
 
-  // ---- HOME page: bio + portrait (linked to the title above) + about ----
+  // ---- home: bio + portrait (linked to the title above) ----
+  const portraitSrc = SRC.querySelector('#portrait');
   new Block(586, 151, 235, 120, { page: 'home',
     follow: { of: title, calc: t => ({ x: t.x + t.w - 235, y: t.y + t.h + GAP }) },
-    html: 'mechanical engineer<br>multi-disciplinarian<br>busy bee' });
+    html: SRC.querySelector('#bio').innerHTML });
   const portrait = new Block(828, 40, 176, 274, { page: 'home', cls: 'portrait', bare: true,
     follow: { of: title, calc: t => ({ x: t.x + t.w + GAP, y: t.y }) },
-    html: '<img src="images/profile.jpg" alt="alex gold">' });
-  colBlock(0, 415, 105, 52, { cls: 'title title-page', page: 'home', html: '<h1>about</h1>' });
-  textBlock('home', 474,
-    `Hey, I'm Alex Gold.${sp}` +
-    `I'm an engineer who loves to spin CAD, despises CTE mismatches, and doesn't mind frying a resistor.${sp}` +
-    `I currently work at Tesla in Palo Alto, California as a mechanical design engineer on the high voltage distribution team, working on high volume part design and actuators. I studied mechanical engineering at BYU with a focus on high voltage electronics, mechatronics, and battery chemistry. I'm passionate about interdisciplinary engineering and mechatronic systems. Above all else I just want to build, build, build!`);
+    html: `<img src="${portraitSrc.getAttribute('src')}" alt="${esc(portraitSrc.alt)}">` });
 
-  // ---- SIDE pages: locked text blocks; interactive bits live between them ----
-  // Tesla
-  const hd = t => `<span class="phead">${t}</span>`;
-  flow('tesla', 230, [
-    { html:
-      `I am currently working as a mechanical design engineer on the drive systems team, focusing on high voltage distribution. I am the design owner of multiple parts including the next generation charge port for Cybercab and future vehicles.${sp}` +
-      `I work on developing new vehicle programs, from high level planning and integration with large groups, to detailed, innovative part design, to ramping and manufacturing at a massive scale.` },
-    { fig: { src: 'images/Tesla-Cybercab-2.jpeg', ratio: 2726 / 1342, alt: 'Tesla Cybercab' } },
-    { html:
-      hd('Actuator integration') +
-      `I own the design and integration of an actuator system, which I have developed from an existing design to a better, more reliable product. I have dealt with every issue you can think of: electrical contact degradation, poor sealing, corrosion, environmental wear, motor burnout, fatigue failures, signal corruption, supplier inconsistencies, not enough grease, too much grease, the wrong kind of grease, and on and on.${sp}` +
-      `I have designed and soldered custom electronics to test actuators, have spent hours analyzing oscilloscope traces, and many more hours decoding CAN signals to characterize field failures.${sp}` +
-      `The work is ongoing as I investigate new designs and actuator types to increase reliability, decrease cost, and improve performance.${sp}` +
-      hd('Ramping to massive scale') +
-      `My parts do not die as ideas and prototypes, they are actively scaling.${sp}` +
-      `I have learned that the ramping process is far more intense than the design process. Turns out 0->1 is a breeze compared to 1->1,000,000. The manufacturing process magnifies weak points and teases out the 5%, 1%, and 0.1% failures. Identifying them and fixing them early and rapidly is key. An example of this:${sp}` +
-      `During ramp, the factory flagged a design problem with a part that caused a vehicle EOL issue. I dropped everything and spent the next few days designing a tester to screen out affected parts. A teammate flew a prototype to the factory and got feedback, and I hand soldered a production-worthy version which I flew to our upstream assembler and then trained line workers to use it. This contained the issue and allowed me to validate a robust design change which would get rid of the problem completely.${sp}` +
-      hd('Early design and prototyping') +
-      `Speed is the name of the game. I have found the sooner you can have a working model running representative firmware, the closer you are to rev 2. I 3D print it, destroy it, modify it, and print it again. I have also learned to be bold with designs.${sp}` +
-      hd('Innovative and careful design for manufacturing') +
-      `Anything that can go wrong in production will go wrong. Taking the effort to carefully make an engineering drawing that lists every part requirement and lays out a precise testing strategy at the tier 1 and tier 2+ suppliers is something that pays itself back 50x later in the manufacturing process.${sp}` +
-      hd('Full vehicle development') +
-      `I was deeply involved in the early development stages of a future vehicle, working with a group of other subsystem owners to establish the vehicle architecture from the ground up to meet the design objectives. I learned to voice our requirements and flag issues early, and that people are much more likely to compromise on their designs to give you what you need through an in-person talk than over messages. It is a tight balance of using existing proven technologies and taking a risk on something new for meaningful performance gains.` },
-  ]);
+  const ratioOf = str => { const [a, b] = str.split('/').map(Number); return b ? a / b : a; };
+  const figSpec = (fig, ratio) => {
+    const img = fig.querySelector('img'), a = fig.querySelector('a[href]'), cap = fig.querySelector('figcaption');
+    return { src: img.getAttribute('src'), alt: img.getAttribute('alt') || '',
+      ratio: ratio || img.getAttribute('width') / img.getAttribute('height'),
+      caption: cap ? cap.innerHTML : '', viewer: a && a.dataset.gallery, full: a && a.getAttribute('href') };
+  };
+  // a page title block, sized to its text
+  function titleBlock(page, html, y) {
+    const b = colBlock(0, y, 900, 52, { cls: 'title title-page', page, html: `<h1>${html}</h1>` });
+    const h1 = b.content.firstChild;
+    h1.style.whiteSpace = 'nowrap';
+    b.w = Math.round(h1.getBoundingClientRect().width) + 28 + 4;
+    h1.style.whiteSpace = ''; b.draw();
+  }
+  // the formal resume: a preview card whose View/Download links come from the .blk's data attributes
+  function docCard(el) {
+    const pages = el.dataset.pages.split(','), pdf = el.dataset.pdf;
+    const attrs = `data-viewer="resume" data-doc="${pages.join(',')}" data-title="${esc(el.dataset.title)}" data-download="${pdf}"`;
+    return `<div class="doc-card">` +
+      `<button class="thumb" ${attrs} aria-label="View the resume"><img src="${pages[0]}" alt="First page of Alex Gold's resume" style="height:259px"></button>` +
+      `<div class="doc-meta"><span class="phead">Resume</span>${pages.length} pages · PDF` +
+        `<div class="doc-actions"><button class="link" ${attrs}>View</button><a href="${pdf}" download="Alex_Gold_Resume.pdf">Download</a></div></div></div>`;
+  }
+  const WIDGET_HOST = { tt: '.tt-host', gr: '.gr-host' };
 
-  // FSAE
-  flow('fsae', 230, [
-    { html: `I was a founding member of the FSAE Formula Electric team at BYU. Within two years, we built a functional car and sent it to competition and it passed accumulator safety check (a very difficult task for a rookie team).` },
-    { fig: { src: 'images/fsae-car.jpg', ratio: 1400 / 1050, alt: 'The FSAE Formula Electric car' } },
-    { html:
-      `<span class="phead">Year 1</span>` +
-      `In the first year, me and a group of equally ambitious and unqualified students designed the electric powertrain and built it for a trial chassis. We used a custom designed and built-to-spec pack and an off the shelf inverter and motor. Year 1 was super scrappy, it was nowhere close to rules compliant, and we were barely able to get the motor spinning, but it did spin! It was the necessary foundation for the next year and exposed the areas that I needed more knowledge in.` +
-      `${sp}<span class="phead">Year 2</span>` +
-      `This is when it got real. Me and a group of 8 other engineers designed and built a custom 400v accumulator (battery pack) from scratch. Me and a friend Landon were the only ones part of the high voltage team in year one.${sp}` +
-      `The areas I owned were overall pack layout, collector plates with integrated fuses, thermal sensing, and BMS integration. In each of these areas I led design discussions, performed experiments and simulations, made decisions, and documented my work.` },
-    { fig: { src: 'images/fsae-pack.jpg', ratio: 1400 / 1050, alt: 'The assembled accumulator with its orange high voltage connector' } },
-    { html: `Here is some of my work for the collector plates I did. One key FSAE rule was that every cell must have its own fuse to prevent parallel groups from igniting if one cell has an internal short. I integrated these fuses into the collector plates to save significant cost and assembly time. To design and validate these collectors, I wrote matlab functions which simulated the thermal model from first principals. I used these results as a starting point, and used a custom (and sketchy) testing rig to precisely verify the fusing time of my prototypes at different currents. Please note the handmade water cooled stainless steel coil resistor with adjustable resistance. Much consideration was also put towards manufacturing, spot welding compatibility, and cost.` },
-    { grid: { cols: 2, figs: [
-      { src: 'images/fsae-fuse-rig.jpg', ratio: 1400 / 1050, alt: 'Fuse time testing rig', caption: 'Fuse time testing rig' },
-      { src: 'images/fsae-collector.jpg', ratio: 1400 / 1050, alt: 'A finished copper collector plate', caption: 'The final product' } ] } },
-    { fig: { src: 'images/fsae-modules.jpg', ratio: 1400 / 1355, alt: 'Assembling battery modules', caption: 'I also assembled many, many modules.' }, w: Math.round(CONTENT_W * 2 / 3) },
-  ]);
-
-  // In the news
-  figBlock(0, 230, 623, { page: 'news', src: 'images/weather_report.JPG', ratio: 1125 / 1627,
-    alt: 'KSL NewsRadio tweet sharing a photo of a cold air funnel over Lehi, Utah' });
-
-  // Resume / Creative / Strava / Thermal — placeholders for now
-  const RESUME_PAGES = ['images/resume-1.jpg', 'images/resume-2.jpg', 'images/resume-3.jpg'];
-  const RESUME_PDF = 'files/Alex_Gold_Resume.pdf';
-  const jobBlock = (name, learned, skills) =>
-    `<span class="phead">${name}</span>The job where I learned:<ul>${learned.map(t => `<li>${t}</li>`).join('')}</ul>` +
-    (skills ? `${sp}${skills[0]}<ul>${skills[1].map(t => `<li>${t}</li>`).join('')}</ul>` : '');
-  flow('resume', 230, [
-    { html:   // the formal resume: preview, view (opens the viewer), download
-      `<div class="doc-card">` +
-        `<button class="thumb" data-viewer="resume" data-doc="${RESUME_PAGES.join(',')}" data-title="Resume" data-download="${RESUME_PDF}" aria-label="View the resume">` +
-          `<img src="${RESUME_PAGES[0]}" alt="First page of Alex Gold's resume" style="height:259px"></button>` +
-        `<div class="doc-meta"><span class="phead">Resume</span>${RESUME_PAGES.length} pages · PDF` +
-          `<div class="doc-actions">` +
-            `<button class="link" data-viewer="resume" data-doc="${RESUME_PAGES.join(',')}" data-title="Resume" data-download="${RESUME_PDF}">View</button>` +
-            `<a href="${RESUME_PDF}" download="Alex_Gold_Resume.pdf">Download</a>` +
-          `</div></div></div>` },
-    { html: `<span class="phead">Informal resume</span>That the time difference between "knowing absolutely nothing" about something and "knowing enough to be useful" is only a few hard-working weeks.` },
-    { html: jobBlock('Tesla', [
-        'How to make beautiful, robust, usable CAD',
-        'To work with very large groups to design a full vehicle from nothing',
-        'How to plan engineering timelines for realistic design cycles and manage my priorities when I have too much work',
-        'How to work with layers of suppliers to produce parts that meet our specifications, and track down issues when problems arise'],
-      ['Key skills:', ['Complex part design using CATIA 3DX and Ansys', 'Hands on experience with almost every manufacturing technique out there', 'Data analysis using python, matlab, AI']]) },
-    { html: jobBlock('BYU Racing', [
-        'How to design a full sized battery pack for an electric vehicle',
-        'Knowing the requirements first is a super critical key',
-        'Real life testing beats computer models 4 times out of 5',
-        'How to work collaboratively with a large engineering team'],
-      ['Key skills:', ['High voltage system design', 'Design choice documentation', 'DAQ instrumentation for experimental data']]) },
-    { html: jobBlock('Market Basket', [
-        'How to pack a grocery bag (eggs on top)',
-        'You can come back from anything, even dropping a customer\'s cheesecake facedown on the checkout conveyor'],
-      ['Skills:', ['Organizing cereal boxes into extremely straight rows']]) },
-  ]);
-  flow('vision', 230, [
-    { html: `I recently read and was deeply influenced by this paper written by a researcher named Jurgen Schmidhuber in 2009. The title is <a href="https://arxiv.org/pdf/0812.4360" target="_blank" rel="noopener">"Driven by Compression Progress: A Simple Principle Explains Essential Aspects of Subjective Beauty, Novelty, Surprise, Interestingness, Attention, Curiosity, Creativity, Art, Science, Music, Jokes"</a>. The paper is worth the read, but in summary, Schmidhuber lays out a general mathematical definition of beauty, defining it as something whose data is able to be compressed in a way where it can be described in much fewer bits. He claims this describes why we find beauty in patterns and symmetrical faces. Interestingness, by this framework, is the derivative of beauty. If something is helping us to understand and describe our inputs and memories, it is interesting until it is no longer useful in improving our compression method.${sp}` +
-      `To further understand and apply the idea, I built a single level, linear neural net that processes vision data and gives an output of the perceived beauty and interestingness of each picture, and uses the image to train its internal data compression scheme. For my input vision data, I used the phenocam database, which comes from a collection of thousands of stationary cameras pointing at nature all around the world which capture 16-48 images a day. It's mostly pictures of crops; this data is primarily used to analyze vegetation cycles. Here is an example interface to the neural net and a demonstration of it training itself over time and developing a unique taste for what it finds interesting and beautiful:` },
-    { html: 'interactive demo incoming…' },
-    { html: `A possible future of this project is to build several solar powered long-lifetime vision/compute units that I can place in a nice spot and they will stay there for 30+ years. They will watch and analyze the world for beauty, selectively looking at what they find interesting, training their unique data compression models. They will be disconnected from any radio frequency antennas so there can not be any output. I think beauty only exists when perceived, so maybe increasing the compute power dedicated to perceiving beauty will increase the amount of beauty in the world.` },
-  ]);
-  // film: thumbnails (images/film/h1-thumb.jpg) open the full photo (h1.jpg) in the viewer, one gallery per orientation
-  const filmFigs = (p, n, ratio) => Array.from({ length: n }, (_, i) => ({
-    src: `images/film/${p}${i + 1}-thumb.jpg`, full: `images/film/${p}${i + 1}.jpg`, ratio, viewer: `film-${p}`,
-    alt: `Film photograph ${i + 1} of ${n} (${p === 'h' ? 'horizontal' : 'vertical'})` }));
-  flow('film', 230, [
-    { html: `Hobby -> low-paying-side-gig -> hobby again.${sp}Almost exclusively shot on a Canon sureshot telemax and the fujifilm 400 sold at Walmart.` },
-    { grid: { cols: 2, figs: filmFigs('h', 14, 3 / 2) } },
-    { grid: { cols: 3, figs: filmFigs('v', 14, 2 / 3) } },
-  ]);
-  colBlock(0, 230, 623, 65, { page: 'trash',    locked: true, plain: true, html: 'content incoming…' });
-  flow('website', 230, [
-    { html: `This website was designed by me as a project. The design was based around these physics-based blocks that interact with each other in predictable ways. This allows for smooth animations and interactions throughout. It is written in plain HTML, CSS, and JavaScript, which allows silky smooth integration of all of the interactive bits.${sp}` +
-      `My technical motivations for the project:<ul><li>Website design</li><li>UX planning</li><li>Integration of interactive components</li></ul>` },
-  ]);
-  // one block for all the consecutive text (not broken up by an image/widget)
-  colBlock(0, 230, 623, 350, { page: 'ghostrun', locked: true, plain: true, html:
-    'I am a man of habit. I run the same 2.3 mile loop around the neighborhood several days a week before work. On a recent run, I thought about how enjoyable it would be to run among all the past versions of myself. I requested my data from Strava and used Xcode to create a visualization app that I could use while running.' + sp +
-    'Technical motivations for this project:' +
-    '<ul><li>iOS app development through Xcode</li><li>API integration</li><li>Functional design and UI</li></ul>' });
-  // (the interactive widget itself is the .gr-host element up top, shown on this page)
-  figBlock(Math.round(CONTENT_W / 6), 1230, Math.round(CONTENT_W * 2 / 3), { page: 'ghostrun', src: 'images/ghost-run-app.png', ratio: 1179 / 2556,
-    alt: 'Ghost Run app mid-run: position in pack, a map of nearby ghost runners, and race controls',
-    caption: 'Actual screenshot of the app, taken mid-run' });
-  colBlock(0, 230, 623, 65, { page: 'thermal',  locked: true, plain: true, html: 'content incoming…' });
-
-  // ---- HAPTIC page: text blocks with the turntable simulation between them ----
-  const ttBottomOfText = flow('haptic', 230, [
-    { html:
-      `I am working on a bluetooth device that sits on my desk and gives physical interfaces to basic audio controls for music and meetings. I am incorporating a little turntable-style platter that turns as audio plays through it and can be used to scratch back over a song or meeting you are in (inspired by Teenage Engineering OB-4). I'm always listening to music and connecting to meetings through my phone, but I don't want to have it out all the time to handle controls.${sp}` +
-      `My technical motivations for the project:` +
-      `<ul><li>Buttery smooth haptic interfacing</li><li>Use field controls on a brushless DC motor</li><li>Low latency communication and processing (&lt;10ms)</li><li>PCBA design</li><li>Industrial design for the housing</li></ul>` },
-  ]);
-  // (the turntable widget itself is the .tt-host element, shown on this page, 514px tall)
-  const TT_TOP = ttBottomOfText - GAP + 30;
-  document.querySelector('.tt-host').style.top = TT_TOP + 'px';
-  flow('haptic', TT_TOP + 514, [
-    { html:
-      `<span class="phead">Architecture</span><ul class="long">` +
-      `<li>Built around an ESP32 — dual cores were a key requirement (core 0 strictly handles motor control and feedback, core 1 handles audio buffer, bluetooth, screen, and user input).</li>` +
-      `<li>Motor is a brushless DC gimbal motor controlled with a simpleFOC chip. This is something I debated for a while, and considered using a small brushed motor with physical gearing and clutch, similar to a real turntable, but I decided on a gimbal motor because of the total integration and small packaging of the motor, magnetic encoder, and mechanical structure. Also I found the simpleFOC chip which unlocked precise control at very low speeds and has an active community which I referenced for the firmware. I've spent a long time tuning the control method and filtering for this to make the feel correct with very low cogging. I found this matters a lot when you tie an audio output to it; high frequency wobble you can't physically feel shows up as noticeable audio distortion in the highs and lows.</li>` +
-      `<li>I want this to be powered by a USB-C connection that can be plugged into a laptop, so the power draw is limited. This governed the max reaction torque of the platter motor, and required me to add a boost converter to bump up the voltage for my motor. During normal operation the closed-loop motor controls run at shockingly low power (&lt;0.1 watts) so system cooling is not a concern.</li>` +
-      `<li>Firmware is based around two main processing systems. I'm a firmware novice so Claude helped implement the code once I had laid out the high level architecture. In one core, audio is pulled in through a bluetooth connection and fed into a ring buffer which overwrites itself every two minutes. The audio is fed out through a DAC to a lined connection, the position and rate of output is set by a pointer which references the motor position and velocity. In another core, the motor is controlled using a closed loop system using field controls that reference the resolver. This system took a lot of refining, it has filtering and the motor goes through a calibration cycle during boot to measure cogging due to the permanent magnets, which it then compensates for. Thanks to the simpleFOC community for that one. I really wanted to do bluetooth in and bluetooth out to airpods, but airpods make this so unfriendly, and it added too much complexity and mostly would have made the latency too high to be usable in a meeting or get a responsive feel at the turntable.</li></ul>` +
-      `${sp}This project is in process.` },
-  ]);
+  for (const art of SRC.querySelectorAll('article')) {
+    const page = art.dataset.route;
+    let y = page === 'home' ? 415 : 171;
+    for (const el of art.children) {
+      if (el.matches('h2')) { titleBlock(page, el.innerHTML, y); y += 52 + GAP; }
+      else if (el.matches('.blk')) y += textBlock(page, y, el.dataset.kind === 'doc' ? docCard(el) : el.innerHTML).h + GAP;
+      else if (el.matches('figure')) {
+        const w = el.dataset.w ? Math.round(CONTENT_W * ratioOf(el.dataset.w)) : CONTENT_W;
+        y += figBlock(Math.round((CONTENT_W - w) / 2), y, w, { page, ...figSpec(el) }).h + GAP;
+      } else if (el.matches('.grid')) {
+        const cols = +el.dataset.cols, w = (CONTENT_W - GAP * (cols - 1)) / cols;
+        const ratio = el.dataset.ratio && ratioOf(el.dataset.ratio), figs = [...el.children];
+        for (let r = 0; r < figs.length; r += cols) {
+          const row = figs.slice(r, r + cols).map((f, i) => figBlock(i * (w + GAP), y, w, { page, ...figSpec(f, ratio) }));
+          y += Math.max(...row.map(b => b.h)) + GAP;
+        }
+      } else if (el.matches('[data-widget]')) {
+        const top = y - GAP + +el.dataset.gap;       // the live widget (turntable, ghost map) sits here
+        document.querySelector(WIDGET_HOST[el.dataset.widget]).style.top = top + 'px';
+        y = top + +el.dataset.h + GAP;
+      }
+    }
+  }
 
   // re-apply every block's `place` (and the two DOM widgets) for the current window width
   const ttHost = document.querySelector('.tt-host'), grHost = document.querySelector('.gr-host');
@@ -2072,7 +2294,9 @@
     }
 
   // open the home page (now that the turntable code above is defined)
-  showPage('home');
+  showPage(pageFromHash(), { history: false, instant: true });
+  window.addEventListener('popstate', route);
+  window.addEventListener('hashchange', route);
   </script>
 </body>
 </html>
