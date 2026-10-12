@@ -167,32 +167,33 @@
     /* menu: a full-screen list of blocks; the two groups open in place */
     html.mobile #content nav { display: none; }
     html.mobile #content.menu-open nav { display: block; position: fixed; inset: 0; z-index: 50; background: var(--gray); overflow-y: auto; padding: 84px 16px 40px; }
+    html.mobile #content nav { --slide: cubic-bezier(.3,.7,.3,1); }
     html.mobile #content nav ul { list-style: none; margin: 0; padding: 0; }
     html.mobile #content nav li > a, html.mobile #content nav .group > button { display: block; width: min(100%, 250px); text-align: left; margin-top: 7px; padding: 9px 14px; font: inherit; font-size: 17px; line-height: 1.2; color: #111; text-decoration: none; border: 0; cursor: pointer; }
     html.mobile #content nav > ul > li:first-child > a { margin-top: 0; }
     html.mobile #content nav a.on::after { content: ''; position: absolute; left: -7px; top: 0; bottom: 0; width: 7px; background: var(--red); }
     html.mobile #content nav .group > button::after { content: '\25B8'; float: right; color: #888; font-size: 14px; margin-top: 1px; transition: transform 0.28s ease; }
     html.mobile #content nav .group.open > button::after { transform: rotate(90deg); }
-    /* the sub-menu slides open like the desktop popout: the first item emerges from under its parent, then the rest
-       slide straight down from under the item above (the list is clipped at its top edge, and sides can overhang) */
+    /* the sub-menu slides open like the desktop popout: every item emerges together from under its parent, and the
+       list's height grows on the same curve so the rest of the menu is pushed down in step (clipped at the list's top edge) */
     html.mobile #content nav .group > button { position: relative; z-index: 30; }
-    html.mobile #content nav .group > ul { margin-left: 24px; max-height: 0; overflow-x: visible; overflow-y: clip; visibility: hidden; transition: max-height 0.34s cubic-bezier(.2,.7,.3,1) 0.08s, padding 0.34s cubic-bezier(.2,.7,.3,1) 0.08s, visibility 0s 0.42s; }
-    html.mobile #content nav .group.open > ul { max-height: var(--mh, 420px); padding: 8px 0 8px; visibility: visible; transition: max-height 0.34s cubic-bezier(.2,.7,.3,1), padding 0.34s cubic-bezier(.2,.7,.3,1), visibility 0s; }
-    html.mobile #content nav .group li > a { width: min(100%, 226px); font-size: 15.5px; padding: 8px 14px; position: relative; z-index: 10; transform: translateY(calc(var(--i, 1) * -1 * (100% + 7px))); transition: transform 0.17s cubic-bezier(.2,.7,.3,1); }
+    html.mobile #content nav .group > ul { margin-left: 24px; max-height: 0; overflow-x: visible; overflow-y: clip; visibility: hidden; transition: max-height 0.26s var(--slide), padding 0.26s var(--slide), visibility 0s 0.26s; }
+    html.mobile #content nav .group.open > ul { max-height: var(--mh, 420px); padding: 8px 0 8px; visibility: visible; transition: max-height 0.26s var(--slide), padding 0.26s var(--slide), visibility 0s; }
+    html.mobile #content nav .group li > a { width: min(100%, 226px); font-size: 15.5px; padding: 8px 14px; position: relative; z-index: 10; transform: translateY(calc(-100% - 16px - var(--i, 0) * (100% + 7px))); transition: transform 0.26s var(--slide); }
     html.mobile #content nav .group li:first-child > a { margin-top: 0; }
-    html.mobile #content nav .group li:nth-child(1) > a { --i: 0; z-index: 14; transform: translateY(calc(-100% - 16px)); transition-delay: 0.15s; }
+    html.mobile #content nav .group li:nth-child(1) > a { --i: 0; z-index: 14; }
     html.mobile #content nav .group li:nth-child(2) > a { --i: 1; z-index: 13; }
     html.mobile #content nav .group li:nth-child(3) > a { --i: 2; z-index: 12; }
     html.mobile #content nav .group li:nth-child(4) > a { --i: 3; z-index: 11; }
     html.mobile #content nav .group li:nth-child(n+5) > a { --i: 4; }
-    html.mobile #content nav .group.open li > a { transform: none; transition-delay: 0.15s; }
-    html.mobile #content nav .group.open li:nth-child(1) > a { transition-delay: 0s; }
+    html.mobile #content nav .group.open li > a { transform: none; }
+    html.mobile #content nav .group > button::after { transition: transform 0.26s var(--slide); }
     @media (prefers-reduced-motion: reduce) { html.mobile #content nav .group > ul, html.mobile #content nav .group li > a, html.mobile #content nav .group > button::after { transition: none !important; } }
     /* home header: name, then photo + bio side by side */
     html.mobile #content > header { display: none; }
     html.mobile #content[data-current="home"] > header { display: grid; grid-template-columns: minmax(0, 1fr) 34%; grid-template-rows: auto 1fr; gap: 7px; margin-top: 14px; }
     html.mobile #content > header h1 { grid-column: 1; grid-row: 1; padding: 10px 12px 14px; font-size: min(54px, 9vw); line-height: 1.05; font-weight: 500; letter-spacing: -0.02em; color: var(--red); text-transform: lowercase; white-space: nowrap; }
-    html.mobile #content > header p { grid-column: 1; grid-row: 2; display: flex; align-items: center; padding: 12px; font-size: min(16.5px, 4.8vw); }
+    html.mobile #content > header p { grid-column: 1; grid-row: 2; justify-self: end; display: flex; align-items: center; padding: 12px; font-size: min(16.5px, 4.8vw); }
     html.mobile #content > header .pw { grid-column: 2; grid-row: 1 / 3; min-height: 150px; }
     html.mobile #content > header .pw img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 16%; }
 
