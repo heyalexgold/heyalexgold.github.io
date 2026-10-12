@@ -1144,19 +1144,21 @@
   // ---------- the site, as blocks (positions mirror the mockup) ----------
 
   // ---- fluid layout (desktop widths) ----
-  // Three zones: the sidebar stays EDGE px from the left; the header (title/portrait/bio, or
-  // the small title on other pages) stays EDGE px from the right; the fixed-width content
-  // column sits centered in the gap between them. Below FLOOR_W the layout stops shrinking
-  // and the page scrolls horizontally instead.
+  // The sidebar stays EDGE px from the left; the header (title/portrait/bio, or the small title on
+  // other pages) stays EDGE px from the right; the fixed-width content column is centered on the
+  // PAGE. As the window narrows the column's left edge closes in on the sidebar and stops at a
+  // minimum gap (wide things like the haptic widget stop sooner). Below FLOOR_W the layout stops
+  // shrinking and the page scrolls horizontally instead.
   const SIDEBAR_X = 20, SIDEBAR_W = 140;
   const SIDEBAR_RIGHT = SIDEBAR_X + SIDEBAR_W;
   const EDGE = 20, FLOOR_W = 1024;
   const CONTENT_W = 623, WIDGET_W = 800;             // content column / the wider haptic widget
+  const CONTENT_MIN_GAP = 40, WIDGET_MIN_GAP = 20;   // least space kept between the sidebar and each
 
   const layoutFor = () => {
-    const right = Math.max(document.documentElement.clientWidth, FLOOR_W) - EDGE;
-    const centered = w => Math.round(SIDEBAR_RIGHT + (right - SIDEBAR_RIGHT - w) / 2);
-    return { right, contentX: centered(CONTENT_W), widgetX: centered(WIDGET_W) };
+    const W = Math.max(document.documentElement.clientWidth, FLOOR_W);
+    const centered = (w, gap) => Math.max(Math.round((W - w) / 2), SIDEBAR_RIGHT + gap);
+    return { right: W - EDGE, contentX: centered(CONTENT_W, CONTENT_MIN_GAP), widgetX: centered(WIDGET_W, WIDGET_MIN_GAP) };
   };
   let LAYOUT = layoutFor();
 
