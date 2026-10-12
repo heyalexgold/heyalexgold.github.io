@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Alex Gold — Mechanical design engineer</title>
   <meta name="description" content="Alex Gold is a mechanical design engineer at Tesla working on high voltage distribution and actuators. Projects: the Cybercab charge port, an FSAE Formula Electric accumulator, a haptic audio controller, and film photography.">
   <link rel="canonical" href="https://heyalexgold.github.io/">
@@ -35,9 +36,9 @@
     "sameAs": ["https://www.linkedin.com/in/alexgold36"]
   }
   </script>
-  <script>document.documentElement.classList.add('js')</script>
+  <script>document.documentElement.classList.add('js'); if (matchMedia('(max-width: 1023px)').matches) document.documentElement.classList.add('mobile')</script>
   <style>
-    :root { --red: #e5392b; }
+    :root { --red: #e5392b; --gray: #e8e8e8; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: #e8e8e8;
@@ -117,23 +118,107 @@
     .block p a:hover, .block li a:hover { border-bottom-color: var(--red); }
 
     /* the static content layer (<main id="content">): what link previews, search engines and
-       non-JavaScript readers get. With JavaScript it is replaced by the blocks. */
-    #content { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; background: #fff; font-size: 17px; line-height: 1.5; }
-    .js #content { display: none; }
-    #content h1 { font-size: 2.4rem; color: var(--red); font-weight: 500; }
-    #content h2 { font-size: 1.7rem; margin: 2.2rem 0 0.8rem; }
-    #content h3 { font-size: 1.25rem; margin: 1.4rem 0 0.4rem; }
-    #content p, #content ul { margin: 0 0 0.9em; }
-    #content ul { padding-left: 1.3em; }
-    #content a { color: var(--red); }
-    #content nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 18px; padding: 0; margin: 1rem 0; }
+       non-JavaScript readers get. With JavaScript on a wide screen it is replaced by the blocks;
+       on a narrow screen it IS the layout (see the mobile section below). */
+    html:not(.mobile) #content { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; background: #fff; font-size: 17px; line-height: 1.5; }
+    html.js:not(.mobile) #content { display: none; }
+    html:not(.mobile) #content h1 { font-size: 2.4rem; color: var(--red); font-weight: 500; }
+    html:not(.mobile) #content h2 { font-size: 1.7rem; margin: 2.2rem 0 0.8rem; }
+    html:not(.mobile) #content h3 { font-size: 1.25rem; margin: 1.4rem 0 0.4rem; }
+    html:not(.mobile) #content p, html:not(.mobile) #content ul { margin: 0 0 0.9em; }
+    html:not(.mobile) #content ul { padding-left: 1.3em; }
+    html:not(.mobile) #content a { color: var(--red); }
+    html:not(.mobile) #content nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 18px; padding: 0; margin: 1rem 0; }
+    html:not(.mobile) #content nav ul ul { display: contents; }
+    html:not(.mobile) #content .group > button { font: inherit; background: none; border: 0; padding: 0; color: inherit; }
+    html:not(.mobile) #mbar { display: none; }
     #content img { max-width: 100%; height: auto; display: block; }
-    #content #portrait { width: 176px; margin: 1rem 0; }
-    #content figure { margin: 1rem 0; }
-    #content figcaption { font-size: 0.85rem; color: #444; margin-top: 0.3rem; }
+    html:not(.mobile) #content #portrait { width: 176px; margin: 1rem 0; }
+    html:not(.mobile) #content figure { margin: 1rem 0; }
+    html:not(.mobile) #content figcaption { font-size: 0.85rem; color: #444; margin-top: 0.3rem; }
     #content .grid[data-cols="3"] { --cols: 3; }
-    #content .grid { display: grid; grid-template-columns: repeat(var(--cols, 2), 1fr); gap: 7px; margin: 1rem 0; }
-    #content .grid figure { margin: 0; }
+    html:not(.mobile) #content .grid { display: grid; grid-template-columns: repeat(var(--cols, 2), 1fr); gap: 7px; margin: 1rem 0; }
+    html:not(.mobile) #content .grid figure { margin: 0; }
+
+    /* ---------- mobile layout (under 1024px): the same content as one column of blocks ----------
+       No canvas is built; this is plain CSS over the static content, plus a menu. */
+    html.mobile { --sqs: linear-gradient(#000,#000) top left / 7px 7px no-repeat, linear-gradient(#000,#000) top right / 7px 7px no-repeat,
+                         linear-gradient(#000,#000) bottom left / 7px 7px no-repeat, linear-gradient(#000,#000) bottom right / 7px 7px no-repeat; }
+    html.mobile body { min-height: 0 !important; min-width: 0 !important; }
+    html.mobile #navbar { display: none; }
+    html.mobile #content { display: block; max-width: 640px; margin: 0 auto; padding: 0 16px 56px; background: none; color: #111; font-size: 16.5px; line-height: 1.42; }
+    html.mobile.menu-open { overflow: hidden; }
+    /* anything drawn as a block: white, 7px black corner squares */
+    html.mobile #content .mblk, html.mobile #content article > h2, html.mobile #content > header h1, html.mobile #content > header .pw,
+    html.mobile #content > header p, html.mobile #content figure, html.mobile #content nav li > a, html.mobile #content nav .group > button,
+    html.mobile #content #mhere, html.mobile #content #mmenu { position: relative; background: #fff; }
+    html.mobile #content .mblk::before, html.mobile #content article > h2::before, html.mobile #content > header h1::before, html.mobile #content > header .pw::before,
+    html.mobile #content > header p::before, html.mobile #content figure::before, html.mobile #content nav li > a::before, html.mobile #content nav .group > button::before,
+    html.mobile #content #mhere::before, html.mobile #content #mmenu::before { content: ''; position: absolute; inset: -7px; pointer-events: none; background: var(--sqs); }
+
+    /* top bar: stays put; its red end is the menu button (the old red cap) */
+    html.mobile #mbar { display: flex; gap: 7px; position: sticky; top: 0; z-index: 60; background: var(--gray); margin: 0 -16px; padding: 16px 16px 9px; }
+    html.mobile #content #mmenu { background: var(--red); }
+    html.mobile #mmenu { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px; background: var(--red); color: #fff; border: 0; font: inherit; font-weight: 500; font-size: 16px; line-height: 1; cursor: pointer; }
+    html.mobile #mmenu i { display: block; width: 18px; height: 12px; border-top: 2px solid #fff; border-bottom: 2px solid #fff; position: relative; }
+    html.mobile #mmenu i::after { content: ''; position: absolute; left: 0; right: 0; top: 3px; border-top: 2px solid #fff; }
+    html.mobile #mhere { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; height: 44px; padding: 0 14px 0 16px; font-size: 16px; }
+    html.mobile #mhere::after { content: ''; position: absolute; left: -7px; top: 0; bottom: 0; width: 7px; background: var(--red); }
+    html.mobile #mhere span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    html.mobile #mhere a { flex: none; color: var(--red); font-weight: 500; letter-spacing: -0.01em; text-decoration: none; }
+
+    /* menu: a full-screen list of blocks; the two groups open in place */
+    html.mobile #content nav { display: none; }
+    html.mobile #content.menu-open nav { display: block; position: fixed; inset: 0; z-index: 50; background: var(--gray); overflow-y: auto; padding: 84px 16px 40px; }
+    html.mobile #content nav ul { list-style: none; margin: 0; padding: 0; max-width: 608px; margin: 0 auto; }
+    html.mobile #content nav li > a, html.mobile #content nav .group > button { display: block; width: 100%; text-align: left; margin-top: 7px; padding: 14px 18px; font: inherit; font-size: 19px; line-height: 1.2; color: #111; text-decoration: none; border: 0; cursor: pointer; }
+    html.mobile #content nav > ul > li:first-child > a { margin-top: 0; }
+    html.mobile #content nav a.on::after { content: ''; position: absolute; left: -7px; top: 0; bottom: 0; width: 7px; background: var(--red); }
+    html.mobile #content nav .group > button::after { content: '\25B8'; float: right; color: #888; font-size: 15px; margin-top: 2px; }
+    html.mobile #content nav .group.open > button::after { content: '\25BE'; }
+    html.mobile #content nav .group > ul { display: none; margin-left: 26px; }
+    html.mobile #content nav .group.open > ul { display: block; }
+    html.mobile #content nav .group li > a { font-size: 16.5px; padding: 12px 16px; }
+
+    /* home header: name, then photo + bio side by side */
+    html.mobile #content > header { display: none; }
+    html.mobile #content[data-current="home"] > header { display: grid; grid-template-columns: 150px 1fr; gap: 7px; margin-top: 14px; }
+    html.mobile #content > header h1 { grid-column: 1 / -1; padding: 12px 18px 16px; font-size: 54px; line-height: 1.05; font-weight: 500; letter-spacing: -0.02em; color: var(--red); text-transform: lowercase; }
+    html.mobile #content > header .pw { height: 232px; grid-row: 2; grid-column: 1; }
+    html.mobile #content > header p { grid-row: 2; grid-column: 2; }
+    html.mobile #content > header .pw img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 16%; }
+    html.mobile #content > header p { display: flex; align-items: center; padding: 0 16px; }
+
+    /* pages: one visible at a time */
+    html.mobile #content article { display: none; }
+    html.mobile #content article.on { display: block; }
+    html.mobile #content article > h2 { display: inline-block; margin-top: 14px; padding: 9px 16px; font-size: 24px; font-weight: 500; letter-spacing: -0.01em; }
+    html.mobile #content #home > h2 { margin-top: 24px; }
+    html.mobile #content .mblk { margin-top: 7px; padding: 16px 18px; position: relative; cursor: auto; touch-action: auto; user-select: text; z-index: auto; }
+    html.mobile #content figure { margin-top: 7px; padding: 10px; }
+    html.mobile #content figure[data-w="2/3"] { width: 66.67%; margin-left: auto; margin-right: auto; }
+    html.mobile #content figure a { display: block; }
+    html.mobile #content figure img { display: block; width: 100%; height: auto; }
+    html.mobile #content figcaption { margin-top: 10px; font-size: 13px; line-height: 19px; color: #444; }
+    html.mobile #content .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 7px; }
+    html.mobile #content .grid figure { margin-top: 0; padding: 8px; }
+    html.mobile #content .grid[data-ratio="3/2"] img { aspect-ratio: 3 / 2; object-fit: cover; }
+    html.mobile #content .grid[data-ratio="2/3"] img { aspect-ratio: 2 / 3; object-fit: cover; }
+    html.mobile #content .doc-card { gap: 16px; }
+    html.mobile #content .doc-card .thumb { flex: 0 0 120px; width: 120px; }
+    html.mobile #content .doc-card .thumb img { width: 120px; height: auto !important; }
+    html.mobile #content [data-widget] { margin-top: 7px; }
+
+    /* the two live widgets sit inline in their pages */
+    html.mobile .gr-host, html.mobile .tt-host { position: static; top: auto; left: auto; width: auto; z-index: auto; }
+    html.mobile .gr-map { width: 100%; height: auto; aspect-ratio: 1 / 1; }
+    html.mobile .gr-overlay-top { font-size: 0.72rem; padding: 6px 10px; }
+    html.mobile .gr-attrib { font-size: 0.58rem; }
+    /* turntable, stacked: the device on top, speaker and phone side by side below */
+    html.mobile .tt-host .tt-stage { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "dev dev" "spk ph"; gap: 1.6rem 0.4rem; padding: 0.6rem 0 1rem; min-height: 0; overflow: visible; justify-items: center; align-items: start; }
+    html.mobile .tt-ctrl { grid-area: dev; }
+    html.mobile .tt-speaker { grid-area: spk; align-self: center; }
+    html.mobile .tt-phone { grid-area: ph; }
 
     /* ---- viewer: a large window over the page (documents, photo galleries) ---- */
     html { scrollbar-gutter: stable; }
@@ -155,7 +240,7 @@
     .vw-title { font-weight: 600; }
     .vw-count { color: #666; }
     .vw-spacer { flex: 1; }
-    .vw-btn { position: relative; background: #fff; color: #111; border: 0; padding: 9px 16px; font: 15px/1.2 inherit; text-decoration: none; cursor: pointer; }
+    .vw-btn { position: relative; background: #fff; color: #111; border: 0; padding: 9px 16px; font: inherit; font-size: 15px; line-height: 1.2; text-decoration: none; cursor: pointer; }
     .vw-btn::before { content: ''; position: absolute; inset: -7px; pointer-events: none;
       background: linear-gradient(#000,#000) top left / 7px 7px no-repeat, linear-gradient(#000,#000) top right / 7px 7px no-repeat,
                   linear-gradient(#000,#000) bottom left / 7px 7px no-repeat, linear-gradient(#000,#000) bottom right / 7px 7px no-repeat; }
@@ -176,6 +261,13 @@
     .vw-doc img { display: block; width: 100%; height: auto; background: #fff; margin: 0 0 7px; }
     #viewer.mode-doc .vw-doc { display: block; }
     #viewer.mode-doc .vw-stage, #viewer.mode-doc .vw-nav { display: none; }
+    @media (max-width: 1023px) {
+      .vw-bar { gap: 14px; flex-wrap: wrap; left: 16px; right: 16px; top: 16px; }
+      .vw-stage { inset: 78px 14px 76px; }
+      .vw-nav { top: auto; bottom: 16px; margin-top: 0; width: 64px; height: 44px; }
+      .vw-prev { left: 22px; } .vw-next { right: 22px; }
+      .vw-doc { top: 78px; width: calc(100vw - 28px); }
+    }
 
 
     /* ---- page content ---- */
@@ -499,25 +591,37 @@
 <body>
 
 <main id="content">
+  <div id="mbar">
+    <button id="mmenu" type="button" aria-expanded="false" aria-controls="site-nav"><i></i><span class="lbl">menu</span></button>
+    <div id="mhere"><span id="mhere-label">home</span><a href="#home">alex gold</a></div>
+  </div>
   <header>
     <h1>Alex Gold</h1>
     <p id="bio">mechanical engineer<br>multi-disciplinarian<br>busy bee</p>
-    <img id="portrait" src="images/profile.jpg" width="1179" height="1712" alt="Alex Gold">
+    <div class="pw"><img id="portrait" src="images/profile.jpg" width="1179" height="1712" alt="Alex Gold"></div>
   </header>
-  <nav aria-label="Pages">
+  <nav id="site-nav" aria-label="Pages">
     <ul>
-      <li><a href="#home">Home</a></li>
-      <li><a href="#tesla">Tesla</a></li>
-      <li><a href="#turntable">Haptic audio controller</a></li>
-      <li><a href="#fsae">FSAE Formula E</a></li>
-      <li><a href="#ghost-run">Strava ghost run</a></li>
-      <li><a href="#thermal-camera">Thermal printer camera</a></li>
-      <li><a href="#bike-chain-cleaner">Bike chain cleaner</a></li>
-      <li><a href="#beauty-as-data-compression">Beauty as data compression</a></li>
-      <li><a href="#film">Film</a></li>
-      <li><a href="#on-trash">On trash</a></li>
-      <li><a href="#this-website">This website</a></li>
-      <li><a href="#resume">Resume / contact</a></li>
+      <li><a href="#home">home</a></li>
+      <li><a href="#tesla">tesla</a></li>
+      <li><a href="#turntable">haptic audio controller</a></li>
+      <li><a href="#fsae">fsae formula e</a></li>
+      <li class="group"><button type="button" aria-expanded="false">currently working on</button>
+        <ul>
+          <li><a href="#ghost-run">Strava ghost runners</a></li>
+          <li><a href="#thermal-camera">thermal printer camera</a></li>
+          <li><a href="#bike-chain-cleaner">bike chain cleaner</a></li>
+        </ul>
+      </li>
+      <li class="group"><button type="button" aria-expanded="false">creative work</button>
+        <ul>
+          <li><a href="#beauty-as-data-compression">beauty as data compression</a></li>
+          <li><a href="#film">film</a></li>
+          <li><a href="#on-trash">on trash</a></li>
+          <li><a href="#this-website">this website</a></li>
+        </ul>
+      </li>
+      <li><a href="#resume">resume / contact me</a></li>
     </ul>
   </nav>
 
@@ -839,7 +943,7 @@
         </section>
 
         <!-- Device (center) -->
-        <section class="tt-panel">
+        <section class="tt-panel tt-ctrl">
           <h3>Controller</h3>
           <div class="tt-device">
             <canvas id="ttPlatter"></canvas>
@@ -895,6 +999,9 @@
   </div>
 
   <script>
+  // narrow screens get the single-column layout (set in <head>); the canvas of draggable blocks is not built
+  const MOBILE = document.documentElement.classList.contains('mobile');
+
   // ---------- block engine (shared primitive) ----------
   const HANDLE = 7;
   const MIN    = 40;
@@ -929,6 +1036,12 @@
 
     constructor(x, y, w, h, opts = {}) {
       Object.assign(this, { x, y, w, h });
+      if (MOBILE) {                                    // single-column layout: keep a detached stand-in (no DOM, no images)
+        this.el = this.content = document.createElement('div');
+        this.page = opts.page || null; this.floating = !!opts.floating; this.nav = false; this.onClick = null;
+        Block.all.push(this);
+        return;
+      }
       this.nav = !!(opts.cls && opts.cls.split(' ').includes('nav'));
       this.onClick = opts.onClick || null;
       this.locked = !!opts.locked;                     // locked = not draggable/resizable
@@ -1110,17 +1223,20 @@
     if (opts.history !== false && pageFromHash() !== page)     // a navigation, not the browser's own back/forward
       history.pushState(null, '', page === 'home' ? location.pathname + location.search : '#' + SLUG[page]);
     document.title = page === 'home' ? 'Alex Gold — Mechanical design engineer' : `Alex Gold — ${PAGE_TITLE[page]}`;
-    for (const b of Block.all) {
+    if (!MOBILE) for (const b of Block.all) {
       const vis = !b.page || b.page === page || (b.page === '_side' && page !== 'home');
       b.el.style.display = vis ? '' : 'none';
     }
     document.querySelectorAll('[data-page]').forEach(el => { el.style.display = el.dataset.page === page ? '' : 'none'; });
-    if (typeof closeSub === 'function') closeSub();
     if (typeof Viewer !== 'undefined') Viewer.close();
-    const target = pageNav[page] || cwo;
-    if (opts.instant) { activeNav = target; placeBar(target, false); } else activateNav(target);
+    if (MOBILE) mobileShow(page);
+    else {
+      if (typeof closeSub === 'function') closeSub();
+      const target = pageNav[page] || cwo;
+      if (opts.instant) { activeNav = target; placeBar(target, false); } else activateNav(target);
+    }
     window.scrollTo(0, 0);
-    fitPageHeight();
+    if (!MOBILE) fitPageHeight();
     if (page === 'haptic') { if (typeof initTurntable === 'function') initTurntable(); }
     else if (typeof stopTurntable === 'function') stopTurntable();
     if (page === 'ghostrun') { if (typeof initGhostRun === 'function') initGhostRun(); }
@@ -1254,6 +1370,7 @@
   // a page title block, sized to its text
   function titleBlock(page, html, y) {
     const b = colBlock(0, y, 900, 52, { cls: 'title title-page', page, html: `<h1>${html}</h1>` });
+    if (MOBILE) return;
     const h1 = b.content.firstChild;
     h1.style.whiteSpace = 'nowrap';
     b.w = Math.round(h1.getBoundingClientRect().width) + 28 + 4;
@@ -1288,7 +1405,7 @@
         }
       } else if (el.matches('[data-widget]')) {
         const top = y - GAP + +el.dataset.gap;       // the live widget (turntable, ghost map) sits here
-        document.querySelector(WIDGET_HOST[el.dataset.widget]).style.top = top + 'px';
+        if (!MOBILE) document.querySelector(WIDGET_HOST[el.dataset.widget]).style.top = top + 'px';
         y = top + +el.dataset.h + GAP;
       }
     }
@@ -1299,10 +1416,11 @@
   function relayout() {
     LAYOUT = layoutFor();
     for (const b of Block.all) if (b.place) { Object.assign(b, b.place(LAYOUT, b)); b.draw(); }
+    if (MOBILE) return;
     ttHost.style.left = LAYOUT.widgetX + 'px';
     grHost.style.left = LAYOUT.contentX + 'px';
   }
-  document.body.style.minWidth = FLOOR_W + 'px';       // below the floor the page scrolls sideways
+  if (!MOBILE) document.body.style.minWidth = FLOOR_W + 'px';   // below the floor the page scrolls sideways
   window.addEventListener('resize', relayout);
   relayout();
 
@@ -2334,6 +2452,60 @@
     }
 
   // open the home page (now that the turntable code above is defined)
+
+  // ---------- mobile layout: the static content shown as one column of blocks ----------
+  matchMedia('(max-width: 1023px)').addEventListener('change', () => location.reload());   // crossing the breakpoint (rotating a tablet)
+  const mmenu = SRC.querySelector('#mmenu'), mnav = SRC.querySelector('nav');
+  function setMenu(open) {
+    SRC.classList.toggle('menu-open', open);
+    document.documentElement.classList.toggle('menu-open', open);
+    mmenu.setAttribute('aria-expanded', open);
+    mmenu.querySelector('.lbl').textContent = open ? 'close' : 'menu';
+  }
+  function setGroup(li, open) { li.classList.toggle('open', open); li.querySelector(':scope > button').setAttribute('aria-expanded', open); }
+  function mobileShow(page) {
+    SRC.dataset.current = page;
+    SRC.querySelectorAll('article').forEach(a => a.classList.toggle('on', a.dataset.route === page));
+    mnav.querySelectorAll('a').forEach(a => {
+      const on = a.getAttribute('href') === '#' + SLUG[page];
+      a.classList.toggle('on', on);
+      const g = a.closest('.group'); if (on && g) setGroup(g, true);
+    });
+    SRC.querySelector('#mhere-label').textContent = page === 'home' ? 'home' : PAGE_TITLE[page].toLowerCase();
+    setMenu(false);
+    if (page === 'haptic') ttFitMobile();
+  }
+  // the turntable's device and phone are fixed-size drawings: shrink them to fit narrow screens
+  function ttFitMobile() {
+    if (!MOBILE) return;
+    const host = document.querySelector('.tt-host'), dev = host.querySelector('.tt-device'), ph = host.querySelector('.phone-frame'), spk = host.querySelector('.tt-speaker');
+    if (!host.offsetParent) return;
+    dev.style.zoom = ph.style.zoom = '';
+    const W = host.clientWidth;
+    dev.style.zoom = Math.min(1, W / dev.offsetWidth);
+    const room = W - spk.querySelector('.spk-graphic').offsetWidth - 12;
+    ph.style.zoom = Math.min(1, room / ph.offsetWidth);
+  }
+  function initMobile() {
+    SRC.querySelectorAll('.blk').forEach(el => el.classList.add('block', 'locked', 'plain', 'mblk'));      // same text rules as canvas blocks
+    SRC.querySelectorAll('.blk[data-kind="doc"]').forEach(el => { el.innerHTML = docCard(el); });          // resume preview card
+    for (const [key, host] of Object.entries(WIDGET_HOST))                                                  // widgets sit inline in their pages
+      SRC.querySelector(`[data-widget="${key}"]`).appendChild(document.querySelector(host));
+    SRC.querySelectorAll('a[data-gallery]').forEach(a => {                                                  // film thumbnails open the viewer
+      a.dataset.viewer = a.dataset.gallery; a.dataset.full = a.getAttribute('href');
+      const cap = a.closest('figure').querySelector('figcaption'); if (cap) a.dataset.caption = cap.textContent;
+    });
+    mmenu.addEventListener('click', () => setMenu(!SRC.classList.contains('menu-open')));
+    mnav.addEventListener('click', e => {
+      const g = e.target.closest('.group > button');
+      if (g) setGroup(g.parentElement, !g.parentElement.classList.contains('open'));
+      else if (e.target.closest('a')) setMenu(false);                                                      // also when it's the page you're on
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && SRC.classList.contains('menu-open')) setMenu(false); });
+    window.addEventListener('resize', () => { if (currentPage === 'haptic') ttFitMobile(); });
+  }
+  if (MOBILE) initMobile();
+
   showPage(pageFromHash(), { history: false, instant: true });
   window.addEventListener('popstate', route);
   window.addEventListener('hashchange', route);
