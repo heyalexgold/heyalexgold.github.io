@@ -191,7 +191,7 @@
     @media (prefers-reduced-motion: reduce) { html.mobile #content nav .group > ul, html.mobile #content nav .group li > a, html.mobile #content nav .group > button::after { transition: none !important; } }
     /* home header: name, then photo + bio side by side */
     html.mobile #content > header { display: none; }
-    html.mobile #content[data-current="home"] > header { display: grid; grid-template-columns: minmax(0, 1fr) 34%; grid-template-rows: auto 1fr; gap: 7px; margin-top: 100px; }
+    html.mobile #content[data-current="home"] > header { display: grid; grid-template-columns: minmax(0, 1fr) 34%; grid-template-rows: auto 1fr; gap: 7px; margin-top: 60px; }
     html.mobile #content > header h1 { grid-column: 1; grid-row: 1; padding: 10px 12px 14px; font-size: min(54px, 9vw); line-height: 1.05; font-weight: 500; letter-spacing: -0.02em; color: var(--red); text-transform: lowercase; white-space: nowrap; }
     html.mobile #content > header p { grid-column: 1; grid-row: 2; justify-self: end; display: flex; align-items: center; padding: 12px; font-size: min(16.5px, 4.8vw); }
     html.mobile #content > header .pw { grid-column: 2; grid-row: 1 / 3; }
