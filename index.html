@@ -110,6 +110,8 @@
     .block > .content.bare img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
     .block a, .block .accent { color: var(--red); text-decoration: none; }
+    .block p a, .block li a { border-bottom: 1px solid rgba(229,57,43,0.4); }
+    .block p a:hover, .block li a:hover { border-bottom-color: var(--red); }
 
     /* the static content layer (<main id="content">): what link previews, search engines and
        non-JavaScript readers get. With JavaScript it is replaced by the blocks. */
@@ -183,6 +185,9 @@
     .block ul { margin: 0.4em 0 0 1.15em; padding: 0; }
     .block li { margin-bottom: 0.3em; }
     .block ul.long li { margin-bottom: 0.8em; }
+    .block ul ul { margin-top: 0.5em; }
+    .block ul ul li { margin-bottom: 0.5em; }
+    .block li > p { margin-top: 0.5em; }
     /* figure: a photo inset in a white block (like a print in a mat), with a caption line */
     .block.figure > .content { padding: 12px; }
     .block.figure img { display: block; width: 100%; object-fit: cover; }
@@ -500,16 +505,16 @@
     <ul>
       <li><a href="#home">Home</a></li>
       <li><a href="#tesla">Tesla</a></li>
-      <li><a href="#fsae">FSAE Formula E</a></li>
-      <li><a href="#news">In the news</a></li>
-      <li><a href="#resume">Resume / contact</a></li>
       <li><a href="#turntable">Haptic audio controller</a></li>
+      <li><a href="#fsae">FSAE Formula E</a></li>
       <li><a href="#ghost-run">Strava ghost run</a></li>
       <li><a href="#thermal-camera">Thermal printer camera</a></li>
+      <li><a href="#bike-chain-cleaner">Bike chain cleaner</a></li>
       <li><a href="#beauty-as-data-compression">Beauty as data compression</a></li>
       <li><a href="#film">Film</a></li>
       <li><a href="#on-trash">On trash</a></li>
       <li><a href="#this-website">This website</a></li>
+      <li><a href="#resume">Resume / contact</a></li>
     </ul>
   </nav>
 
@@ -518,14 +523,14 @@
     <div class="blk">
       <p>Hey, I'm Alex Gold.</p>
       <p>I'm an engineer who loves to spin CAD, despises CTE mismatches, and doesn't mind frying a resistor.</p>
-      <p>I currently work at Tesla in Palo Alto, California as a mechanical design engineer on the high voltage distribution team, working on high volume part design and actuators. I studied mechanical engineering at BYU with a focus on high voltage electronics, mechatronics, and battery chemistry. I'm passionate about interdisciplinary engineering and mechatronic systems. Above all else I just want to build, build, build!</p>
+      <p>I currently work at <a href="#tesla">Tesla</a> in Palo Alto, California as a mechanical design engineer on the high voltage distribution team. My focus is designing pieces of the charging system for massive scale and actuator design and integration. I studied mechanical engineering at BYU with a focus on <a href="#fsae">high voltage electronics</a>, mechatronics, and battery chemistry. I'm passionate about interdisciplinary engineering and mechatronic systems, and I'm working on several <a href="#turntable">side projects</a> to apply my interests. Above all else I just want to build, build, build!</p>
     </div>
   </article>
 
   <article id="tesla" data-route="tesla" data-title="Tesla">
     <h2>tesla</h2>
     <div class="blk">
-      <p>I am currently working as a mechanical design engineer on the drive systems team, focusing on high voltage distribution. I am the design owner of multiple parts including the next generation charge port for Cybercab and future vehicles.</p>
+      <p>I am currently working as a mechanical design engineer on the drive systems team, focusing on high voltage distribution. I am the design owner of multiple parts on the vehicle side charging system for Cybercab and future vehicles.</p>
       <p>I work on developing new vehicle programs, from high level planning and integration with large groups, to detailed, innovative part design, to ramping and manufacturing at a massive scale.</p>
     </div>
     <figure><img src="images/Tesla-Cybercab-2.jpeg" width="2726" height="1342" alt="Tesla Cybercab" loading="lazy"></figure>
@@ -535,11 +540,11 @@
       <p>I have designed and soldered custom electronics to test actuators, have spent hours analyzing oscilloscope traces, and many more hours decoding CAN signals to characterize field failures.</p>
       <p>The work is ongoing as I investigate new designs and actuator types to increase reliability, decrease cost, and improve performance.</p>
       <h3>Ramping to massive scale</h3>
-      <p>My parts do not die as ideas and prototypes, they are actively scaling.</p>
-      <p>I have learned that the ramping process is far more intense than the design process. Turns out 0-&gt;1 is a breeze compared to 1-&gt;1,000,000. The manufacturing process magnifies weak points and teases out the 5%, 1%, and 0.1% failures. Identifying them and fixing them early and rapidly is key. An example of this:</p>
+      <p>My parts do not terminate as ideas and prototypes, they are actively scaling.</p>
+      <p>I have learned that the ramping process is far more intense than the design process, it turns out 0-&gt;1 is a breeze compared to 1-&gt;1,000,000. The manufacturing process magnifies weak points and teases out the 5%, 1%, and 0.1% failures. Identifying them and fixing them early and rapidly is so important, and it's something I have learned to do at Tesla. An example of this:</p>
       <p>During ramp, the factory flagged a design problem with a part that caused a vehicle EOL issue. I dropped everything and spent the next few days designing a tester to screen out affected parts. A teammate flew a prototype to the factory and got feedback, and I hand soldered a production-worthy version which I flew to our upstream assembler and then trained line workers to use it. This contained the issue and allowed me to validate a robust design change which would get rid of the problem completely.</p>
       <h3>Early design and prototyping</h3>
-      <p>Speed is the name of the game. I have found the sooner you can have a working model running representative firmware, the closer you are to rev 2. I 3D print it, destroy it, modify it, and print it again. I have also learned to be bold with designs.</p>
+      <p>Speed is the name of the game. In my experience, the sooner you can have a working model running representative firmware, the closer you are to rev 2. I 3D print it, destroy it, modify it, and print it again. I have also learned to be bold with designs and trying out new technology when the timeline permits it.</p>
       <h3>Innovative and careful design for manufacturing</h3>
       <p>Anything that can go wrong in production will go wrong. Taking the effort to carefully make an engineering drawing that lists every part requirement and lays out a precise testing strategy at the tier 1 and tier 2+ suppliers is something that pays itself back 50x later in the manufacturing process.</p>
       <h3>Full vehicle development</h3>
@@ -557,7 +562,7 @@
       <h3>Year 1</h3>
       <p>In the first year, me and a group of equally ambitious and unqualified students designed the electric powertrain and built it for a trial chassis. We used a custom designed and built-to-spec pack and an off the shelf inverter and motor. Year 1 was super scrappy, it was nowhere close to rules compliant, and we were barely able to get the motor spinning, but it did spin! It was the necessary foundation for the next year and exposed the areas that I needed more knowledge in.</p>
       <h3>Year 2</h3>
-      <p>This is when it got real. Me and a group of 8 other engineers designed and built a custom 400v accumulator (battery pack) from scratch. Me and a friend Landon were the only ones part of the high voltage team in year one.</p>
+      <p>This is when it got real. Me and a group of 8 other engineers designed and built a custom 450v accumulator (battery pack) from scratch. Me and a friend <a href="https://lens-thinkering.github.io" target="_blank" rel="noopener">Landon</a> were the only ones who had been part of the high voltage team in year one.</p>
       <p>The areas I owned were overall pack layout, collector plates with integrated fuses, thermal sensing, and BMS integration. In each of these areas I led design discussions, performed experiments and simulations, made decisions, and documented my work.</p>
     </div>
     <figure><img src="images/fsae-pack.jpg" width="1400" height="1050" alt="The assembled accumulator with its orange high voltage connector" loading="lazy"></figure>
@@ -571,11 +576,6 @@
     <figure data-w="2/3"><img src="images/fsae-modules.jpg" width="1400" height="1355" alt="Assembling battery modules" loading="lazy"><figcaption>I also assembled many, many modules.</figcaption></figure>
   </article>
 
-  <article id="news" data-route="news" data-title="In the news">
-    <h2>in the news</h2>
-    <figure><img src="images/weather_report.JPG" width="1125" height="1627" alt="KSL NewsRadio tweet sharing a photo of a cold air funnel over Lehi, Utah" loading="lazy"></figure>
-  </article>
-
   <article id="resume" data-route="resume" data-title="Resume / contact">
     <h2>resume / contact</h2>
     <div class="blk" data-kind="doc" data-title="Resume" data-pages="images/resume-1.jpg,images/resume-2.jpg,images/resume-3.jpg" data-pdf="files/Alex_Gold_Resume.pdf">
@@ -583,8 +583,12 @@
       <p><a href="files/Alex_Gold_Resume.pdf">Alex Gold — Resume (PDF, 3 pages)</a></p>
     </div>
     <div class="blk">
+      <p>Got criticism of my projects, thoughts on trash, or would like to give me some money? Send me an email.</p>
+      <p>LinkedIn: <a href="https://www.linkedin.com/in/alexgold36" target="_blank" rel="noopener">linkedin.com/in/alexgold36</a><br>
+      Email: <a href="mailto:mr.alex.m.gold@gmail.com">mr.alex.m.gold@gmail.com</a></p>
+    </div>
+    <div class="blk">
       <h3>Informal resume</h3>
-      <p>That the time difference between "knowing absolutely nothing" about something and "knowing enough to be useful" is only a few hard-working weeks.</p>
     </div>
     <div class="blk">
       <h3>Tesla</h3>
@@ -597,7 +601,7 @@
       </ul>
       <p>Key skills:</p>
       <ul>
-        <li>Complex part design using CATIA 3DX and Ansys</li>
+        <li>Complex part design using CATIA 3DX, Ansys</li>
         <li>Hands on experience with almost every manufacturing technique out there</li>
         <li>Data analysis using python, matlab, AI</li>
       </ul>
@@ -616,6 +620,38 @@
         <li>High voltage system design</li>
         <li>Design choice documentation</li>
         <li>DAQ instrumentation for experimental data</li>
+      </ul>
+    </div>
+    <div class="blk">
+      <h3>Lion Energy</h3>
+      <p>The job where I learned:</p>
+      <ul>
+        <li>The mechanical and electrical structure of commercial battery storage systems</li>
+        <li>The process for turning a design into a small batch of prototypes</li>
+        <li>How to work with FW teams</li>
+        <li>How to not get shocked by live packs</li>
+      </ul>
+      <p>Key skills:</p>
+      <ul>
+        <li>Solidworks assembly design and mechanical + thermal FEA tools</li>
+        <li>Prototype manufacturing</li>
+        <li>Teardown and analysis for benchmarking</li>
+      </ul>
+    </div>
+    <div class="blk">
+      <h3>Battery material research lab</h3>
+      <p>The job where I learned:</p>
+      <ul>
+        <li>How to be extremely scrappy</li>
+        <li>That I can throw myself into a new engineering discipline and become useful within a few weeks</li>
+        <li>What the research process looks like</li>
+        <li>Everything I know about battery chemistry</li>
+      </ul>
+      <p>Key skills:</p>
+      <ul>
+        <li>Battery analysis tools like Arbin cyclers</li>
+        <li>Debugging Aliexpress manufacturing equipment</li>
+        <li>Manual machining</li>
       </ul>
     </div>
     <div class="blk">
@@ -639,7 +675,7 @@
       <p>My technical motivations for the project:</p>
       <ul>
         <li>Buttery smooth haptic interfacing</li>
-        <li>Use field controls on a brushless DC motor</li>
+        <li>Use field-oriented control on a brushless DC motor with a magnetic encoder</li>
         <li>Low latency communication and processing (&lt;10ms)</li>
         <li>PCBA design</li>
         <li>Industrial design for the housing</li>
@@ -649,10 +685,17 @@
     <div class="blk">
       <h3>Architecture</h3>
       <ul class="long">
-        <li>Built around an ESP32 — dual cores were a key requirement (core 0 strictly handles motor control and feedback, core 1 handles audio buffer, bluetooth, screen, and user input).</li>
-        <li>Motor is a brushless DC gimbal motor controlled with a simpleFOC chip. This is something I debated for a while, and considered using a small brushed motor with physical gearing and clutch, similar to a real turntable, but I decided on a gimbal motor because of the total integration and small packaging of the motor, magnetic encoder, and mechanical structure. Also I found the simpleFOC chip which unlocked precise control at very low speeds and has an active community which I referenced for the firmware. I've spent a long time tuning the control method and filtering for this to make the feel correct with very low cogging. I found this matters a lot when you tie an audio output to it; high frequency wobble you can't physically feel shows up as noticeable audio distortion in the highs and lows.</li>
-        <li>I want this to be powered by a USB-C connection that can be plugged into a laptop, so the power draw is limited. This governed the max reaction torque of the platter motor, and required me to add a boost converter to bump up the voltage for my motor. During normal operation the closed-loop motor controls run at shockingly low power (&lt;0.1 watts) so system cooling is not a concern.</li>
-        <li>Firmware is based around two main processing systems. I'm a firmware novice so Claude helped implement the code once I had laid out the high level architecture. In one core, audio is pulled in through a bluetooth connection and fed into a ring buffer which overwrites itself every two minutes. The audio is fed out through a DAC to a lined connection, the position and rate of output is set by a pointer which references the motor position and velocity. In another core, the motor is controlled using a closed loop system using field controls that reference the resolver. This system took a lot of refining, it has filtering and the motor goes through a calibration cycle during boot to measure cogging due to the permanent magnets, which it then compensates for. Thanks to the simpleFOC community for that one. I really wanted to do bluetooth in and bluetooth out to airpods, but airpods make this so unfriendly, and it added too much complexity and mostly would have made the latency too high to be usable in a meeting or get a responsive feel at the turntable.</li>
+        <li>Built around an ESP32-S3 chip, quick processing speeds and double cores were a key requirement (core 0 strictly handles motor control and feedback, core 1 handles audio buffer, screen, user input)</li>
+        <li>Motor is a brushless DC gimbal motor driven by a DRV8313 three-phase driver, with field-oriented control running on the ESP32 via the open-source SimpleFOC library and a 12-bit AS5600 magnetic encoder for rotor angle. I spent a long time on motor choice, and considered using a small brushed motor with physical gearing and clutch, similar to a real turntable, but I decided on a gimbal motor because of the total integration and small packaging of the motor, magnetic encoder, and mechanical structure. I also found the SimpleFOC open-source library which unlocked precise control at very low speeds and has an active community which I referenced for the firmware. I've spent a long time tuning the control method and filtering for this to make the feel correct with very low cogging. Tying an audio output to motor velocity makes this matter a lot; high frequency wobble you can't physically feel shows up as noticeable audio distortion in the highs and lows.</li>
+        <li>I want this to be powered by a usb-c connection that can be plugged into a laptop, so the power draw is limited. This governed the max reaction torque of the platter motor, and required me to add a boost converter to bump up the voltage for my motor. During normal operation the closed-loop motor controls run at shockingly low power (&lt;0.1 watts) so system cooling is not a concern.</li>
+        <li>Firmware is based around three main processing systems:
+          <ul>
+            <li>Audio and visuals: In core 0 on the ESP32, audio is pulled in through a bluetooth connection from a coprocessor chip and fed into a ring buffer which overwrites itself every two minutes. The audio is fed out through a DAC to a lined connection, the audio position and rate of output is set by a pointer which references the motor position and velocity.</li>
+            <li>Motor controls: In core 1, the motor is controlled using a closed loop system using simpleFOC library's from which reference the resolver.</li>
+            <li>Bluetooth: The ESP32 only has BLE 5, which is the latest and greatest bluetooth standard, but it is so late and great that it won't connect to your phone :(. This meant I needed a coprocessing chip with an older BT standard that then communicates with the main system over I2C.</li>
+          </ul>
+          <p>I defined the architecture, timing budget and control approach, used Claude Code to write most of the firmware, then debugged and tuned it on hardware. This system took a lot of refining, I added a velocity filter and a calibration cycle that the motor spins through during boot to measure cogging due to the permanent magnets, which it then compensates for. Thanks to the simpleFOC community for that one. I really wanted to do bluetooth in and bluetooth out to airpods, but airpods make this so unfriendly, and it added too much complexity and mostly would have made the latency too high to be usable in a meeting or get a responsive feel at the turntable.</p>
+        </li>
       </ul>
       <p>This project is in process.</p>
     </div>
@@ -678,15 +721,20 @@
     <div class="blk"><p>content incoming…</p></div>
   </article>
 
+  <article id="bike-chain-cleaner" data-route="bike" data-title="Bike chain cleaner">
+    <h2>bike chain cleaner</h2>
+    <div class="blk"><p>content incoming…</p></div>
+  </article>
+
   <article id="beauty-as-data-compression" data-route="vision" data-title="Beauty as data compression">
     <h2>beauty as data compression</h2>
     <div class="blk">
-      <p>I recently read and was deeply influenced by this paper written by a researcher named Jurgen Schmidhuber in 2009. The title is <a href="https://arxiv.org/pdf/0812.4360" target="_blank" rel="noopener">"Driven by Compression Progress: A Simple Principle Explains Essential Aspects of Subjective Beauty, Novelty, Surprise, Interestingness, Attention, Curiosity, Creativity, Art, Science, Music, Jokes"</a>. The paper is worth the read, but in summary, Schmidhuber lays out a general mathematical definition of beauty, defining it as something whose data is able to be compressed in a way where it can be described in much fewer bits. He claims this describes why we find beauty in patterns and symmetrical faces. Interestingness, by this framework, is the derivative of beauty. If something is helping us to understand and describe our inputs and memories, it is interesting until it is no longer useful in improving our compression method.</p>
-      <p>To further understand and apply the idea, I built a single level, linear neural net that processes vision data and gives an output of the perceived beauty and interestingness of each picture, and uses the image to train its internal data compression scheme. For my input vision data, I used the phenocam database, which comes from a collection of thousands of stationary cameras pointing at nature all around the world which capture 16-48 images a day. It's mostly pictures of crops; this data is primarily used to analyze vegetation cycles. Here is an example interface to the neural net and a demonstration of it training itself over time and developing a unique taste for what it finds interesting and beautiful:</p>
+      <p>I recently read and was deeply influenced by this paper written by a researcher named Jurgen Schmidhuber in 2009. The title is <a href="https://arxiv.org/pdf/0812.4360" target="_blank" rel="noopener">"Driven by Compression Progress: A Simple Principle Explains Essential Aspects of Subjective Beauty, Novelty, Surprise, Interestingness, Attention, Curiosity, Creativity, Art, Science, Music, Jokes"</a>. The paper is worth the read, but in summary, Schmidhuber lays out a general mathematical definition of subjective beauty and interestingness, defining the beauty of a set of data as the quality of being compressible in a way where it can be described in much fewer bits. This suggests why we find beauty in patterns and symmetrical faces. Interestingness, by this framework, is the derivative of beauty. If new data is helping us to understand, describe, and compress our current inputs as well as our recorded memories, and therefore find them more beautiful, it is interesting until it is no longer useful in improving our compression method.</p>
+      <p>To further understand and apply the idea, I built a single-level, linear autoencoder that processes vision data and gives an output of the perceived beauty and interestingness of each picture, and uses the image to train its internal data compression scheme. It is self motivated to maximize interestingness and data compression progress. For my input vision data, I used images from the <a href="https://phenocam.nau.edu/" target="_blank" rel="noopener">Phenocam database</a>, which pulls from thousands of stationary cameras pointing at nature all around the world capturing 16-48 images a day. It’s mostly pictures of crops; this data is primarily used to analyze vegetation cycles. Here is an example interface to the neural net and a demonstration of it training itself over time and developing a unique taste for what it finds interesting and beautiful:</p>
     </div>
     <div class="blk"><p>interactive demo incoming…</p></div>
     <div class="blk">
-      <p>A possible future of this project is to build several solar powered long-lifetime vision/compute units that I can place in a nice spot and they will stay there for 30+ years. They will watch and analyze the world for beauty, selectively looking at what they find interesting, training their unique data compression models. They will be disconnected from any radio frequency antennas so there can not be any output. I think beauty only exists when perceived, so maybe increasing the compute power dedicated to perceiving beauty will increase the amount of beauty in the world.</p>
+      <p>A possible future of this project is to build several solar powered long-lifetime vision/compute units that I can place in a nice spot and they will stay there for 30+ years. They will watch and analyze the world for beauty, selectively looking at what they find interesting, training their unique data compression models. They will be disconnected from their radio frequency antennas so there can not be any output. I think beauty only exists when perceived, so maybe increasing the compute power dedicated to perceiving beauty will increase the amount of beauty in the world.</p>
     </div>
   </article>
 
@@ -1052,8 +1100,8 @@
   // ---------- page routing: the sidebar + title stay, the middle swaps ----------
   // Every page has its own address (#tesla, #turntable, ...). Navigating pushes a history entry, so
   // back/forward work and a pasted link opens straight onto its page.
-  const SLUG = { home: 'home', tesla: 'tesla', fsae: 'fsae', news: 'news', resume: 'resume', haptic: 'turntable',
-    ghostrun: 'ghost-run', thermal: 'thermal-camera', vision: 'beauty-as-data-compression', film: 'film',
+  const SLUG = { home: 'home', tesla: 'tesla', fsae: 'fsae', resume: 'resume', haptic: 'turntable',
+    ghostrun: 'ghost-run', thermal: 'thermal-camera', bike: 'bike-chain-cleaner', vision: 'beauty-as-data-compression', film: 'film',
     trash: 'on-trash', website: 'this-website' };
   const PAGE_OF = { ...Object.fromEntries(Object.keys(SLUG).map(p => [p, p])),
                     ...Object.fromEntries(Object.entries(SLUG).map(([p, s]) => [s, p])) };   // slug or page id -> page id
@@ -1153,29 +1201,29 @@
   // ---- sidebar (constant across pages; locked = click-only) ----
   new Block(SIDEBAR_X,  40, SIDEBAR_W, 24, { cls: 'redcap', locked: true });                  // red cap on top
   const home      = new Block(SIDEBAR_X,  71, SIDEBAR_W, 42, { cls: 'nav', locked: true, html: 'home',                  onClick: () => showPage('home') });
-  const cwo       = new Block(SIDEBAR_X, 120, SIDEBAR_W, 63, { cls: 'nav', locked: true, html: 'currently<br>working on' });
-  const teslaNav  = new Block(SIDEBAR_X, 190, SIDEBAR_W, 42, { cls: 'nav', locked: true, html: 'tesla',                 onClick: () => showPage('tesla') });
+  const teslaNav  = new Block(SIDEBAR_X, 120, SIDEBAR_W, 42, { cls: 'nav', locked: true, html: 'tesla',                 onClick: () => showPage('tesla') });
+  const hapticNav = new Block(SIDEBAR_X, 169, SIDEBAR_W, 63, { cls: 'nav', locked: true, html: 'haptic audio<br>controller', onClick: () => showPage('haptic') });
   const fsaeNav   = new Block(SIDEBAR_X, 239, SIDEBAR_W, 63, { cls: 'nav', locked: true, html: 'fsae<br>formula e',      onClick: () => showPage('fsae') });
-  const newsNav   = new Block(SIDEBAR_X, 309, SIDEBAR_W, 42, { cls: 'nav', locked: true, html: 'in the news?',          onClick: () => showPage('news') });
-  const resumeNav = new Block(SIDEBAR_X, 358, SIDEBAR_W, 63, { cls: 'nav', locked: true, html: 'resume/<br>contact me', onClick: () => showPage('resume') });
-  const creativeNav = new Block(SIDEBAR_X, 428, SIDEBAR_W, 63, { cls: 'nav', locked: true, html: 'creative<br>work' });
+  const cwo       = new Block(SIDEBAR_X, 309, SIDEBAR_W, 63, { cls: 'nav', locked: true, html: 'currently<br>working on' });
+  const creativeNav = new Block(SIDEBAR_X, 379, SIDEBAR_W, 63, { cls: 'nav', locked: true, html: 'creative<br>work' });
+  const resumeNav = new Block(SIDEBAR_X, 449, SIDEBAR_W, 63, { cls: 'nav', locked: true, html: 'resume/<br>contact me', onClick: () => showPage('resume') });
 
   // sub-menu cards under "currently working on" — each opens a project page
   // floating: true — this popout sits in its own plane above the (now closer) body
   // content and never collides with or snaps to it
   const SUB_X = SIDEBAR_X + SIDEBAR_W + GAP;
   const cards = [
-    new Block(SUB_X, 120, 142, 63, { cls: 'sub', locked: true, floating: true, html: 'haptic audio<br>controller', onClick: () => showPage('haptic') }),
-    new Block(SUB_X, 190, 142, 63, { cls: 'sub', locked: true, floating: true, html: 'Strava ghost<br>runners',     onClick: () => showPage('ghostrun') }),
-    new Block(SUB_X, 260, 142, 63, { cls: 'sub', locked: true, floating: true, html: 'thermal printer<br>camera',   onClick: () => showPage('thermal') })
+    new Block(SUB_X, 309, 142, 63, { cls: 'sub', locked: true, floating: true, html: 'Strava ghost<br>runners',     onClick: () => showPage('ghostrun') }),
+    new Block(SUB_X, 379, 142, 63, { cls: 'sub', locked: true, floating: true, html: 'thermal printer<br>camera',   onClick: () => showPage('thermal') }),
+    new Block(SUB_X, 449, 142, 63, { cls: 'sub', locked: true, floating: true, html: 'bike chain<br>cleaner',       onClick: () => showPage('bike') })
   ];
 
   // sub-menu cards under "creative work"
   const creativeCards = [
-    new Block(SUB_X, 428, 142, 63, { cls: 'sub', locked: true, floating: true, html: 'beauty as data<br>compression', onClick: () => showPage('vision') }),
-    new Block(SUB_X, 498, 142, 44, { cls: 'sub', locked: true, floating: true, html: 'film',                        onClick: () => showPage('film') }),
-    new Block(SUB_X, 549, 142, 44, { cls: 'sub', locked: true, floating: true, html: 'on trash',                    onClick: () => showPage('trash') }),
-    new Block(SUB_X, 600, 142, 44, { cls: 'sub', locked: true, floating: true, html: 'this website',                onClick: () => showPage('website') })
+    new Block(SUB_X, 379, 142, 63, { cls: 'sub', locked: true, floating: true, html: 'beauty as data<br>compression', onClick: () => showPage('vision') }),
+    new Block(SUB_X, 449, 142, 44, { cls: 'sub', locked: true, floating: true, html: 'film',                        onClick: () => showPage('film') }),
+    new Block(SUB_X, 500, 142, 44, { cls: 'sub', locked: true, floating: true, html: 'on trash',                    onClick: () => showPage('trash') }),
+    new Block(SUB_X, 551, 142, 44, { cls: 'sub', locked: true, floating: true, html: 'this website',                onClick: () => showPage('website') })
   ];
 
   // "alex gold" — big on home (left of the picture); small top-right on every other page.
@@ -1449,8 +1497,8 @@
 
   // which nav block lights up for each page (project pages ride their parent's popout)
   Object.assign(pageNav, {
-    home, tesla: teslaNav, fsae: fsaeNav, news: newsNav, resume: resumeNav,
-    haptic: cwo, ghostrun: cwo, thermal: cwo,
+    home, tesla: teslaNav, haptic: hapticNav, fsae: fsaeNav, resume: resumeNav,
+    ghostrun: cwo, thermal: cwo, bike: cwo,
     vision: creativeNav, film: creativeNav, trash: creativeNav, website: creativeNav
   });
   activeNav = home;
