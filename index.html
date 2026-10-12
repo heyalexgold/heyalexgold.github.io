@@ -935,7 +935,6 @@
       this.page = opts.page || null;                   // null = shown on every page
       this.floating = !!opts.floating;                 // floating = ignored by others' collision/snap (sits in its own plane above content)
       this.plain = !!opts.plain;                        // plain = ordinary body text/images — no drag affordance at all
-      this.follow = opts.follow || null;                // { of: Block, calc(of) => {x,y,w?,h?} } — recomputed whenever `of` redraws
       this.place = opts.place || null;                  // (layout, block) => {x} — re-applied by relayout() whenever the window resizes
       this.el = document.createElement('div');
       this.el.className = 'block' + (opts.cls ? ' ' + opts.cls : '') + (this.plain ? ' plain' : '') + (this.locked ? ' locked' : '');
@@ -960,12 +959,6 @@
       s.left = this.x + 'px'; s.top = this.y + 'px';
       s.width = this.w + 'px'; s.height = this.h + 'px';
       if (activeNav === this) placeBar(this, false);   // bar tracks the active item while it moves
-      for (const b of Block.all) {                     // group-mates that follow this block redraw with it
-        if (b.follow && b.follow.of === this) {
-          Object.assign(b, b.follow.calc(this));
-          b.draw();
-        }
-      }
     }
 
     overflowing() {
@@ -974,12 +967,8 @@
     }
 
     others() {
-      // a hidden block (a different page's content) never obstructs. Nor does a
-      // block that FOLLOWS this one — it's computed from this block's position, not
-      // an independent obstacle, so this one must be free to move/resize without
-      // "colliding" with its own followers. Followers themselves keep normal
-      // snapping/collision against their anchor and everything else.
-      return Block.all.filter(b => b !== this && !b.floating && b.el.style.display !== 'none' && !(b.follow && b.follow.of === this));
+      // a hidden block (a different page's content) never obstructs
+      return Block.all.filter(b => b !== this && !b.floating && b.el.style.display !== 'none');
     }
     hitsAny() { return this.others().some(b => this.hits(b)); }
     hits(o) {
@@ -1120,7 +1109,7 @@
     currentPage = page;
     if (opts.history !== false && pageFromHash() !== page)     // a navigation, not the browser's own back/forward
       history.pushState(null, '', page === 'home' ? location.pathname + location.search : '#' + SLUG[page]);
-    document.title = page === 'home' ? 'Alex Gold — Mechanical design engineer' : `${PAGE_TITLE[page]} — Alex Gold`;
+    document.title = page === 'home' ? 'Alex Gold — Mechanical design engineer' : `Alex Gold — ${PAGE_TITLE[page]}`;
     for (const b of Block.all) {
       const vis = !b.page || b.page === page || (b.page === '_side' && page !== 'home');
       b.el.style.display = vis ? '' : 'none';
@@ -1230,11 +1219,9 @@
   ];
 
   // "alex gold" — big on home (left of the picture); small top-right on every other page.
-  // `follow` ties portrait/bio to the title below: dragging or resizing the title
-  // (the anchor) carries the other two along as one unit, since the title ignores
-  // its own followers as obstacles — but portrait/bio still snap to and collide
-  // with the title (and each other) normally when dragged independently.
-  // The cluster's right edge (the portrait's) is what's pinned EDGE px from the window's right.
+  // The three header blocks (title, bio, portrait) are independent: each drags, resizes, snaps and
+  // collides on its own. Only when the window resizes are they re-pinned as a cluster whose right
+  // edge (the portrait's) sits EDGE px from the window's right.
   const title = new Block(486, 40, 335, 104, { cls: 'title', page: 'home', html: '<h1>alex gold</h1>',
     place: (L, b) => ({ x: L.right - (b.w + GAP + portrait.w) }) });
   new Block(828, 40, 176, 56, { cls: 'title title-side', page: '_side', html: '<h1>alex gold</h1>', place: pinRight });
@@ -1246,13 +1233,13 @@
   // .grid[data-cols] -> figures in columns;  [data-widget] -> room for a live widget.
   const SRC = document.getElementById('content');
 
-  // ---- home: bio + portrait (linked to the title above) ----
+  // ---- home: bio (right edge flush with the title's) + portrait (pinned to the right edge) ----
   const portraitSrc = SRC.querySelector('#portrait');
   new Block(586, 151, 235, 120, { page: 'home',
-    follow: { of: title, calc: t => ({ x: t.x + t.w - 235, y: t.y + t.h + GAP }) },
+    place: (L, b) => ({ x: title.x + title.w - b.w }),
     html: SRC.querySelector('#bio').innerHTML });
   const portrait = new Block(828, 40, 176, 274, { page: 'home', cls: 'portrait', bare: true,
-    follow: { of: title, calc: t => ({ x: t.x + t.w + GAP, y: t.y }) },
+    place: pinRight,
     html: `<img src="${portraitSrc.getAttribute('src')}" alt="${esc(portraitSrc.alt)}">` });
 
   const ratioOf = str => { const [a, b] = str.split('/').map(Number); return b ? a / b : a; };
@@ -1283,7 +1270,7 @@
 
   for (const art of SRC.querySelectorAll('article')) {
     const page = art.dataset.route;
-    let y = page === 'home' ? 415 : 171;
+    let y = page === 'home' ? portrait.y + portrait.h : 171;   // home: the about block starts level with the photo's bottom edge
     for (const el of art.children) {
       if (el.matches('h2')) { titleBlock(page, el.innerHTML, y); y += 52 + GAP; }
       else if (el.matches('.blk')) y += textBlock(page, y, el.dataset.kind === 'doc' ? docCard(el) : el.innerHTML).h + GAP;
