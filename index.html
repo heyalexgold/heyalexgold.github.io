@@ -159,13 +159,10 @@
     /* top bar: stays put; its red end is the menu button (the old red cap) */
     html.mobile #mbar { display: flex; gap: 7px; position: sticky; top: 0; z-index: 60; background: var(--gray); margin: 0 -16px; padding: 16px 16px 9px; }
     html.mobile #content #mmenu { background: var(--red); }
-    html.mobile #mmenu { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px; background: var(--red); color: #fff; border: 0; font: inherit; font-weight: 500; font-size: 16px; line-height: 1; cursor: pointer; }
-    html.mobile #mmenu i { display: block; width: 18px; height: 12px; border-top: 2px solid #fff; border-bottom: 2px solid #fff; position: relative; }
-    html.mobile #mmenu i::after { content: ''; position: absolute; left: 0; right: 0; top: 3px; border-top: 2px solid #fff; }
-    html.mobile #mhere { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; height: 44px; padding: 0 14px 0 16px; font-size: 16px; }
-    html.mobile #mhere::after { content: ''; position: absolute; left: -7px; top: 0; bottom: 0; width: 7px; background: var(--red); }
+    html.mobile #mmenu { display: flex; align-items: center; justify-content: center; min-width: 86px; height: 44px; padding: 0 16px; background: var(--red); color: #fff; border: 0; font: inherit; font-weight: 500; font-size: 16px; line-height: 1; cursor: pointer; }
+    html.mobile #mhere { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; height: 44px; padding: 0 14px 0 16px; font-size: 17px; }
     html.mobile #mhere span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    html.mobile #mhere a { flex: none; color: var(--red); font-weight: 500; letter-spacing: -0.01em; text-decoration: none; }
+    html.mobile #mhere a { flex: none; color: var(--red); font-size: 27px; line-height: 1; font-weight: 500; letter-spacing: -0.02em; text-decoration: none; }
 
     /* menu: a full-screen list of blocks; the two groups open in place */
     html.mobile #content nav { display: none; }
@@ -182,12 +179,11 @@
 
     /* home header: name, then photo + bio side by side */
     html.mobile #content > header { display: none; }
-    html.mobile #content[data-current="home"] > header { display: grid; grid-template-columns: 150px 1fr; gap: 7px; margin-top: 14px; }
-    html.mobile #content > header h1 { grid-column: 1 / -1; padding: 12px 18px 16px; font-size: 54px; line-height: 1.05; font-weight: 500; letter-spacing: -0.02em; color: var(--red); text-transform: lowercase; }
-    html.mobile #content > header .pw { height: 232px; grid-row: 2; grid-column: 1; }
-    html.mobile #content > header p { grid-row: 2; grid-column: 2; }
-    html.mobile #content > header .pw img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 16%; }
-    html.mobile #content > header p { display: flex; align-items: center; padding: 0 16px; }
+    html.mobile #content[data-current="home"] > header { display: grid; grid-template-columns: minmax(0, 1fr) 34%; grid-template-rows: auto 1fr; gap: 7px; margin-top: 14px; }
+    html.mobile #content > header h1 { grid-column: 1; grid-row: 1; padding: 10px 12px 14px; font-size: min(54px, 9vw); line-height: 1.05; font-weight: 500; letter-spacing: -0.02em; color: var(--red); text-transform: lowercase; white-space: nowrap; }
+    html.mobile #content > header p { grid-column: 1; grid-row: 2; display: flex; align-items: center; padding: 12px; font-size: min(16.5px, 4.8vw); }
+    html.mobile #content > header .pw { grid-column: 2; grid-row: 1 / 3; min-height: 150px; }
+    html.mobile #content > header .pw img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 16%; }
 
     /* pages: one visible at a time */
     html.mobile #content article { display: none; }
@@ -214,11 +210,8 @@
     html.mobile .gr-map { width: 100%; height: auto; aspect-ratio: 1 / 1; }
     html.mobile .gr-overlay-top { font-size: 0.72rem; padding: 6px 10px; }
     html.mobile .gr-attrib { font-size: 0.58rem; }
-    /* turntable, stacked: the device on top, speaker and phone side by side below */
-    html.mobile .tt-host .tt-stage { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "dev dev" "spk ph"; gap: 1.6rem 0.4rem; padding: 0.6rem 0 1rem; min-height: 0; overflow: visible; justify-items: center; align-items: start; }
-    html.mobile .tt-ctrl { grid-area: dev; }
-    html.mobile .tt-speaker { grid-area: spk; align-self: center; }
-    html.mobile .tt-phone { grid-area: ph; }
+    /* turntable, stacked: the device on top, the phone below */
+    html.mobile .tt-host .tt-stage { flex-direction: column; flex-wrap: nowrap; align-items: center; justify-content: flex-start; gap: 1.6rem; padding: 0.6rem 0 1rem; min-height: 0; overflow: visible; }
 
     /* ---- viewer: a large window over the page (documents, photo galleries) ---- */
     html { scrollbar-gutter: stable; }
@@ -290,7 +283,7 @@
     .block .caption { display: block; color: #444; font-size: 0.9rem; margin-bottom: 0.5rem; }
     .block b { font-weight: 700; }
     /* the turntable simulation, dropped between the haptic text blocks */
-    .tt-host { position: absolute; top: 560px; width: 800px; z-index: 1; }
+    .tt-host { position: absolute; top: 560px; width: 623px; z-index: 1; }
     .tt-host .tt-stage { background: transparent; padding: 0.5rem 0; min-height: 0; }
 
     /* Ghost Run widget: static street map + animated ghost dots */
@@ -537,54 +530,6 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
 
-    /* speaker */
-    .tt-speaker { width: 150px; }
-    .spk-graphic {
-      position: relative;
-      width: 110px; height: 150px;
-      border-radius: 12px;
-      background: #2c3137;
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: space-around;
-      padding: 14px 0;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
-    }
-    .spk-cone {
-      width: 66px; height: 66px; border-radius: 50%;
-      background: radial-gradient(circle at 50% 50%, #4a5158 30%, #1c2024 75%);
-      box-shadow: inset 0 0 0 4px #20242a;
-    }
-    .spk-cone.small { width: 34px; height: 34px; }
-    .spk-meter {
-      width: 110px; height: 3px;
-      background: #d7dde2; border-radius: 2px; overflow: hidden;
-    }
-    #spkMeter { height: 100%; width: 0%; background: #e23b2e; transition: width 0.05s linear; }
-    .spk-jack {
-      position: absolute;
-      right: -9px; top: 64%;
-      width: 18px; height: 18px; border-radius: 50%;
-      background: #111; box-shadow: inset 0 0 0 3px #4a5158;
-    }
-    .tt-cable {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 3;
-    }
-    .spk-plug {
-      position: absolute;
-      width: 26px; height: 16px;
-      margin: -8px 0 0 -13px;
-      border-radius: 4px;
-      background: linear-gradient(#6b7480, #3a4047);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.35);
-      cursor: grab; touch-action: none;
-      z-index: 4;
-    }
-    .spk-plug:active { cursor: grabbing; }
-    .spk-plug.loose { background: linear-gradient(#8a5b5b, #5a3636); }
-    .tt-disconnected { color: #c0392b; font-size: 0.7rem; min-height: 0.9rem; }
 
   </style>
 </head>
@@ -592,7 +537,7 @@
 
 <main id="content">
   <div id="mbar">
-    <button id="mmenu" type="button" aria-expanded="false" aria-controls="site-nav"><i></i><span class="lbl">menu</span></button>
+    <button id="mmenu" type="button" aria-expanded="false" aria-controls="site-nav"><span class="lbl">menu</span></button>
     <div id="mhere"><span id="mhere-label">home</span><a href="#home">alex gold</a></div>
   </div>
   <header>
@@ -928,21 +873,7 @@
 
   <div class="tt-host" data-page="haptic">
       <div class="tt-stage">
-        <canvas class="tt-cable" id="ttCable"></canvas>
-
-        <!-- Speaker (left) -->
-        <section class="tt-panel tt-speaker">
-          <h3>Speaker</h3>
-          <div class="spk-graphic">
-            <div class="spk-cone small"></div>
-            <div class="spk-cone"></div>
-            <div class="spk-jack" id="spkJack"></div>
-          </div>
-          <div class="spk-meter"><div id="spkMeter"></div></div>
-          <div class="tt-disconnected" id="ttConnState"></div>
-        </section>
-
-        <!-- Device (center) -->
+        <!-- Device (left) -->
         <section class="tt-panel tt-ctrl">
           <h3>Controller</h3>
           <div class="tt-device">
@@ -1263,18 +1194,17 @@
   // The sidebar stays EDGE px from the left; the header (title/portrait/bio, or the small title on
   // other pages) stays EDGE px from the right; the fixed-width content column is centered on the
   // PAGE. As the window narrows the column's left edge closes in on the sidebar and stops at a
-  // minimum gap (wide things like the haptic widget stop sooner). Below FLOOR_W the layout stops
+  // minimum gap. Below FLOOR_W the layout stops
   // shrinking and the page scrolls horizontally instead.
   const SIDEBAR_X = 20, SIDEBAR_W = 140;
   const SIDEBAR_RIGHT = SIDEBAR_X + SIDEBAR_W;
   const EDGE = 20, FLOOR_W = 1024;
-  const CONTENT_W = 623, WIDGET_W = 800;             // content column / the wider haptic widget
-  const CONTENT_MIN_GAP = 40, WIDGET_MIN_GAP = 20;   // least space kept between the sidebar and each
+  const CONTENT_W = 623;                              // the content column (the haptic widget shares it)
+  const CONTENT_MIN_GAP = 40;                         // least space kept between the sidebar and the column
 
   const layoutFor = () => {
     const W = Math.max(document.documentElement.clientWidth, FLOOR_W);
-    const centered = (w, gap) => Math.max(Math.round((W - w) / 2), SIDEBAR_RIGHT + gap);
-    return { right: W - EDGE, contentX: centered(CONTENT_W, CONTENT_MIN_GAP), widgetX: centered(WIDGET_W, WIDGET_MIN_GAP) };
+    return { right: W - EDGE, contentX: Math.max(Math.round((W - CONTENT_W) / 2), SIDEBAR_RIGHT + CONTENT_MIN_GAP) };
   };
   let LAYOUT = layoutFor();
 
@@ -1417,7 +1347,7 @@
     LAYOUT = layoutFor();
     for (const b of Block.all) if (b.place) { Object.assign(b, b.place(LAYOUT, b)); b.draw(); }
     if (MOBILE) return;
-    ttHost.style.left = LAYOUT.widgetX + 'px';
+    ttHost.style.left = LAYOUT.contentX + 'px';
     grHost.style.left = LAYOUT.contentX + 'px';
   }
   if (!MOBILE) document.body.style.minWidth = FLOOR_W + 'px';   // below the floor the page scrolls sideways
@@ -1637,19 +1567,15 @@
       scrub: null,                  // null | 'ff' | 'rew' — overrides audio rate while held
       // transport / mixer
       playing: false, muted: false, volume: 64,
-      trackIndex: 0, meeting: false, micMuted: false, connected: true, bt: true,
-      level: 0,
+      trackIndex: 0, meeting: false, micMuted: false, bt: true,
       // audio graph
-      ctx: null, ring: null, volGain: null, linkGain: null, connGain: null,
-      analyser: null, meterBuf: null, tracks: [], meetingTrack: null,
-      // cable plug position (stage coords)
-      plug: { x: 0, y: 0, dragging: false, placed: false }
+      ctx: null, ring: null, volGain: null, linkGain: null,
+      tracks: [], meetingTrack: null
     };
 
     const ttPlatter = document.getElementById('ttPlatter');
     const ttOled = document.getElementById('ttOled');
     const ttKnob = document.getElementById('ttKnob');
-    const ttCable = document.getElementById('ttCable');
     const PLATTER_SIZE = 168;       // disc diameter (px) — kept in sync with the concentric corner
 
     // simple monochrome button glyphs (fill follows text color)
@@ -1780,16 +1706,11 @@
         TT.ring = new AudioWorkletNode(TT.ctx, 'ring-reader', { outputChannelCount: [2] });
         TT.volGain = TT.ctx.createGain();
         TT.linkGain = TT.ctx.createGain();   // bluetooth link gate
-        TT.connGain = TT.ctx.createGain();
-        TT.analyser = TT.ctx.createAnalyser();
-        TT.analyser.fftSize = 256;
-        TT.meterBuf = new Float32Array(TT.analyser.fftSize);
-        TT.ring.connect(TT.volGain).connect(TT.linkGain).connect(TT.connGain)
-               .connect(TT.analyser).connect(TT.ctx.destination);
+        TT.ring.connect(TT.volGain).connect(TT.linkGain).connect(TT.ctx.destination);
         TT.ring.port.onmessage = e => { if (e.data && e.data.behind != null) TT.behind = e.data.behind; };
         ttBuildTracks();
         ttLoadSource();
-        ttApplyVolume(); ttApplyMute(); ttApplyLink(); ttApplyConnection(); ttApplyPlaying();
+        ttApplyVolume(); ttApplyMute(); ttApplyLink(); ttApplyPlaying();
         TT.audioReady = true;
         await TT.ctx.resume();
       } catch (err) {
@@ -1820,10 +1741,6 @@
     }
     function ttApplyLink() {        // bluetooth link stays open; button is decorative only
       if (TT.linkGain) TT.linkGain.gain.value = 1;
-    }
-    function ttApplyConnection() {
-      if (TT.connGain) TT.connGain.gain.value = TT.connected ? 1 : 0;
-      document.getElementById('ttConnState').textContent = TT.connected ? '' : 'aux unplugged';
     }
     function ttApplyPlaying() {
       if (TT.ring) TT.ring.parameters.get('playing').value = TT.playing ? 1 : 0;
@@ -2052,152 +1969,6 @@
     ttKnob.addEventListener('pointerup', knobUp);
     ttKnob.addEventListener('pointercancel', knobUp);
 
-    // ---------- aux-cable plug physics ----------
-    const ttPlug = document.createElement('div');
-    ttPlug.className = 'spk-plug';
-    function stageEl() { return document.querySelector('.tt-stage'); }
-    function ttPlaceInit() {
-      const stage = stageEl();
-      if (!stage.contains(ttPlug)) stage.appendChild(ttPlug);
-      ttSnapPlug();
-      ropeInit();
-    }
-    function jackCenter() {
-      const stage = stageEl(), j = document.getElementById('spkJack');
-      const sr = stage.getBoundingClientRect(), jr = j.getBoundingClientRect();
-      return { x: jr.left - sr.left + jr.width/2, y: jr.top - sr.top + jr.height/2 };
-    }
-    function deviceAnchor() {
-      // jack on the left side of the device, kept just outside the body so the
-      // rope's pinned start visually sits *next to* the device rather than on it
-      const stage = stageEl(), d = document.querySelector('.tt-device');
-      const sr = stage.getBoundingClientRect(), dr = d.getBoundingClientRect();
-      return { x: dr.left - sr.left - 5, y: dr.top - sr.top + dr.height*0.78 };
-    }
-    function deviceRect() {
-      const stage = stageEl(), d = document.querySelector('.tt-device');
-      const sr = stage.getBoundingClientRect(), dr = d.getBoundingClientRect();
-      // matches the CSS border-top-left-radius (kept concentric with the platter)
-      return { x: dr.left - sr.left, y: dr.top - sr.top, w: dr.width, h: dr.height, cornerR: 98 };
-    }
-    // push a single point outside the rounded-rect device shape, with a margin
-    function pushOutOfDevice(p, r) {
-      const m = 3;
-      const left = r.x - m, right = r.x + r.w + m;
-      const top  = r.y - m, bottom = r.y + r.h + m;
-      if (p.x < left || p.x > right || p.y < top || p.y > bottom) return;
-      // top-left rounded corner: arc centered at (r.x + R, r.y + R)
-      if (p.x < r.x + r.cornerR && p.y < r.y + r.cornerR) {
-        const cx = r.x + r.cornerR, cy = r.y + r.cornerR;
-        const dx = p.x - cx, dy = p.y - cy;
-        const d = Math.hypot(dx, dy) || 0.0001;
-        if (d < r.cornerR + m) {
-          const t = (r.cornerR + m) / d;
-          p.x = cx + dx * t; p.y = cy + dy * t;
-        }
-        return;
-      }
-      // straight edges: push to the closest one
-      const dL = p.x - left, dR = right - p.x, dT = p.y - top, dB = bottom - p.y;
-      const k = Math.min(dL, dR, dT, dB);
-      if      (k === dL) p.x = left;
-      else if (k === dR) p.x = right;
-      else if (k === dT) p.y = top;
-      else               p.y = bottom;
-    }
-    function ttSnapPlug() {
-      const j = jackCenter();
-      TT.plug.x = j.x; TT.plug.y = j.y; TT.plug.placed = true; TT.connected = true;
-      ttApplyConnection(); ttPositionPlug();
-    }
-    function ttPositionPlug() { ttPlug.style.left = TT.plug.x + 'px'; ttPlug.style.top = TT.plug.y + 'px'; }
-    ttPlug.addEventListener('pointerdown', e => {
-      e.preventDefault(); ttEnsureAudio();
-      TT.plug.dragging = true; ttPlug.setPointerCapture(e.pointerId);
-    });
-    ttPlug.addEventListener('pointermove', e => {
-      if (!TT.plug.dragging) return;
-      const sr = stageEl().getBoundingClientRect();
-      TT.plug.x = e.clientX - sr.left; TT.plug.y = e.clientY - sr.top;
-      ttPositionPlug();
-      const j = jackCenter();
-      TT.connected = Math.hypot(TT.plug.x - j.x, TT.plug.y - j.y) < 36;
-      ttApplyConnection();
-    });
-    function plugUp(e) {
-      if (!TT.plug.dragging) return;
-      TT.plug.dragging = false;
-      if (e && e.pointerId != null) { try { ttPlug.releasePointerCapture(e.pointerId); } catch (_) {} }
-      const j = jackCenter();
-      if (Math.hypot(TT.plug.x - j.x, TT.plug.y - j.y) < 40) ttSnapPlug();   // snap back if close
-      else { TT.connected = false; ttApplyConnection(); }
-      ttPlug.classList.toggle('loose', !TT.connected);
-    }
-    ttPlug.addEventListener('pointerup', plugUp);
-    ttPlug.addEventListener('pointercancel', plugUp);
-
-    // ----- verlet rope -----
-    // The cable is a chain of point masses connected by length constraints.
-    // Endpoints are pinned (device anchor + the plug the user drags). Middle
-    // points fall under gravity, swing on grab, and are pushed out of the
-    // device's rounded body so the cable can't intersect it.
-    const ROPE = { N: 26, iters: 14, rest: 6, points: [] };
-    function ropeInit() {
-      // start as a straight line between anchor and plug — no initial sag
-      const a = deviceAnchor(), j = jackCenter();
-      ROPE.points = [];
-      for (let i = 0; i < ROPE.N; i++) {
-        const t = i / (ROPE.N - 1);
-        const x = a.x + (j.x - a.x) * t;
-        const y = a.y + (j.y - a.y) * t;
-        ROPE.points.push({ x, y });
-      }
-      const straight = Math.hypot(j.x - a.x, j.y - a.y);
-      ROPE.rest = (straight * 1.05) / (ROPE.N - 1);     // taut: just barely longer than straight
-    }
-    function ropeStep() {
-      if (!ROPE.points.length) return;
-      const a = deviceAnchor(), p = TT.plug;
-      // pin endpoints (no integration / momentum — the cable is purely kinematic)
-      ROPE.points[0].x = a.x; ROPE.points[0].y = a.y;
-      ROPE.points[ROPE.N-1].x = p.x; ROPE.points[ROPE.N-1].y = p.y;
-      // satisfy constraints: equalize segment lengths + keep points off the device
-      const rect = deviceRect();
-      for (let it = 0; it < ROPE.iters; it++) {
-        for (let i = 0; i < ROPE.N - 1; i++) {
-          const a_ = ROPE.points[i], b_ = ROPE.points[i+1];
-          const dx = b_.x - a_.x, dy = b_.y - a_.y;
-          const d = Math.hypot(dx, dy) || 0.0001;
-          const diff = (d - ROPE.rest) / d * 0.5;
-          const mx = dx * diff, my = dy * diff;
-          if (i !== 0)        { a_.x += mx; a_.y += my; }
-          if (i !== ROPE.N-2) { b_.x -= mx; b_.y -= my; }
-        }
-        for (let i = 1; i < ROPE.N - 1; i++) pushOutOfDevice(ROPE.points[i], rect);
-      }
-    }
-    function ttDrawCable() {
-      const stage = stageEl(); if (!stage) return;
-      const r = stage.getBoundingClientRect();
-      if (ttCable.width !== r.width || ttCable.height !== r.height) {
-        ttCable.width = r.width; ttCable.height = r.height;
-      }
-      const g = ttCable.getContext('2d');
-      g.clearRect(0, 0, ttCable.width, ttCable.height);
-      if (!ROPE.points.length) return;
-      g.strokeStyle = TT.connected ? '#2c3137' : '#a84a3c';
-      g.lineWidth = 5; g.lineCap = 'round'; g.lineJoin = 'round';
-      g.beginPath();
-      g.moveTo(ROPE.points[0].x, ROPE.points[0].y);
-      for (let i = 1; i < ROPE.points.length - 1; i++) {
-        const cur = ROPE.points[i], nxt = ROPE.points[i+1];
-        g.quadraticCurveTo(cur.x, cur.y, (cur.x + nxt.x) / 2, (cur.y + nxt.y) / 2);
-      }
-      const last = ROPE.points[ROPE.points.length - 1];
-      g.lineTo(last.x, last.y);
-      g.stroke();
-    }
-
     // ---------- main animation loop ----------
     function ttFrame(ts) {
       if (!hapticActive()) { TT.raf = null; return; }
@@ -2233,25 +2004,13 @@
       if (TT.scrub === 'rew')                   outRate = -1;
       if (TT.ring) TT.ring.parameters.get('rate').value = outRate;
 
-      // output level meter (post everything the user hears)
-      if (TT.analyser) {
-        TT.analyser.getFloatTimeDomainData(TT.meterBuf);
-        let sum = 0; for (let i=0;i<TT.meterBuf.length;i++) sum += TT.meterBuf[i]*TT.meterBuf[i];
-        const rms = Math.sqrt(sum / TT.meterBuf.length);
-        TT.level += ((Math.min(1, rms*3)) - TT.level) * 0.3;
-        document.getElementById('spkMeter').style.width = (TT.level*100).toFixed(1) + '%';
-      }
-
       ttDrawPlatter();
-      ropeStep();
-      ttDrawCable();
       TT.raf = requestAnimationFrame(ttFrame);
     }
 
     function initTurntable() {
       requestAnimationFrame(() => {
         ttSizePlatter();
-        ttPlaceInit();
         if (!TT.raf) { TT.lastTs = 0; TT.raf = requestAnimationFrame(ttFrame); }
         if (!TT.oledTimer) TT.oledTimer = setInterval(ttDrawOled, Math.round(1000 / TT.DISPLAY_FPS));
         if (!TT.booted) {
@@ -2315,7 +2074,7 @@
       if (TT.playing) ttSetPlaying(false);     // pause audio when you leave the page
     }
     window.addEventListener('resize', () => {
-      if (hapticActive()) { ttSizePlatter(); ttPlaceInit(); }
+      if (hapticActive()) ttSizePlatter();
       if (currentPage === 'ghostrun') grResize();
     });
 
@@ -2475,16 +2234,13 @@
     setMenu(false);
     if (page === 'haptic') ttFitMobile();
   }
-  // the turntable's device and phone are fixed-size drawings: shrink them to fit narrow screens
+  // the turntable's device is a fixed-size drawing: shrink it to fit narrow screens
   function ttFitMobile() {
     if (!MOBILE) return;
-    const host = document.querySelector('.tt-host'), dev = host.querySelector('.tt-device'), ph = host.querySelector('.phone-frame'), spk = host.querySelector('.tt-speaker');
+    const host = document.querySelector('.tt-host'), dev = host.querySelector('.tt-device');
     if (!host.offsetParent) return;
-    dev.style.zoom = ph.style.zoom = '';
-    const W = host.clientWidth;
-    dev.style.zoom = Math.min(1, W / dev.offsetWidth);
-    const room = W - spk.querySelector('.spk-graphic').offsetWidth - 12;
-    ph.style.zoom = Math.min(1, room / ph.offsetWidth);
+    dev.style.zoom = '';
+    dev.style.zoom = Math.min(1, host.clientWidth / dev.offsetWidth);
   }
   function initMobile() {
     SRC.querySelectorAll('.blk').forEach(el => el.classList.add('block', 'locked', 'plain', 'mblk'));      // same text rules as canvas blocks
