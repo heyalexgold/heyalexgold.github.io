@@ -299,7 +299,7 @@
     .block b { font-weight: 700; }
     /* the turntable simulation, dropped between the haptic text blocks */
     .tt-host { position: absolute; top: 560px; width: 800px; z-index: 1; }
-    .tt-host .tt-stage { background: transparent; padding: 0.5rem 0; min-height: 0; }
+    .tt-host .tt-stage { background: transparent; padding: 0.5rem 0; min-height: 0; overflow: visible; }   /* visible: the device and phone cast shadows past the stage edge */
 
     /* Ghost Run widget: static street map + animated ghost dots */
     .gr-host { position: absolute; top: 600px; width: 623px; z-index: 1; }
