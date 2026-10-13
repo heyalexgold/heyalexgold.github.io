@@ -393,7 +393,7 @@
     #ttPlatter:active { cursor: grabbing; }
     /* 0.96" OLED: 128x64 monochrome pixels, drawn 1:1 then upscaled crisply */
     #ttOled {
-      width: 138px; height: 69px;
+      width: 124px; height: 58px;
       background: #000;
       border-radius: 6px;
       image-rendering: pixelated;
@@ -944,7 +944,7 @@
           <h3>Controller</h3>
           <div class="tt-device">
             <canvas id="ttPlatter"></canvas>
-            <canvas id="ttOled" width="128" height="64"></canvas>
+            <canvas id="ttOled" width="120" height="56"></canvas>
             <div class="tt-knob" id="ttKnob" title="Volume — drag to turn"></div>
             <div class="tt-buttons">
               <button id="ttMute" title="Mute (display only)"></button>
@@ -1633,7 +1633,7 @@
       smoothedRate: 1, behind: 0,
       scrub: null,                  // null | 'ff' | 'rew' — overrides audio rate while held
       // transport / mixer
-      playing: false, muted: false, volume: 64,
+      playing: false, muted: true, volume: 64,
       trackIndex: 0, meeting: false, micMuted: false, bt: true,
       level: 0,
       // audio graph
@@ -1959,7 +1959,7 @@
     }
     // 32×45 face bitmaps (row-major, MSB-first — same format as the firmware's
     // SSD1306 buffer). Closed-mouth face and an open-mouth variant.
-    const FACE_W = 32, FACE_H = 45, FACE_X = 4, FACE_Y = 9;
+    const FACE_W = 32, FACE_H = 45, FACE_X = 3, FACE_Y = 5;
     const FACE_CLOSED = new Uint8Array([
       0xff,0xff,0x80,0x00, 0xff,0xff,0xc0,0x00, 0xff,0xff,0xc0,0x00, 0xff,0xff,0xe0,0x00,
       0xff,0xff,0xe0,0x00, 0xff,0xff,0xe0,0x00, 0xff,0xff,0xf0,0x00, 0xff,0xff,0xf0,0x00,
@@ -2002,7 +2002,7 @@
     function ttDrawOled() {
       const g = ttOled.getContext('2d');
       g.imageSmoothingEnabled = false;
-      g.fillStyle = '#000'; g.fillRect(0, 0, 128, 64);
+      g.fillStyle = '#000'; g.fillRect(0, 0, 120, 56);
 
       // ---- left: 32x45 face bitmap, open when unmuted, closed when muted ----
       g.fillStyle = '#fff';
@@ -2011,9 +2011,9 @@
       // ---- right: VOL and time-behind, that's all ----
       g.fillStyle = '#fff';
       const vol = Math.round(TT.volume / TT.VOLUME_MAX * 10);
-      oledText(g, 'VOL ' + vol, 46, 8, 2);
+      oledText(g, 'VOL ' + vol, 45, 4, 2);
       const sec = Math.min(120, Math.max(0, Math.round(TT.behind)));
-      oledText(g, sec === 0 ? 'LIVE' : 'T-' + sec, 46, 34, 2);
+      oledText(g, sec === 0 ? 'LIVE' : 'T-' + sec, 45, 30, 2);
     }
 
     // ---------- volume knob (relative encoder) ----------
