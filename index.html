@@ -149,10 +149,10 @@
     html.mobile #content { display: block; max-width: 640px; margin: 0 auto; padding: 0 16px 56px; background: none; color: #111; font-size: 16.5px; line-height: 1.42; }
     html.mobile.menu-open { overflow: hidden; }
     /* anything drawn as a block: white, 7px black corner squares */
-    html.mobile #content .mblk, html.mobile #content article > h2, html.mobile #content > header h1, html.mobile #content > header .pw,
+    html.mobile #content .mblk, html.mobile #content article > h2, html.mobile #content article > h3.sec, html.mobile #content > header h1, html.mobile #content > header .pw,
     html.mobile #content > header p, html.mobile #content figure, html.mobile #content nav li > a, html.mobile #content nav .group > button,
     html.mobile #content #mhere, html.mobile #content #mmenu { position: relative; background: #fff; }
-    html.mobile #content .mblk::before, html.mobile #content article > h2::before, html.mobile #content > header h1::before, html.mobile #content > header .pw::before,
+    html.mobile #content .mblk::before, html.mobile #content article > h2::before, html.mobile #content article > h3.sec::before, html.mobile #content > header h1::before, html.mobile #content > header .pw::before,
     html.mobile #content > header p::before, html.mobile #content figure::before, html.mobile #content nav li > a::before, html.mobile #content nav .group > button::before,
     html.mobile #content #mhere::before, html.mobile #content #mmenu::before { content: ''; position: absolute; inset: -7px; pointer-events: none; background: var(--sqs); }
 
@@ -202,6 +202,7 @@
     html.mobile #content article.on { display: block; }
     html.mobile #content article > h2 { display: inline-block; margin-top: 14px; padding: 9px 16px; font-size: 24px; font-weight: 500; letter-spacing: -0.01em; }
     html.mobile #content #home > h2 { margin-top: 100px; }
+    html.mobile #content article > h3.sec { display: block; width: fit-content; margin: 48px 0 0; padding: 9px 16px; font-size: 24px; font-weight: 500; letter-spacing: -0.01em; }
     html.mobile #content .mblk { margin-top: 7px; padding: 16px 18px; position: relative; cursor: auto; touch-action: auto; user-select: text; z-index: auto; }
     html.mobile #content figure { margin-top: 7px; padding: 10px; }
     html.mobile #content figure[data-w="2/3"] { width: 66.67%; margin-left: auto; margin-right: auto; }
@@ -878,20 +879,16 @@
       <p>It seems there is always a need for one more bag.</p>
       <p>I learned to sew in high school for a project and have used the skill to create many custom bags to fit my needs. Here are a few highlights:</p>
     </div>
-    <div class="blk">
-      <h3>Bike frame bag</h3>
-    </div>
+    <h3 class="sec">Bike frame bag</h3>
     <div class="grid" data-cols="2" data-ratio="4/3">
       <figure><a href="images/sewing/frame-bag-1.jpg" data-gallery="sewing"><img src="images/sewing/frame-bag-1-thumb.jpg" width="1200" height="1010" alt="Orange bike frame bag laid flat on a bed, side panel" loading="lazy"></a></figure>
       <figure><a href="images/sewing/frame-bag-2.jpg" data-gallery="sewing"><img src="images/sewing/frame-bag-2-thumb.jpg" width="1200" height="938" alt="Orange bike frame bag laid flat, showing its two zippered pockets" loading="lazy"></a></figure>
     </div>
-    <figure><a href="images/sewing/frame-bag-3.jpg" data-gallery="sewing"><img src="images/sewing/frame-bag-3-thumb.jpg" width="1200" height="900" alt="The frame bag mounted in the frame of a white gravel bike" loading="lazy"></a></figure>
+    <figure><a href="images/sewing/frame-bag-3.jpg" data-gallery="sewing"><img src="images/sewing/frame-bag-3-thumb.jpg" width="1200" height="693" alt="The frame bag mounted in the frame of a white gravel bike" loading="lazy"></a></figure>
     <div class="blk">
       <p>Super handy and aero and fits a ton of gear, initially made for bikepacking but I actually use it for every ride</p>
     </div>
-    <div class="blk">
-      <h3>Green backpack</h3>
-    </div>
+    <h3 class="sec">Green backpack</h3>
     <div class="grid" data-cols="2" data-ratio="1/1">
       <figure><a href="images/sewing/green-backpack-1.jpg" data-gallery="sewing"><img src="images/sewing/green-backpack-1-thumb.jpg" width="1188" height="1200" alt="Green and gray backpack with yellow accents, three-quarter view" loading="lazy"></a></figure>
       <figure><a href="images/sewing/green-backpack-2.jpg" data-gallery="sewing"><img src="images/sewing/green-backpack-2-thumb.jpg" width="1119" height="1200" alt="The green backpack&#x27;s cut pieces laid out flat on a wood floor" loading="lazy"></a></figure>
@@ -899,9 +896,7 @@
     <div class="blk">
       <p>Ol' faithful. I made this bag 8 years ago and still use it every week. The front pocket has a clip for my keys and is the perfect size for a book. The top pocket fits a small camera. The main pocket holds two full-sized baseball gloves or three beach towels.</p>
     </div>
-    <div class="blk">
-      <h3>Round kid&#x27;s bag</h3>
-    </div>
+    <h3 class="sec">Round kid&#x27;s bag</h3>
     <div class="grid" data-cols="2" data-ratio="1/1">
       <figure><a href="images/sewing/round-kids-bag-1.jpg" data-gallery="sewing"><img src="images/sewing/round-kids-bag-1-thumb.jpg" width="913" height="1200" alt="Round red crossbody bag with a quilted star and a gold zipper" loading="lazy"></a></figure>
       <figure><a href="images/sewing/round-kids-bag-2.jpg" data-gallery="sewing"><img src="images/sewing/round-kids-bag-2-thumb.jpg" width="1200" height="1127" alt="The round red bag held in a hand, showing its zipper and a small slip pocket" loading="lazy"></a></figure>
@@ -909,28 +904,22 @@
     <div class="blk">
       <p>I made this for my niece's birthday</p>
     </div>
-    <div class="blk">
-      <h3>Baguette bag</h3>
-    </div>
+    <h3 class="sec">Baguette bag</h3>
     <figure><a href="images/sewing/baguette-bag-1.jpg" data-gallery="sewing"><img src="images/sewing/baguette-bag-1-thumb.jpg" width="1200" height="449" alt="Long blue baguette bag with a yellow zipper and green strap" loading="lazy"></a></figure>
     <div class="blk">
       <p>Baguettes are the perfect outdoor snack. The bag has capacity for one standard sized baguette, a small jar of jam, and a butter knife.</p>
     </div>
-    <div class="blk">
-      <h3>Bike tool pouch</h3>
-    </div>
+    <h3 class="sec">Bike tool pouch</h3>
     <div class="grid" data-cols="3" data-ratio="4/3">
       <figure><a href="images/sewing/bike-tool-pouch-1.jpg" data-gallery="sewing"><img src="images/sewing/bike-tool-pouch-1-thumb.jpg" width="1200" height="900" alt="Black zippered tool pouch holding a bike pump" loading="lazy"></a></figure>
       <figure><a href="images/sewing/bike-tool-pouch-2.jpg" data-gallery="sewing"><img src="images/sewing/bike-tool-pouch-2-thumb.jpg" width="1200" height="900" alt="The tool pouch opened to show its mesh-lined compartments" loading="lazy"></a></figure>
-      <figure><a href="images/sewing/bike-tool-pouch-3.jpg" data-gallery="sewing"><img src="images/sewing/bike-tool-pouch-3-thumb.jpg" width="1200" height="900" alt="The pouch mounted under the saddle of a white bike" loading="lazy"></a></figure>
+      <figure><a href="images/sewing/bike-tool-pouch-3.jpg" data-gallery="sewing"><img src="images/sewing/bike-tool-pouch-3-thumb.jpg" width="1200" height="909" alt="The pouch mounted under the saddle of a white bike" loading="lazy"></a></figure>
     </div>
     <div class="blk">
       <p>A little bag to carry my bike repair tools</p>
     </div>
-    <div class="blk">
-      <h3>Handlebar snack bag</h3>
-    </div>
-    <figure data-w="0.6"><a href="images/sewing/handlebar-bag-1.jpg" data-gallery="sewing"><img src="images/sewing/handlebar-bag-1-thumb.jpg" width="900" height="1200" alt="Red, blue and yellow color-blocked handlebar bag held in a hand in front of a sewing machine" loading="lazy"></a></figure>
+    <h3 class="sec">Handlebar snack bag</h3>
+    <figure data-w="0.6"><a href="images/sewing/handlebar-bag-1.jpg" data-gallery="sewing"><img src="images/sewing/handlebar-bag-1-thumb.jpg" width="990" height="1200" alt="Red, blue and yellow color-blocked handlebar bag held in a hand in front of a sewing machine" loading="lazy"></a></figure>
     <div class="blk">
       <p>I use this for bikepacking trips and will throw my camera and some snacks in it. It's slightly too small for a water bottle :/</p>
     </div>
@@ -1452,12 +1441,14 @@
         `<div class="doc-actions"><button class="link" ${attrs}>View</button><a href="${pdf}" download="Alex_Gold_Resume.pdf">Download</a></div></div></div>`;
   }
   const WIDGET_HOST = { tt: '.tt-host', gr: '.gr-host' };
+  const SECTION_GAP = 48;                       // blank gray space above each section title
 
   for (const art of SRC.querySelectorAll('article')) {
     const page = art.dataset.route;
     let y = page === 'home' ? portrait.y + portrait.h : 171;   // home: the about block starts level with the photo's bottom edge
     for (const el of art.children) {
       if (el.matches('h2')) { titleBlock(page, el.innerHTML, y); y += 52 + GAP; }
+      else if (el.matches('h3.sec')) { y += SECTION_GAP; titleBlock(page, el.innerHTML, y); y += 52 + GAP; }   // a new section: room above, a title only as wide as its text
       else if (el.matches('.blk')) y += textBlock(page, y, el.dataset.kind === 'doc' ? docCard(el) : el.innerHTML).h + GAP;
       else if (el.matches('figure')) {
         const w = el.dataset.w ? Math.round(CONTENT_W * ratioOf(el.dataset.w)) : CONTENT_W;
