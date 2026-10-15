@@ -2205,6 +2205,7 @@
           document.getElementById('ttBt').innerHTML = ICON.bt;
           ttApplyMute(); ttApplyPlaying(); ttApplyLink();
           TT.booted = true;
+          ttEnsureAudio();      // build the graph and start decoding the tracks now (the context stays suspended until the first click), so the first press plays without a wait
         }
       });
     }
