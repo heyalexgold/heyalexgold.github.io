@@ -1868,10 +1868,8 @@
       if (slider && +slider.value !== TT.volume) slider.value = TT.volume;
     }
     function ttApplyMute() {
-      // cosmetic only — drives the OLED face mouth + the button icon. No audio change.
-      const b = document.getElementById('ttMute');
-      b.classList.toggle('on', TT.muted);
-      b.innerHTML = TT.muted ? ICON.micOff : ICON.mic;
+      // cosmetic only — drives the OLED face mouth. The button always shows the plain mic. No audio change.
+      document.getElementById('ttMute').innerHTML = ICON.mic;
     }
     function ttApplyLink() {        // bluetooth link stays open; button is decorative only
       if (TT.linkGain) TT.linkGain.gain.value = 1;
