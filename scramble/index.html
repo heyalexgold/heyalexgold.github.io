@@ -5,80 +5,77 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Scramble</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%94%A4%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap">
 <script src="peerjs.min.js"></script>
 <style>
 :root{
-  --bg1:#120f2b; --bg2:#2a1450; --ink:#fff8ec; --muted:#a79fc9;
-  --tile:#fff3d6; --tileInk:#2a1450; --lock:#7cf2c5;
+  --bg1:#120f2b; --bg2:#2a1450; --ink:#ffffff; --muted:#a79fc9;
+  --t0:#ff8a1f; --t1:#8e4dff; --t2:#1fb86f; --t3:#2f7dff; --tred:#e8322f;
   --red:#ff4d6d; --blue:#3d8bff; --green:#2ecc71; --yellow:#ffc93c;
-  --t:80px;
+  --t:80px; --gold:#f2c230;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{font-family:Fredoka,system-ui,sans-serif;color:var(--ink);
+body{font-family:Arial,Helvetica,sans-serif;font-weight:700;color:var(--ink);
   background:radial-gradient(120% 120% at 20% 0%,var(--bg2),var(--bg1) 60%);overflow:hidden;-webkit-tap-highlight-color:transparent}
-button{font-family:inherit;cursor:pointer;border:0}
+button,input{font-family:inherit;font-weight:700;cursor:pointer;border:0}
 .hidden{display:none!important}
 
 /* ---------- landing ---------- */
 #landing{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:24px;text-align:center}
 #landing h1{font-size:clamp(48px,10vw,120px);letter-spacing:.06em}
 #landing .choices{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
-.bigbtn{background:var(--tile);color:var(--tileInk);font-size:24px;font-weight:700;padding:18px 34px;border-radius:18px;box-shadow:0 6px 0 #c9b98f}
-.bigbtn:active{transform:translateY(3px);box-shadow:0 3px 0 #c9b98f}
-#landing p{color:var(--muted);max-width:520px}
+.bigbtn{background:#fff;color:#2a1450;font-size:24px;padding:18px 34px;border-radius:18px;box-shadow:0 6px 0 #b9b0d6}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 3px 0 #b9b0d6}
+#landing p{color:var(--muted);max-width:520px;font-weight:400}
 
 /* ---------- TV ---------- */
 #tv{height:100%;display:flex;flex-direction:column}
-#tvTop{display:flex;align-items:center;gap:2vw;padding:2.2vh 3vw 0}
-#tvRound{font-size:2.4vw;font-weight:600;white-space:nowrap}
+#tvTop{display:flex;align-items:center;gap:2vw;padding:2.4vh 3vw 0;min-height:9vh}
+#tvRound{font-size:2.4vw;white-space:nowrap;flex:1}
 #tvRound small{color:var(--muted);font-weight:400}
-#timerWrap{flex:1;height:1.6vh;min-height:8px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden}
-#timerBar{height:100%;width:100%;background:linear-gradient(90deg,var(--lock),var(--yellow));border-radius:99px;transform-origin:left;transition:background .5s}
-#timerBar.low{background:var(--red)}
-#timerNum{font-size:3.2vw;font-weight:700;width:6vw;text-align:right;font-variant-numeric:tabular-nums}
+#clock{font-size:3.4vw;font-variant-numeric:tabular-nums}
+#clock.low{color:var(--red)}
 #hintPips{display:flex;gap:.6vw}
 .pip{width:1.4vw;height:1.4vw;border-radius:50%;background:rgba(255,255,255,.15);transition:all .4s}
 .pip.on{background:var(--yellow);box-shadow:0 0 1vw var(--yellow)}
-#stage{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
-#slots{display:flex;flex-wrap:wrap;justify-content:center;align-content:center;column-gap:calc(var(--t)*.6);row-gap:calc(var(--t)*.25);width:94%}
+#stage{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+#slots{display:flex;flex-wrap:wrap;justify-content:center;align-content:center;column-gap:calc(var(--t)*.6);row-gap:calc(var(--t)*.3);width:94%}
 .word{display:flex;gap:calc(var(--t)*.1)}
-.slot{width:var(--t);height:calc(var(--t)*1.12);border-radius:calc(var(--t)*.16);border:2px dashed rgba(255,255,255,.18)}
+.slot{width:var(--t);height:calc(var(--t)*1.12);border-radius:calc(var(--t)*.14);border:2px dashed rgba(255,255,255,.14)}
 #tiles{position:absolute;inset:0;pointer-events:none;z-index:1}
-.tile{position:absolute;left:0;top:0;width:var(--t);height:calc(var(--t)*1.12);border-radius:calc(var(--t)*.16);
-  background:var(--tile);color:var(--tileInk);display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:calc(var(--t)*.7);box-shadow:0 calc(var(--t)*.07) 0 #c9b98f;
-  transition:transform .75s cubic-bezier(.5,-0.3,.3,1.35),background .5s,color .5s,box-shadow .5s,opacity .4s}
-.tile.moving{z-index:5;box-shadow:0 calc(var(--t)*.07) 0 #c9b98f,0 0 calc(var(--t)*.5) rgba(255,255,255,.5)}
-.tile.locked{background:var(--lock);box-shadow:0 calc(var(--t)*.07) 0 #3aa883}
-.tile.nofx{transition:none}
-#tiles.solve .tile{transition-duration:1.3s}
-#hintText{margin-top:3vh;height:17vh;overflow:hidden;font-size:2.3vw;max-width:80%;text-align:center;color:var(--ink)}
-#hintText .ann{font-size:5.5vw;font-weight:700;opacity:1!important;text-shadow:0 .4vw 0 rgba(0,0,0,.35)}
-#hintText div{opacity:.95;margin-top:.6vh}
-#hintText div:not(:last-child){opacity:.45;font-size:.8em}
-#banner{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
-#banner .big{font-size:7vw;font-weight:700;text-shadow:0 .4vw 0 rgba(0,0,0,.35)}
-#banner .sub{font-size:2.6vw;color:var(--muted);margin-top:1vh}
-#banner.overlay{background:rgba(18,15,43,.82)}
+.tile{position:absolute;left:0;top:0;width:var(--t);height:calc(var(--t)*1.12);border-radius:calc(var(--t)*.12);
+  color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Arial Black','Arial Bold',Arial,sans-serif;font-weight:900;
+  font-size:calc(var(--t)*.84);line-height:1;padding-top:calc(var(--t)*.02);border:calc(var(--t)*.055) solid var(--gold);transition:background-color .35s;will-change:transform}
+.tile.c0{background:var(--t0)} .tile.c1{background:var(--t1)} .tile.c2{background:var(--t2)} .tile.c3{background:var(--t3)}
+.tile.red{background:var(--tred)}
+.tile.lift{z-index:5;box-shadow:0 calc(var(--t)*.12) calc(var(--t)*.25) rgba(0,0,0,.4)}
+#below{margin-top:5vh;height:17vh;overflow:hidden;font-size:2.2vw;max-width:82%;text-align:center;line-height:1.3}
+#below .h{font-weight:400;margin-top:.6vh}
+#below .h:not(:last-child){opacity:.45;font-size:.85em}
+#below .ann{font-size:5.5vw;text-shadow:0 .4vw 0 rgba(0,0,0,.35)}
+#below .theme{font-size:3.2vw;color:var(--yellow)}
+#below .theme small{display:block;font-size:1.8vw;color:var(--muted);font-weight:400;margin-bottom:.5vh}
+#banner{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;padding:0 6vw}
+#banner .big{font-size:7vw;text-shadow:0 .4vw 0 rgba(0,0,0,.35)}
+#banner .sub{font-size:2.6vw;color:var(--muted);margin-top:1.5vh;font-weight:400}
+#banner .theme{font-size:4.5vw;color:var(--yellow);margin-top:1vh}
+#banner.overlay{background:rgba(18,15,43,.88)}
 .pop{animation:pop .6s cubic-bezier(.3,1.6,.5,1)}
 @keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
 #scoreBar{display:flex;gap:1.5vw;padding:0 3vw 2.5vh;justify-content:center}
 .score{flex:1;max-width:22vw;border-radius:1.4vw;padding:1.2vh 1.4vw;display:flex;align-items:center;justify-content:space-between;
   background:rgba(255,255,255,.07);border-bottom:.6vh solid var(--c);transition:transform .3s}
-.score .nm{font-size:2vw;font-weight:600;color:var(--c)}
-.score .pts{font-size:3.2vw;font-weight:700;font-variant-numeric:tabular-nums}
+.score .nm{font-size:2vw;color:var(--c)}
+.score .pts{font-size:3.2vw;font-variant-numeric:tabular-nums}
 .score.win{transform:translateY(-1.2vh);background:color-mix(in srgb,var(--c) 30%,transparent)}
 #lobby{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:3vh;background:radial-gradient(120% 120% at 20% 0%,var(--bg2),var(--bg1) 60%);z-index:20}
 #lobby h1{font-size:9vw;letter-spacing:.08em}
-#lobby .code{font-size:9vw;font-weight:700;letter-spacing:.25em;color:var(--yellow);padding-left:.25em}
-#lobby .how{font-size:2vw;color:var(--muted)}
-#lobby .url{color:var(--ink);font-weight:600}
-#lobby .status{font-size:1.6vw;color:var(--muted)}
+#lobby .code{font-size:9vw;letter-spacing:.25em;color:var(--yellow);padding-left:.25em}
+#lobby .how{font-size:2vw;color:var(--muted);font-weight:400}
+#lobby .url{color:var(--ink);font-weight:700}
+#lobby .status{font-size:1.6vw;color:var(--muted);font-weight:400}
 #soundGate{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:rgba(10,8,25,.92)}
-#soundGate p{color:var(--muted);font-size:20px}
+#soundGate p{color:var(--muted);font-size:20px;font-weight:400}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
 
 /* ---------- HOST ---------- */
@@ -89,43 +86,45 @@ button{font-family:inherit;cursor:pointer;border:0}
 .status-pill{font-size:13px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.12);color:var(--muted);white-space:nowrap}
 .status-pill.ok{background:rgba(46,204,113,.2);color:var(--green)}
 .status-pill.bad{background:rgba(255,77,109,.2);color:var(--red)}
-input.code{font-family:inherit;font-size:34px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;width:100%;text-align:center;
-  padding:12px;border-radius:14px;border:2px solid rgba(255,255,255,.2);background:rgba(0,0,0,.25);color:var(--ink)}
-.btn{background:var(--tile);color:var(--tileInk);font-weight:700;font-size:18px;padding:14px 18px;border-radius:14px;width:100%}
+input.code{font-size:34px;letter-spacing:.3em;text-transform:uppercase;width:100%;text-align:center;
+  padding:12px;border-radius:14px;border:2px solid rgba(255,255,255,.2);background:rgba(0,0,0,.25);color:var(--ink);cursor:text}
+.btn{background:#fff;color:#2a1450;font-size:18px;padding:14px 18px;border-radius:14px;width:100%}
 .btn.secondary{background:rgba(255,255,255,.12);color:var(--ink)}
-.btn.small{font-size:14px;padding:8px 12px;width:auto}
-.btn:disabled{opacity:.35}
 #gameGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.gnum{aspect-ratio:1;border-radius:12px;background:rgba(255,255,255,.1);color:var(--ink);font-size:20px;font-weight:700;position:relative}
+.gnum{aspect-ratio:1;border-radius:12px;background:rgba(255,255,255,.1);color:var(--ink);font-size:20px;position:relative}
 .gnum.played{opacity:.45}
-.gnum.played::after{content:"✓";position:absolute;top:2px;right:6px;font-size:12px;color:var(--lock)}
-.hdr{color:var(--muted);font-size:14px;margin-bottom:4px}
-.answer{font-size:28px;font-weight:700;letter-spacing:.04em;line-height:1.15}
-.timer-line{display:flex;align-items:center;gap:10px;margin-top:12px}
-.timer-line .bar{flex:1;height:10px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden}
-.timer-line .bar i{display:block;height:100%;background:var(--lock)}
-.timer-line b{font-size:22px;width:44px;text-align:right;font-variant-numeric:tabular-nums}
-.hint{padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.2);margin-top:8px;font-size:16px;line-height:1.3}
-.hint .lbl{font-size:12px;color:var(--muted);display:block;margin-bottom:2px}
+.gnum.played::after{content:"✓";position:absolute;top:2px;right:6px;font-size:12px;color:var(--green)}
+.hdr{color:var(--muted);font-size:14px;margin-bottom:4px;font-weight:400}
+.answer{font-size:28px;letter-spacing:.03em;line-height:1.15}
+.prog{display:flex;align-items:center;gap:10px;margin-top:12px}
+.prog .bar{flex:1;height:10px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden}
+.prog .bar i{display:block;height:100%;background:var(--green)}
+.prog b{font-size:20px;min-width:56px;text-align:right;font-variant-numeric:tabular-nums}
+.hint{padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.2);margin-top:8px;font-size:16px;line-height:1.35;font-weight:400}
+.hint .lbl{font-size:12px;color:var(--muted);display:block;margin-bottom:2px;font-weight:700}
 .hint.locked{opacity:.45}
 .hint.live{outline:2px solid var(--yellow)}
+.bank{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.bank span{font-size:13px;padding:4px 8px;border-radius:8px;background:rgba(255,255,255,.08);color:var(--muted)}
+.bank span.cur{background:#fff;color:#2a1450}
+.bank span.got{color:#14112b;background:var(--c)}
+.bank span.miss{text-decoration:line-through}
 .award{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.award button{padding:20px 8px;border-radius:16px;font-size:20px;font-weight:700;color:#14112b;background:var(--c)}
+.award button{padding:20px 8px;border-radius:16px;font-size:20px;color:#14112b;background:var(--c)}
 .award button:disabled{opacity:.3}
 .scores-edit .srow{display:flex;align-items:center;gap:10px;padding:6px 0}
 .scores-edit .dot{width:14px;height:14px;border-radius:50%;background:var(--c)}
-.scores-edit .nm{flex:1;font-weight:600}
-.scores-edit .pts{width:60px;text-align:right;font-weight:700;font-size:18px}
-.scores-edit button{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.12);color:var(--ink);font-size:20px;font-weight:700}
-.toggle{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+.scores-edit .nm{flex:1}
+.scores-edit .pts{width:60px;text-align:right;font-size:18px}
+.scores-edit button{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.12);color:var(--ink);font-size:20px}
+.toggle{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-weight:400}
 .toggle input{width:22px;height:22px}
 .stack{display:flex;flex-direction:column;gap:10px}
-.result{font-size:20px;font-weight:700;text-align:center;padding:6px 0 2px}
+.result{font-size:20px;text-align:center;padding:6px 0 2px}
 </style>
 </head>
 <body>
 
-<!-- Landing -->
 <section id="landing" class="hidden">
   <h1>SCRAMBLE</h1>
   <div class="choices">
@@ -135,18 +134,16 @@ input.code{font-family:inherit;font-size:34px;font-weight:700;letter-spacing:.3e
   <p>Open this page on the TV (or a laptop plugged into it) and choose TV. Open it on your phone and choose host, then type the code shown on the TV.</p>
 </section>
 
-<!-- TV -->
 <section id="tv" class="hidden">
   <div id="tvTop">
     <div id="tvRound"></div>
-    <div id="timerWrap"><div id="timerBar"></div></div>
-    <div id="timerNum"></div>
+    <div id="clock"></div>
     <div id="hintPips"><div class="pip"></div><div class="pip"></div><div class="pip"></div></div>
   </div>
   <div id="stage">
     <div id="slots"></div>
     <div id="tiles"></div>
-    <div id="hintText"></div>
+    <div id="below"></div>
     <div id="banner"></div>
   </div>
   <div id="scoreBar"></div>
@@ -163,36 +160,27 @@ input.code{font-family:inherit;font-size:34px;font-weight:700;letter-spacing:.3e
   </div>
 </section>
 
-<!-- HOST -->
 <section id="host" class="hidden">
   <div class="row" style="justify-content:space-between;margin-bottom:12px">
     <h2 style="margin:0">Scramble · Host</h2>
     <span class="status-pill" id="hostStatus">Not connected</span>
   </div>
-
   <div id="hConnect" class="card">
     <div class="hdr">Code shown on the TV</div>
     <input class="code" id="codeInput" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false">
     <div style="height:10px"></div>
     <button class="btn" id="connectBtn">Connect</button>
   </div>
-
   <div id="hPick" class="card hidden">
     <h2>Pick a game</h2>
-    <div class="hdr">Each game is 3 rounds. ✓ means you've already played it.</div>
+    <div class="hdr">✓ means you've already played it.</div>
     <div style="height:8px"></div>
     <div id="gameGrid"></div>
   </div>
-
-  <div id="hRound" class="hidden">
-    <div class="card">
-      <div class="hdr" id="hRoundHdr"></div>
-      <div class="answer" id="hAnswer"></div>
-      <div class="timer-line"><div class="bar"><i id="hBar"></i></div><b id="hTime"></b></div>
-      <div id="hHints"></div>
-    </div>
+  <div id="hGame" class="hidden">
+    <div class="card" id="hMain"></div>
     <div class="card stack" id="hControls"></div>
-    <div class="card">
+    <div class="card" id="hAwardCard">
       <div class="hdr">Who got it? (+<span id="ptsLbl"></span>)</div>
       <div class="award" id="awardBtns"></div>
     </div>
@@ -206,28 +194,30 @@ input.code{font-family:inherit;font-size:34px;font-weight:700;letter-spacing:.3e
   </div>
 </section>
 
-<script id="gamesData" type="text/plain">eyJnYW1lcyI6IFt7InB1enpsZXMiOiBbeyJ0aGVtZSI6ICJTYXkgV2hhdD8iLCAiYW5zd2VyIjogIk9OQ0UgSU4gQSBCTFVFIE1PT04iLCAiaGludHMiOiBbIk9uIGF2ZXJhZ2UsIGl0IGNvbWVzIGFyb3VuZCByb3VnaGx5IGV2ZXJ5IDIuNyB5ZWFycyIsICJJdCBoYXBwZW5zIHdoZW4gYSBzaW5nbGUgY2FsZW5kYXIgbW9udGggaG9sZHMgdHdvIG9mIHNvbWV0aGluZyIsICJBbiBpZGlvbSBmb3Igc29tZXRoaW5nIHRoYXQgYWxtb3N0IG5ldmVyIGhhcHBlbnMiXX0sIHsidGhlbWUiOiAiT24gdGhlIE1hcCIsICJhbnN3ZXIiOiAiR09MREVOIEdBVEUgQlJJREdFIiwgImhpbnRzIjogWyJJdHMgb2ZmaWNpYWwgcGFpbnQgY29sb3IgaXMgY2FsbGVkIEludGVybmF0aW9uYWwgT3JhbmdlIiwgIldoZW4gaXQgb3BlbmVkIGluIDE5MzcsIGl0IGhhZCB0aGUgbG9uZ2VzdCBzdXNwZW5zaW9uIHNwYW4gaW4gdGhlIHdvcmxkIiwgIkl0IHNwYW5zIHRoZSBzdHJhaXQgYXQgdGhlIG1vdXRoIG9mIFNhbiBGcmFuY2lzY28gQmF5Il19LCB7InRoZW1lIjogIlRpdGxlIENhcmQiLCAiYW5zd2VyIjogIlRIRSBXSVpBUkQgT0YgT1oiLCAiaGludHMiOiBbIkl0cyBhdXRob3Igd2VudCBvbiB0byB3cml0ZSB0aGlydGVlbiBzZXF1ZWxzIHNldCBpbiB0aGUgc2FtZSBsYW5kIiwgIkluIHRoZSBib29rIHRoZSBzbGlwcGVycyB3ZXJlIHNpbHZlcjsgdGhlIDE5MzkgZmlsbSBtYWRlIHRoZW0gcnVieSIsICJGb2xsb3cgdGhlIHllbGxvdyBicmljayByb2FkIl19XX0sIHsicHV6emxlcyI6IFt7InRoZW1lIjogIlNheSBXaGF0PyIsICJhbnN3ZXIiOiAiQklURSBUSEUgQlVMTEVUIiwgImhpbnRzIjogWyJLaXBsaW5nIHVzZWQgYSB2ZXJzaW9uIG9mIGl0IGluIGhpcyAxODkxIG5vdmVsIFRoZSBMaWdodCBUaGF0IEZhaWxlZCIsICJPZnRlbiB0cmFjZWQgdG8gc29sZGllcnMgY2xlbmNoaW5nIHNvbWV0aGluZyBkdXJpbmcgc3VyZ2VyeSB3aXRob3V0IGFuZXN0aGV0aWMiLCAiVG8gZm9yY2UgeW91cnNlbGYgdGhyb3VnaCBzb21ldGhpbmcgdW5wbGVhc2FudCB5b3UndmUgYmVlbiBwdXR0aW5nIG9mZiJdfSwgeyJ0aGVtZSI6ICJPbiB0aGUgTWFwIiwgImFuc3dlciI6ICJHUkVBVCBCQVJSSUVSIFJFRUYiLCAiaGludHMiOiBbIkl0J3MgbWFkZSB1cCBvZiByb3VnaGx5IDIsOTAwIGluZGl2aWR1YWwgcmVlZnMgYW5kIDkwMCBpc2xhbmRzIiwgIkl0IHN0cmV0Y2hlcyBhYm91dCAyLDMwMCBrbSBhbG9uZyB0aGUgY29hc3Qgb2YgUXVlZW5zbGFuZCIsICJUaGUgd29ybGQncyBsYXJnZXN0IGNvcmFsIHJlZWYgc3lzdGVtLCBvZmYgQXVzdHJhbGlhIl19LCB7InRoZW1lIjogIlRpdGxlIENhcmQiLCAiYW5zd2VyIjogIkpVUkFTU0lDIFBBUksiLCAiaGludHMiOiBbIkl0cyBmZWFyc29tZSAncmFwdG9ycycgd2VyZSByZWFsbHkgbW9kZWxlZCBvbiBhIGJpZ2dlciBjb3VzaW4sIERlaW5vbnljaHVzIiwgIlRoZSB3aG9sZSBzY2hlbWUgcmVsaWVkIG9uIG1vc3F1aXRvZXMgdHJhcHBlZCBpbiBhbWJlciIsICJBIHRoZW1lIHBhcmsgb24gYW4gaXNsYW5kIGZ1bGwgb2YgY2xvbmVkIGRpbm9zYXVycyJdfV19LCB7InB1enpsZXMiOiBbeyJ0aGVtZSI6ICJTYXkgV2hhdD8iLCAiYW5zd2VyIjogIkJSRUFLIEEgTEVHIiwgImhpbnRzIjogWyJPbmUgdGhlb3J5IHRpZXMgaXQgdG8gdGhlICdsZWcnIGN1cnRhaW5zIGF0IHRoZSBzaWRlIG9mIGEgc3RhZ2UiLCAiSXQncyBzYWlkIHByZWNpc2VseSBiZWNhdXNlIHdpc2hpbmcgJ2dvb2QgbHVjaycgaXMgY29uc2lkZXJlZCBiYWQgbHVjayIsICJXaGF0IHlvdSB0ZWxsIGFuIGFjdG9yIGJlZm9yZSB0aGV5IGdvIG9uIHN0YWdlIl19LCB7InRoZW1lIjogIk9uIHRoZSBNYXAiLCAiYW5zd2VyIjogIk1PVU5UIEVWRVJFU1QiLCAiaGludHMiOiBbIkl0cyBUaWJldGFuIG5hbWUsIENob21vbHVuZ21hLCBpcyBvZnRlbiB0cmFuc2xhdGVkICdHb2RkZXNzIE1vdGhlciBvZiB0aGUgV29ybGQnIiwgIkZpcnN0IHN1bW1pdGVkIGluIDE5NTMgYnkgRWRtdW5kIEhpbGxhcnkgYW5kIFRlbnppbmcgTm9yZ2F5IiwgIlRoZSBoaWdoZXN0IHBvaW50IGFib3ZlIHNlYSBsZXZlbCBvbiBFYXJ0aCJdfSwgeyJ0aGVtZSI6ICJUaXRsZSBDYXJkIiwgImFuc3dlciI6ICJUSEUgR1JFQVQgR0FUU0JZIiwgImhpbnRzIjogWyJPbmUgb2YgaXRzIHdvcmtpbmcgdGl0bGVzIHdhcyAnVHJpbWFsY2hpbyBpbiBXZXN0IEVnZyciLCAiQSBncmVlbiBsaWdodCBnbG93cyBhdCB0aGUgZW5kIG9mIGEgZG9jayBhY3Jvc3MgdGhlIGJheSIsICJMZW9uYXJkbyBEaUNhcHJpbyByYWlzZWQgYSBjaGFtcGFnbmUgZ2xhc3MgYXMgSmF5IGluIHRoZSAyMDEzIGZpbG0iXX1dfSwgeyJwdXp6bGVzIjogW3sidGhlbWUiOiAiU2F5IFdoYXQ/IiwgImFuc3dlciI6ICJTUElMTCBUSEUgQkVBTlMiLCAiaGludHMiOiBbIkEgcG9wdWxhciAodW5wcm92ZW4pIHRoZW9yeSB0aWVzIGl0IHRvIGFuY2llbnQgR3JlZWtzIHZvdGluZyB3aXRoIGJlYW5zIGluIGEgamFyIiwgIkRlc3BpdGUgdGhlIHdvcmRpbmcsIGl0IGhhcyBub3RoaW5nIHRvIGRvIHdpdGggY29va2luZyIsICJUbyByZXZlYWwgYSBzZWNyZXQgeW91IHdlcmVuJ3Qgc3VwcG9zZWQgdG8gdGVsbCJdfSwgeyJ0aGVtZSI6ICJPbiB0aGUgTWFwIiwgImFuc3dlciI6ICJTVEFUVUUgT0YgTElCRVJUWSIsICJoaW50cyI6IFsiSXRzIGludGVybmFsIGlyb24gZnJhbWV3b3JrIHdhcyBkZXNpZ25lZCBieSBHdXN0YXZlIEVpZmZlbCIsICJBIGdpZnQgZnJvbSBGcmFuY2UsIGRlZGljYXRlZCBpbiAxODg2IiwgIlNoZSBob2xkcyBhIHRvcmNoIGhpZ2ggb3ZlciBOZXcgWW9yayBIYXJib3IiXX0sIHsidGhlbWUiOiAiVGl0bGUgQ2FyZCIsICJhbnN3ZXIiOiAiVEhFIEVNUElSRSBTVFJJS0VTIEJBQ0siLCAiaGludHMiOiBbIkl0cyBzY3JlZW5wbGF5IHdhcyBjby13cml0dGVuIGJ5IExlaWdoIEJyYWNrZXR0LCB3aG8gZGllZCBiZWZvcmUgdGhlIGZpbG0gY2FtZSBvdXQiLCAiUmVsZWFzZWQgaW4gMTk4MCwgaXQgaW50cm9kdWNlZCBZb2RhIGFuZCBMYW5kbyBDYWxyaXNzaWFuIiwgIlRoZSBvbmUgd2hlcmUgRGFydGggVmFkZXIgcmV2ZWFscyBoZSdzIEx1a2UncyBmYXRoZXIiXX1dfSwgeyJwdXp6bGVzIjogW3sidGhlbWUiOiAiU2F5IFdoYXQ/IiwgImFuc3dlciI6ICJUSEUgV0hPTEUgTklORSBZQVJEUyIsICJoaW50cyI6IFsiTWFjaGluZS1ndW4gYmVsdHMgYW5kIGNvbmNyZXRlIG1peGVycyBhcmUgcG9wdWxhciBvcmlnaW4gc3RvcmllcywgYnV0IHByb2JhYmx5IHdyb25nIiwgIkRlc3BpdGUgdGhlIHVuaXQgb2YgbGVuZ3RoLCBpdCBoYXMgbm90aGluZyB0byBkbyB3aXRoIGZvb3RiYWxsIiwgIkV2ZXJ5dGhpbmcgaW5jbHVkZWQ7IGdvaW5nIGFsbCB0aGUgd2F5Il19LCB7InRoZW1lIjogIk9uIHRoZSBNYXAiLCAiYW5zd2VyIjogIk1BQ0hVIFBJQ0NIVSIsICJoaW50cyI6IFsiSXRzIG5hbWUgaXMgdXN1YWxseSB0cmFuc2xhdGVkIGZyb20gUXVlY2h1YSBhcyAnT2xkIFBlYWsnIiwgIkhpcmFtIEJpbmdoYW0gYnJvdWdodCBpdCB0byB3b3JsZCBhdHRlbnRpb24gaW4gMTkxMSIsICJBbiBJbmNhIGNpdGFkZWwgaGlnaCBpbiB0aGUgQW5kZXMgb2YgUGVydSJdfSwgeyJ0aGVtZSI6ICJUaXRsZSBDYXJkIiwgImFuc3dlciI6ICJQUklERSBBTkQgUFJFSlVESUNFIiwgImhpbnRzIjogWyJJdHMgb3JpZ2luYWwgdGl0bGUgd2FzICdGaXJzdCBJbXByZXNzaW9ucyciLCAiSXRzIGhlcm9pbmUgaGFzIGZvdXIgc2lzdGVycyBhbmQgYSBtb3RoZXIgZGVzcGVyYXRlIHRvIG1hcnJ5IHRoZW0gYWxsIG9mZiIsICJKYW5lIEF1c3RlbidzIG5vdmVsIGFib3V0IEVsaXphYmV0aCBCZW5uZXQgYW5kIE1yLiBEYXJjeSJdfV19LCB7InB1enpsZXMiOiBbeyJ0aGVtZSI6ICJTYXkgV2hhdD8iLCAiYW5zd2VyIjogIkNPU1QgQU4gQVJNIEFORCBBIExFRyIsICJoaW50cyI6IFsiT2Z0ZW4gKGR1YmlvdXNseSkgbGlua2VkIHRvIHBvcnRyYWl0IHBhaW50ZXJzIGNoYXJnaW5nIGV4dHJhIHRvIGluY2x1ZGUgbGltYnMiLCAiWW91J2Qgc2F5IGl0IGFib3V0IGEgcHJpY2UsIG5vdCBhbiBpbmp1cnkiLCAiV2hhdCBzb21ldGhpbmcgZXh0cmVtZWx5IGV4cGVuc2l2ZSBkb2VzIl19LCB7InRoZW1lIjogIk9uIHRoZSBNYXAiLCAiYW5zd2VyIjogIkxFQU5JTkcgVE9XRVIgT0YgUElTQSIsICJoaW50cyI6IFsiQ29uc3RydWN0aW9uIGJlZ2FuIGluIDExNzMgYW5kIHN0cmV0Y2hlZCBhY3Jvc3MgbmVhcmx5IHR3byBjZW50dXJpZXMiLCAiRW5naW5lZXJzIHNwZW50IHRoZSAxOTkwcyBtYWtpbmcgc3VyZSBpdCB3b3VsZG4ndCBmYWxsIG92ZXIiLCAiVG91cmlzdHMgbG92ZSBwcmV0ZW5kaW5nIHRvIGhvbGQgaXQgdXAsIGluIEl0YWx5Il19LCB7InRoZW1lIjogIlRpdGxlIENhcmQiLCAiYW5zd2VyIjogIkJBQ0sgVE8gVEhFIEZVVFVSRSIsICJoaW50cyI6IFsiRXJpYyBTdG9sdHogd2FzIG9yaWdpbmFsbHkgY2FzdCBpbiB0aGUgbGVhZCBhbmQgZmlsbWVkIGZvciB3ZWVrcyBiZWZvcmUgYmVpbmcgcmVwbGFjZWQiLCAiRXZlcnl0aGluZyBoaW5nZXMgb24gMS4yMSBnaWdhd2F0dHMiLCAiTWFydHkgTWNGbHkgYW5kIGEgdGltZS10cmF2ZWxpbmcgRGVMb3JlYW4iXX1dfSwgeyJwdXp6bGVzIjogW3sidGhlbWUiOiAiU2F5IFdoYXQ/IiwgImFuc3dlciI6ICJMRVQgVEhFIENBVCBPVVQgT0YgVEhFIEJBRyIsICJoaW50cyI6IFsiT2Z0ZW4gbGlua2VkIHRvIGEgbWFya2V0IGNvbiBhbHNvIGJlaGluZCB0aGUgcGhyYXNlICdhIHBpZyBpbiBhIHBva2UnIiwgIk5vdGhpbmcgdG8gZG8gd2l0aCBwZXRzOyBpdCdzIGFib3V0IHNvbWV0aGluZyB0aGF0IHdhcyBzdXBwb3NlZCB0byBzdGF5IGhpZGRlbiIsICJUbyBhY2NpZGVudGFsbHkgcmV2ZWFsIGEgc2VjcmV0Il19LCB7InRoZW1lIjogIk9uIHRoZSBNYXAiLCAiYW5zd2VyIjogIkdSQU5EIENBTllPTiIsICJoaW50cyI6IFsiSXRzIGRlZXBlc3QgZXhwb3NlZCByb2NrcywgdGhlIFZpc2hudSBTY2hpc3QsIGFyZSBhYm91dCAxLjcgYmlsbGlvbiB5ZWFycyBvbGQiLCAiVGhlIENvbG9yYWRvIFJpdmVyIHNwZW50IG1pbGxpb25zIG9mIHllYXJzIGNhcnZpbmcgaXQiLCAiQSBodWdlIHJlZC1yb2NrIGdvcmdlIGFuZCBuYXRpb25hbCBwYXJrIGluIEFyaXpvbmEiXX0sIHsidGhlbWUiOiAiVGl0bGUgQ2FyZCIsICJhbnN3ZXIiOiAiVEhFIExJT04gS0lORyIsICJoaW50cyI6IFsiSXRzIHdvcmtpbmcgdGl0bGUgd2FzICdLaW5nIG9mIHRoZSBKdW5nbGUnIiwgIkVsdG9uIEpvaG4gYW5kIFRpbSBSaWNlIHdyb3RlIGl0cyBzb25ncyIsICJIYWt1bmEgTWF0YXRhOiBTaW1iYSdzIHN0b3J5Il19XX0sIHsicHV6emxlcyI6IFt7InRoZW1lIjogIlNheSBXaGF0PyIsICJhbnN3ZXIiOiAiSElUIFRIRSBOQUlMIE9OIFRIRSBIRUFEIiwgImhpbnRzIjogWyJBIExhdGluIHZlcnNpb24sICdyZW0gYWN1IHRldGlnaXN0aSwnIHN3YXBzIHRoZSBoYW1tZXIgZm9yIGEgbmVlZGxlIiwgIkl0IGJvcnJvd3MgY2FycGVudHJ5IHRvIHByYWlzZSBwcmVjaXNpb24iLCAiVG8gZGVzY3JpYmUgc29tZXRoaW5nIGV4YWN0bHkgcmlnaHQiXX0sIHsidGhlbWUiOiAiT24gdGhlIE1hcCIsICJhbnN3ZXIiOiAiTklBR0FSQSBGQUxMUyIsICJoaW50cyI6IFsiSW4gMTk2OSBlbmdpbmVlcnMgc2h1dCBvZmYgdGhlIHdhdGVyIHRvIGl0cyBBbWVyaWNhbiBzaWRlIHRvIHN0dWR5IGVyb3Npb24iLCAiQW5uaWUgRWRzb24gVGF5bG9yIHdlbnQgb3ZlciBpdCBpbiBhIGJhcnJlbCBpbiAxOTAxLCBvbiBoZXIgNjNyZCBiaXJ0aGRheSIsICJIdWdlIHdhdGVyZmFsbHMgb24gdGhlIFVTLUNhbmFkYSBib3JkZXIsIGEgY2xhc3NpYyBob25leW1vb24gc3BvdCJdfSwgeyJ0aGVtZSI6ICJUaXRsZSBDYXJkIiwgImFuc3dlciI6ICJUSEUgU0hBV1NIQU5LIFJFREVNUFRJT04iLCAiaGludHMiOiBbIkl0IGZsb3BwZWQgYXQgdGhlIGJveCBvZmZpY2UgYmVmb3JlIGZpbmRpbmcgaXRzIGF1ZGllbmNlIG9uIGhvbWUgdmlkZW8iLCAiQWRhcHRlZCBmcm9tIGEgU3RlcGhlbiBLaW5nIG5vdmVsbGEiLCAiQSBwcmlzb25lciB0dW5uZWxzIG91dCBvdmVyIG5pbmV0ZWVuIHllYXJzLCBoaWRkZW4gYmVoaW5kIGEgcG9zdGVyIl19XX0sIHsicHV6emxlcyI6IFt7InRoZW1lIjogIlNheSBXaGF0PyIsICJhbnN3ZXIiOiAiQlVSTiBUSEUgTUlETklHSFQgT0lMIiwgImhpbnRzIjogWyJJdHMgbGl0ZXJhbCBtZWFuaW5nIGNvbWVzIGZyb20gY2VudHVyaWVzIGJlZm9yZSBlbGVjdHJpYyBsaWdodCIsICJTb21ldGhpbmcgc3R1ZGVudHMgZmFtb3VzbHkgZG8gdGhlIG5pZ2h0IGJlZm9yZSBhbiBleGFtIiwgIlRvIHdvcmsgb3Igc3R1ZHkgbGF0ZSBpbnRvIHRoZSBuaWdodCJdfSwgeyJ0aGVtZSI6ICJPbiB0aGUgTWFwIiwgImFuc3dlciI6ICJUSEUgR1JFQVQgV0FMTCBPRiBDSElOQSIsICJoaW50cyI6IFsiQSAyMDEyIHN1cnZleSBwdXQgaXRzIHRvdGFsIGxlbmd0aCwgYWxsIGJyYW5jaGVzIGluY2x1ZGVkLCBhdCBhYm91dCAyMSwwMDAga20iLCAiQ29udHJhcnkgdG8gdGhlIG15dGgsIHlvdSBjYW4ndCBzZWUgaXQgZnJvbSB0aGUgTW9vbiB3aXRoIHRoZSBuYWtlZCBleWUiLCAiQSBtYXNzaXZlIGFuY2llbnQgZm9ydGlmaWNhdGlvbiBpbiBFYXN0IEFzaWEiXX0sIHsidGhlbWUiOiAiVGl0bGUgQ2FyZCIsICJhbnN3ZXIiOiAiUkFJREVSUyBPRiBUSEUgTE9TVCBBUksiLCAiaGludHMiOiBbIlRvbSBTZWxsZWNrIHdhcyB0aGUgZmlyc3QgY2hvaWNlIGZvciBpdHMgaGVybywgYnV0IHdhcyB0aWVkIHVwIHdpdGggTWFnbnVtLCBQLkkuIiwgIlNldCBpbiAxOTM2LCB0aGUgTmF6aXMgYXJlIGh1bnRpbmcgZm9yIGEgYmlibGljYWwgYXJ0aWZhY3QiLCAiSW5kaWFuYSBKb25lcydzIGZpcnN0IGFkdmVudHVyZSJdfV19LCB7InB1enpsZXMiOiBbeyJ0aGVtZSI6ICJTYXkgV2hhdD8iLCAiYW5zd2VyIjogIlVOREVSIFRIRSBXRUFUSEVSIiwgImhpbnRzIjogWyJPbmUgdGhlb3J5OiBzZWFzaWNrIHNhaWxvcnMgd2VyZSBzZW50IGJlbG93LCBhd2F5IGZyb20gdGhlIHN0b3JteSBzaWRlIG9mIHRoZSBzaGlwIiwgIk5vdGhpbmcgdG8gZG8gd2l0aCB0aGUgZm9yZWNhc3QiLCAiRmVlbGluZyBhIGxpdHRsZSBzaWNrIl19LCB7InRoZW1lIjogIk9uIHRoZSBNYXAiLCAiYW5zd2VyIjogIlRIRSBFSUZGRUwgVE9XRVIiLCAiaGludHMiOiBbIkl0IGNhbiBncm93IGFib3V0IDE1IGNtIHRhbGxlciBvbiBhIGhvdCBzdW1tZXIgZGF5IiwgIkJ1aWx0IGFzIHRoZSBlbnRyYW5jZSBhcmNoIGZvciB0aGUgMTg4OSBXb3JsZCdzIEZhaXIiLCAiVGhlIGlyb24gbGF0dGljZSBsYW5kbWFyayBvZiBQYXJpcyJdfSwgeyJ0aGVtZSI6ICJUaXRsZSBDYXJkIiwgImFuc3dlciI6ICJUSEUgUFJJTkNFU1MgQlJJREUiLCAiaGludHMiOiBbIkl0cyBhdXRob3IgcHJlc2VudGVkIGl0IGFzIGFuIGFicmlkZ21lbnQgb2YgYSBib29rIGJ5IHRoZSBmaWN0aW9uYWwgJ1MuIE1vcmdlbnN0ZXJuJyIsICJBIGdyYW5kZmF0aGVyIHJlYWRzIGEgc3RvcnkgdG8gaGlzIHNpY2sgZ3JhbmRzb24iLCAiSW5pZ28gTW9udG95YSwgV2VzdGxleSwgYW5kICdJbmNvbmNlaXZhYmxlISciXX1dfV19</script>
+<script id="gamesData" type="text/plain">eyJnYW1lcyI6IFt7InJvdW5kMSI6IFt7ImNhdGVnb3J5IjogIlNheWluZyIsICJhbnN3ZXIiOiAiUElFQ0UgT0YgQ0FLRSIsICJoaW50cyI6IFsiT2dkZW4gTmFzaCB1c2VkIGl0IGluIGEgMTkzNiBwb2VtLCBhbmQgUm95YWwgQWlyIEZvcmNlIHBpbG90cyBpbiBXb3JsZCBXYXIgSUkgYWRvcHRlZCBpdCBhcyBzbGFuZyBmb3IgYSBtaXNzaW9uIHRoYXQgdHVybmVkIG91dCB0byBiZSBlYXN5LiIsICJBIGNsb3NlIGNvdXNpbiBvZiAnY2FrZXdhbGsnLCB3aGljaCBjb21lcyBmcm9tIGEgY29tcGV0aXRpdmUgZGFuY2Ugd2hlcmUgdGhlIHByaXplIHdhcyBzb21ldGhpbmcgYmFrZWQuIiwgIlNvbWV0aGluZyBleHRyZW1lbHkgZWFzeSB0byBkby4iXX0sIHsiY2F0ZWdvcnkiOiAiTGFuZG1hcmsiLCAiYW5zd2VyIjogIkhPTExZV09PRCBTSUdOIiwgImhpbnRzIjogWyJJdCB3ZW50IHVwIGluIDE5MjMgdG8gYWR2ZXJ0aXNlIGEgcmVhbC1lc3RhdGUgZGV2ZWxvcG1lbnQsIGFuZCBpdCB3YXMgb25seSBtZWFudCB0byBzdGFuZCBmb3IgYWJvdXQgYSB5ZWFyIGFuZCBhIGhhbGYuIiwgIkl0IGxvc3QgaXRzIGxhc3QgZm91ciBsZXR0ZXJzIGluIDE5NDkuIEVhY2ggb2YgdGhlIGxldHRlcnMgaXQgaGFzIG5vdyBpcyBhYm91dCA0NSBmZWV0IHRhbGwuIiwgIkJpZyB3aGl0ZSBsZXR0ZXJzIG9uIE1vdW50IExlZSwgbG9va2luZyBkb3duIG92ZXIgTG9zIEFuZ2VsZXMuIl19LCB7ImNhdGVnb3J5IjogIkFydHdvcmsiLCAiYW5zd2VyIjogIk1PTkEgTElTQSIsICJoaW50cyI6IFsiSXRzIHNpdHRlciBpcyBnZW5lcmFsbHkgaWRlbnRpZmllZCBhcyB0aGUgd2lmZSBvZiBhIEZsb3JlbnRpbmUgc2lsayBtZXJjaGFudC4gSW4gMTkxMSBhIG11c2V1bSBoYW5keW1hbiB3YWxrZWQgb3V0IHdpdGggaXQgdW5kZXIgaGlzIHNtb2NrIGFuZCBrZXB0IGl0IGluIGhpcyBhcGFydG1lbnQgZm9yIHR3byB5ZWFycy4iLCAiVG9kYXkgaXQgaGFuZ3MgYmVoaW5kIGJ1bGxldHByb29mIGdsYXNzIGluIHRoZSBsYXJnZXN0IHJvb20gb2YgYSBmb3JtZXIgcm95YWwgcGFsYWNlLCBmYWNpbmcgYSBodWdlIFZlcm9uZXNlIHBhaW50aW5nIG9mIGEgd2VkZGluZyBmZWFzdC4iLCAiTGVvbmFyZG8gZGEgVmluY2kncyBmYW1vdXMgc21pbGluZyBwb3J0cmFpdCBpbiB0aGUgTG91dnJlLiJdfSwgeyJjYXRlZ29yeSI6ICJRdW90ZSIsICJhbnN3ZXIiOiAiSE9VU1RPTiBXRSBIQVZFIEEgUFJPQkxFTSIsICJoaW50cyI6IFsiVGhlIHJlYWwgbGluZSwgc3Bva2VuIGluIEFwcmlsIDE5NzAgYnkgSmFjayBTd2lnZXJ0IGFuZCByZXBlYXRlZCBieSBoaXMgY29tbWFuZGVyLCB3YXMgaW4gdGhlIHBhc3QgdGVuc2UgYW5kIGJlZ2FuIHdpdGggJ09rYXknLiIsICJBbiBveHlnZW4gdGFuayBleHBsb3Npb24gYWJvdXQgMjAwLDAwMCBtaWxlcyBmcm9tIEVhcnRoIHByb21wdGVkIGl0LiBBIDE5OTUgZmlsbSBzdGFycmluZyBUb20gSGFua3MgbWFkZSB0aGUgZmFtb3VzIHZlcnNpb24uIiwgIkFwb2xsbyAxMydzIGZhbW91cyB1bmRlcnN0YXRlbWVudCB0byBNaXNzaW9uIENvbnRyb2wuIl19LCB7ImNhdGVnb3J5IjogIlN0b3J5IiwgImFuc3dlciI6ICJTTEVFUElORyBCRUFVVFkiLCAiaGludHMiOiBbIkluIEdpYW1iYXR0aXN0YSBCYXNpbGUncyAxNjM0IHZlcnNpb24sIHRoZSBoZXJvaW5lIGlzbid0IHdva2VuIGJ5IGEga2lzcy4gU2hlIHdha2VzIHVwIHdoZW4gb25lIG9mIGhlciBuZXdib3JuIHR3aW5zIHN1Y2tzIGEgc3BsaW50ZXIgb2YgZmxheCBvdXQgb2YgaGVyIGZpbmdlci4iLCAiVGhlIEJyb3RoZXJzIEdyaW1tIGNhbGxlZCB0aGVpciB2ZXJzaW9uICdMaXR0bGUgQnJpYXIgUm9zZScsIGFuZCBUY2hhaWtvdnNreSB0dXJuZWQgdGhlIHN0b3J5IGludG8gYSBiYWxsZXQuIiwgIkEgcHJpbmNlc3MgcHJpY2tzIGhlciBmaW5nZXIgb24gYSBzcGlubmluZyB3aGVlbCBhbmQgc2xlZXBzIGZvciBhIGh1bmRyZWQgeWVhcnMuIl19XSwgInJvdW5kMiI6IFt7ImNhdGVnb3J5IjogIlNheWluZyIsICJhbnN3ZXIiOiAiVEhFIEVMRVBIQU5UIElOIFRIRSBST09NIiwgImhpbnRzIjogWyJBbiAxODE0IGZhYmxlIGJ5IEl2YW4gS3J5bG92IGRlc2NyaWJlcyBhIG11c2V1bSB2aXNpdG9yIHdobyBjYXJlZnVsbHkgc3R1ZGllcyBldmVyeSB0aW55IGluc2VjdCBidXQgY29tcGxldGVseSBtaXNzZXMgc29tZXRoaW5nIGVub3Jtb3VzIHN0YW5kaW5nIHRoZXJlLiIsICJUaGVyYXBpc3RzIHVzZSBpdCBmb3IgdGhlIHN1YmplY3QgYSB3aG9sZSBmYW1pbHkgc2lsZW50bHkgYWdyZWVzIG5ldmVyIHRvIGJyaW5nIHVwLCBsaWtlIGEgcGFyZW50J3MgZHJpbmtpbmcuIiwgIkFuIG9idmlvdXMgcHJvYmxlbSB0aGF0IG5vIG9uZSB3YW50cyB0byB0YWxrIGFib3V0LiJdfSwgeyJjYXRlZ29yeSI6ICJOYXR1cmUiLCAiYW5zd2VyIjogIk5PUlRIRVJOIExJR0hUUyIsICJoaW50cyI6IFsiVGhlaXIgTGF0aW4gbmFtZSwgb2Z0ZW4gY3JlZGl0ZWQgdG8gR2FsaWxlbyBpbiAxNjE5LCBjb21iaW5lcyBhIFJvbWFuIGdvZGRlc3Mgb2YgZGF3biB3aXRoIGEgR3JlZWsgd29yZCBmb3IgdGhlIG5vcnRoIHdpbmQuIiwgIlRoZXkgZ2xvdyB3aGVuIGNoYXJnZWQgcGFydGljbGVzIGZyb20gdGhlIHN1biBoaXQgb3h5Z2VuIGFuZCBuaXRyb2dlbiA2MCB0byAyMDAgbWlsZXMgdXAuIEdyZWVuIGNvbWVzIGZyb20gb3h5Z2VuLCBhbmQgdGhlIHJhcmUgcHVycGxlIGZyb20gbml0cm9nZW4uIiwgIlNoaW1tZXJpbmcgY3VydGFpbnMgb2YgY29sb3JlZCBsaWdodCBpbiB0aGUgc2t5IG92ZXIgcGxhY2VzIGxpa2UgTm9yd2F5IGFuZCBBbGFza2EuIl19LCB7ImNhdGVnb3J5IjogIkJvb2siLCAiYW5zd2VyIjogIlRIRSBDQVRDSEVSIElOIFRIRSBSWUUiLCAiaGludHMiOiBbIkl0cyB0aXRsZSBjb21lcyBmcm9tIHRoZSBuYXJyYXRvciBtaXNoZWFyaW5nIGEgUm9iZXJ0IEJ1cm5zIHBvZW0uIEEgY29weSB3YXMgaW4gdGhlIHBvY2tldCBvZiB0aGUgbWFuIGFycmVzdGVkIGZvciBhIGZhbW91cyBtdXJkZXIgaW4gTmV3IFlvcmsgaW4gRGVjZW1iZXIgMTk4MC4iLCAiUHVibGlzaGVkIGluIDE5NTEsIGl0cyBhdXRob3IgcmVmdXNlZCBldmVyeSBvZmZlciB0byBmaWxtIGl0IGFuZCBzcGVudCBkZWNhZGVzIGFzIGEgcmVjbHVzZSBpbiBDb3JuaXNoLCBOZXcgSGFtcHNoaXJlLiIsICJIb2xkZW4gQ2F1bGZpZWxkJ3Mgc3Rvcnk6IEouRC4gU2FsaW5nZXIncyBub3ZlbC4iXX0sIHsiY2F0ZWdvcnkiOiAiUGxhY2UiLCAiYW5zd2VyIjogIlBBTkFNQSBDQU5BTCIsICJoaW50cyI6IFsiRnJhbmNlIGFiYW5kb25lZCB0aGUgZmlyc3QgYXR0ZW1wdCBpbiAxODg5IGFmdGVyIGRpc2Vhc2UgYW5kIGxhbmRzbGlkZXMga2lsbGVkIHRob3VzYW5kcyBvZiB3b3JrZXJzLiBPZGRseSwgYSBzaGlwIHNhaWxpbmcgZnJvbSB0aGUgQXRsYW50aWMgdG8gdGhlIFBhY2lmaWMgdGhyb3VnaCBpdCBoZWFkcyBtb3N0bHkgc291dGhlYXN0LiIsICJJdHMgbG9ja3MgbGlmdCBzaGlwcyBhYm91dCA4NSBmZWV0IHVwIHRvIGEgbWFuLW1hZGUgbGFrZSwgYW5kIHRoZSBVbml0ZWQgU3RhdGVzIGhhbmRlZCBjb250cm9sIG9mIGl0IG92ZXIgYXQgdGhlIGVuZCBvZiAxOTk5LiIsICJBIHNob3J0Y3V0IGJldHdlZW4gdHdvIG9jZWFucywgY3V0IHRocm91Z2ggQ2VudHJhbCBBbWVyaWNhLiJdfV0sICJzcGVlZCI6IHsidGhlbWUiOiAiQnJlYWtmYXN0IEZvb2RzIiwgIndvcmRzIjogWyJQQU5DQUtFUyIsICJXQUZGTEVTIiwgIk9BVE1FQUwiLCAiQkFHRUwiLCAiQ1JPSVNTQU5UIiwgIkZSRU5DSCBUT0FTVCIsICJIQVNIIEJST1dOUyIsICJHUkFOT0xBIl19fSwgeyJyb3VuZDEiOiBbeyJjYXRlZ29yeSI6ICJTYXlpbmciLCAiYW5zd2VyIjogIk9OIENMT1VEIE5JTkUiLCAiaGludHMiOiBbIkVhcmxpZXIgdmVyc2lvbnMgdXNlZCBvdGhlciBudW1iZXJzLCBpbmNsdWRpbmcgc2V2ZW4uIE9uZSB0aGVvcnkgdGllcyBpdCB0byBhbiAxODk2IGNsb3VkIGF0bGFzIGluIHdoaWNoIHR5cGUgbmluZSB3YXMgdGhlIHRvd2VyaW5nIGN1bXVsb25pbWJ1cy4iLCAiVGhlIFRlbXB0YXRpb25zJyAxOTY4IHNpbmdsZSB3aXRoIHRoaXMgbmFtZSBiZWNhbWUgTW90b3duJ3MgZmlyc3QgR3JhbW15IHdpbm5lci4iLCAiRmVlbGluZyBibGlzc2Z1bGx5IGhhcHB5LiJdfSwgeyJjYXRlZ29yeSI6ICJMYW5kbWFyayIsICJhbnN3ZXIiOiAiQklHIEJFTiIsICJoaW50cyI6IFsiU3RyaWN0bHkgc3BlYWtpbmcsIHRoaXMgaXMgdGhlIG5hbWUgb2YgYSAxMy43LXRvbm5lIGJlbGwgcmF0aGVyIHRoYW4gdGhlIHRvd2VyIGl0IGhhbmdzIGluLCBhbmQgaXQgY3JhY2tlZCB3aXRoaW4gYSBjb3VwbGUgb2YgbW9udGhzIG9mIGZpcnN0IHJpbmdpbmcgaW4gMTg1OS4iLCAiVGhlIHRvd2VyIHRoYXQgaG91c2VzIGl0IHdhcyByZW5hbWVkIEVsaXphYmV0aCBUb3dlciBpbiAyMDEyIHRvIG1hcmsgYSByb3lhbCBEaWFtb25kIEp1YmlsZWUuIiwgIlRoZSBmYW1vdXMgY2xvY2sgYXQgTG9uZG9uJ3MgSG91c2VzIG9mIFBhcmxpYW1lbnQuIl19LCB7ImNhdGVnb3J5IjogIk1vdmllIiwgImFuc3dlciI6ICJUSEUgR09ERkFUSEVSIiwgImhpbnRzIjogWyJJdHMgYXV0aG9yIGFkbWl0dGVkIGhlIGhhZCBuZXZlciBtZXQgYSByZWFsIGdhbmdzdGVyIGFuZCB3cm90ZSBpdCBtYWlubHkgdG8gbWFrZSBtb25leSBhZnRlciBoaXMgZmlyc3QgdHdvIG5vdmVscyBmbG9wcGVkLiIsICJUaGUgc3R1ZGlvIGZvdWdodCBjYXN0aW5nIGl0cyBldmVudHVhbCBPc2Nhci13aW5uaW5nIGxlYWQsIHRoZW4gY29uc2lkZXJlZCBib3gtb2ZmaWNlIHBvaXNvbiwgYW5kIGFsc28gZm91Z2h0IHRoZSBsaXR0bGUta25vd24gYWN0b3Igd2hvIHBsYXllZCBoaXMgeW91bmdlc3Qgc29uLiIsICInSSdtIGdvbm5hIG1ha2UgaGltIGFuIG9mZmVyIGhlIGNhbid0IHJlZnVzZS4nIl19LCB7ImNhdGVnb3J5IjogIkxhbmRtYXJrIiwgImFuc3dlciI6ICJNT1VOVCBSVVNITU9SRSIsICJoaW50cyI6IFsiSXRzIHNjdWxwdG9yIGhhZCBlYXJsaWVyIHdvcmtlZCBvbiBhIENvbmZlZGVyYXRlIG1lbW9yaWFsIGluIEdlb3JnaWEsIGFuZCB0aGUgbW91bnRhaW4gaXMgbmFtZWQgYWZ0ZXIgYSBOZXcgWW9yayBsYXd5ZXIgd2hvIHZpc2l0ZWQgaW4gMTg4NS4iLCAiRWFjaCBmYWNlIGlzIGFib3V0IDYwIGZlZXQgdGFsbCwgYW5kIGEgbW9zdGx5IGVtcHR5ICdIYWxsIG9mIFJlY29yZHMnIGlzIGhpZGRlbiBpbiB0aGUgcm9jayBiZWhpbmQgdGhlbS4iLCAiRm91ciBwcmVzaWRlbnRzIGNhcnZlZCBpbnRvIGEgbW91bnRhaW4gaW4gU291dGggRGFrb3RhLiJdfSwgeyJjYXRlZ29yeSI6ICJTYXlpbmciLCAiYW5zd2VyIjogIlRIRSBFQVJMWSBCSVJEIEdFVFMgVEhFIFdPUk0iLCAiaGludHMiOiBbIlRoZSBuYXR1cmFsaXN0IEpvaG4gUmF5IHJlY29yZGVkIGl0IGluIGEgMTY3MCBjb2xsZWN0aW9uIG9mIEVuZ2xpc2ggcHJvdmVyYnMuIEEgbW9kZXJuIGNvbWViYWNrIHBvaW50cyBvdXQgdGhhdCB0aGUgc2Vjb25kIG1vdXNlIGdldHMgdGhlIGNoZWVzZS4iLCAiSXQgY292ZXJzIHRoZSBzYW1lIGdyb3VuZCBhcyBCZW5qYW1pbiBGcmFua2xpbidzIGFkdmljZSBhYm91dCBnb2luZyB0byBiZWQgZWFybHkgYW5kIHJpc2luZyBlYXJseS4iLCAiQSBwcm92ZXJiOiB0aGUgcGVyc29uIHdobyBnZXRzIHVwIGZpcnN0IGdldHMgdGhlIHJld2FyZC4iXX1dLCAicm91bmQyIjogW3siY2F0ZWdvcnkiOiAiQXJ0d29yayIsICJhbnN3ZXIiOiAiVEhFIFBFUlNJU1RFTkNFIE9GIE1FTU9SWSIsICJoaW50cyI6IFsiSXRzIHBhaW50ZXIgc2FpZCB0aGUgaWRlYSBjYW1lIHRvIGhpbSB3aGlsZSBsb29raW5nIGF0IGEgcnVubnkgQ2FtZW1iZXJ0IGNoZWVzZSwgYW5kIHRoZSBjYW52YXMgaXMgc3VycHJpc2luZ2x5IHNtYWxsLCBhYm91dCB0aGUgc2l6ZSBvZiBhIHNoZWV0IG9mIHByaW50ZXIgcGFwZXIuIiwgIlBhaW50ZWQgaW4gMTkzMSBhbmQgbm93IGF0IE1vTUEgaW4gTmV3IFlvcmssIGl0IGluY2x1ZGVzIGFuIG9yYW5nZSBwb2NrZXQgd2F0Y2ggY3Jhd2xpbmcgd2l0aCBhbnRzIGFuZCBhIHN0cmFuZ2Ugc2xlZXBpbmcgZmFjZSBvbiB0aGUgZ3JvdW5kLiIsICJTYWx2YWRvciBEYWxpJ3MgbWVsdGluZyBjbG9ja3MuIl19LCB7ImNhdGVnb3J5IjogIlNheWluZyIsICJhbnN3ZXIiOiAiU0FWRUQgQlkgVEhFIEJFTEwiLCAiaGludHMiOiBbIkEgcG9wdWxhciBzdG9yeSBzYXlzIGl0IGNvbWVzIGZyb20gY29mZmlucyBmaXR0ZWQgd2l0aCBiZWxscyBpbiBjYXNlIHNvbWVvbmUgd2FzIGJ1cmllZCBhbGl2ZSwgYnV0IGJveGluZywgd2hlcmUgYSByaW5nIGVuZHMgdGhlIHJvdW5kLCBpcyB0aGUgbXVjaCBsaWtlbGllciBzb3VyY2UuIiwgIkl0J3MgYWxzbyB0aGUgbmFtZSBvZiBhIDE5ODkgc2l0Y29tIHNldCBhdCBCYXlzaWRlIEhpZ2guIiwgIlJlc2N1ZWQgYXQgdGhlIHZlcnkgbGFzdCBzZWNvbmQuIl19LCB7ImNhdGVnb3J5IjogIlBsYWNlIiwgImFuc3dlciI6ICJHQUxBUEFHT1MgSVNMQU5EUyIsICJoaW50cyI6IFsiVGhlaXIgbmFtZSBjb21lcyBmcm9tIGFuIG9sZCBTcGFuaXNoIHdvcmQgZm9yIGEga2luZCBvZiBzYWRkbGUsIGJlY2F1c2Ugb2YgdGhlIHNoYXBlIG9mIHRoZSBzaGVsbHMgb2YgdGhlIGdpYW50IHJlcHRpbGVzIHRoYXQgbGl2ZSB0aGVyZS4iLCAiQSBQYW5hbWFuaWFuIGJpc2hvcCBmb3VuZCB0aGVtIGJ5IGFjY2lkZW50IGluIDE1MzUgd2hlbiBoaXMgc2hpcCBkcmlmdGVkIG9mZiBjb3Vyc2UuIFRvZGF5IHRoZXkgYmVsb25nIHRvIEVjdWFkb3IuIiwgIlRoZSBQYWNpZmljIGlzbGFuZHMgd2hvc2UgZmluY2hlcyBhbmQgdG9ydG9pc2VzIGhlbHBlZCBpbnNwaXJlIERhcndpbidzIHRoZW9yeSBvZiBldm9sdXRpb24uIl19LCB7ImNhdGVnb3J5IjogIkJvb2siLCAiYW5zd2VyIjogIlRIRSBPTEQgTUFOIEFORCBUSEUgU0VBIiwgImhpbnRzIjogWyJJdHMgaGVybyBpcyBvZnRlbiBzYWlkIHRvIGJlIGJhc2VkIHBhcnRseSBvbiBhIEN1YmFuIHdobyBjcmV3ZWQgdGhlIGF1dGhvcidzIG93biBmaXNoaW5nIGJvYXQuIFdoZW4gaXQgZmlyc3QgYXBwZWFyZWQgaW4gZnVsbCBpbiBhIHNpbmdsZSAxOTUyIGlzc3VlIG9mIExpZmUgbWFnYXppbmUsIHRoYXQgaXNzdWUgc29sZCBvdmVyIGZpdmUgbWlsbGlvbiBjb3BpZXMgaW4gdHdvIGRheXMuIiwgIkl0IHdvbiB0aGUgUHVsaXR6ZXIgUHJpemUgaW4gMTk1MyBhbmQgaGVscGVkIGl0cyBhdXRob3Igd2luIHRoZSBOb2JlbCBQcml6ZSBhIHllYXIgbGF0ZXIuIFRoZSBzdG9yeSBvcGVucyBhZnRlciBpdHMgaGVybyBoYXMgZ29uZSA4NCBkYXlzIHdpdGhvdXQgY2F0Y2hpbmcgYW55dGhpbmcuIiwgIkVybmVzdCBIZW1pbmd3YXkncyBzaG9ydCBub3ZlbCBhYm91dCBhIGZpc2hlcm1hbiBhbmQgYSBnaWFudCBtYXJsaW4uIl19XSwgInNwZWVkIjogeyJ0aGVtZSI6ICJCb2FyZCBHYW1lcyIsICJ3b3JkcyI6IFsiTU9OT1BPTFkiLCAiU0NSQUJCTEUiLCAiQ0hFU1MiLCAiQ0hFQ0tFUlMiLCAiQkFUVExFU0hJUCIsICJCQUNLR0FNTU9OIiwgIkNBTkRZIExBTkQiLCAiUklTSyJdfX0sIHsicm91bmQxIjogW3siY2F0ZWdvcnkiOiAiU2F5aW5nIiwgImFuc3dlciI6ICJSQUlOSU5HIENBVFMgQU5EIERPR1MiLCAiaGludHMiOiBbIkpvbmF0aGFuIFN3aWZ0IHVzZWQgYSB2ZXJzaW9uIGluIDE3MzguIE9uZSBncmltIHRoZW9yeSBwb2ludHMgdG8gYW5pbWFsIGNhcmNhc3NlcyB0aGF0IHdhc2hlZCB0aHJvdWdoIHRoZSBzdHJlZXRzIG9mIDE3dGgtY2VudHVyeSBMb25kb24gYWZ0ZXIgaGVhdnkgc3Rvcm1zLiIsICJBIHBvcHVsYXIgYnV0IGZhbHNlIHN0b3J5IGNsYWltcyBwZXRzIHVzZWQgdG8gc2xpZGUgb2ZmIHRoYXRjaGVkIHJvb2ZzIHdoZW4gdGhleSBnb3Qgd2V0LiIsICJQb3VyaW5nIHJhaW4uIl19LCB7ImNhdGVnb3J5IjogIkxhbmRtYXJrIiwgImFuc3dlciI6ICJTWURORVkgT1BFUkEgSE9VU0UiLCAiaGludHMiOiBbIkl0cyBEYW5pc2ggYXJjaGl0ZWN0IHdvbiB0aGUgZGVzaWduIGNvbXBldGl0aW9uIGluIDE5NTcsIHRoZW4gcXVpdCBpbiAxOTY2IGFuZCBuZXZlciBjYW1lIGJhY2sgdG8gc2VlIGl0IGZpbmlzaGVkLiIsICJNb3JlIHRoYW4gYSBtaWxsaW9uIHNlbGYtY2xlYW5pbmcgdGlsZXMgbWFkZSBpbiBTd2VkZW4gY292ZXIgaXRzIHJvb2Ygc2hlbGxzLiIsICJUaGUgc2FpbC1zaGFwZWQgcm9vZnMgb24gQXVzdHJhbGlhJ3MgbW9zdCBmYW1vdXMgaGFyYm9yLiJdfSwgeyJjYXRlZ29yeSI6ICJCb29rIiwgImFuc3dlciI6ICJUUkVBU1VSRSBJU0xBTkQiLCAiaGludHMiOiBbIkl0cyBhdXRob3Igc3RhcnRlZCBpdCBmcm9tIGEgbWFwIGhlIGRyZXcgd2l0aCBoaXMgMTIteWVhci1vbGQgc3RlcHNvbiBvbiBhIHJhaW55IGhvbGlkYXkgaW4gU2NvdGxhbmQgaW4gMTg4MS4iLCAiSXQgZ2F2ZSB1cyB0aGUgb25lLWxlZ2dlZCBzaGlwJ3MgY29vayB3aXRoIGEgcGFycm90IG9uIGhpcyBzaG91bGRlciwgYW5kIGhlbHBlZCBtYWtlICdYIG1hcmtzIHRoZSBzcG90JyBmYW1vdXMuIiwgIlJvYmVydCBMb3VpcyBTdGV2ZW5zb24ncyBwaXJhdGUgYWR2ZW50dXJlIHdpdGggTG9uZyBKb2huIFNpbHZlci4iXX0sIHsiY2F0ZWdvcnkiOiAiSGlzdG9yeSIsICJhbnN3ZXIiOiAiVEhFIEJFUkxJTiBXQUxMIiwgImhpbnRzIjogWyJJdCBvcGVuZWQgYWZ0ZXIgYSBnb3Zlcm5tZW50IHNwb2tlc21hbiBuYW1lZCBHdW50ZXIgU2NoYWJvd3NraSBmdW1ibGVkIGEgcHJlc3MgY29uZmVyZW5jZSwgYW5ub3VuY2luZyB0aGF0IG5ldyB0cmF2ZWwgcnVsZXMgdG9vayBlZmZlY3QgJ2ltbWVkaWF0ZWx5Jy4iLCAiQnVpbHQgaW4gMTk2MSwgaXQgcmFuIGFib3V0IDk2IG1pbGVzLCBhbGwgdGhlIHdheSBhcm91bmQgdGhlIHdlc3Rlcm4gaGFsZiBvZiBhIGRpdmlkZWQgY2l0eS4iLCAiVGhlIGJhcnJpZXIgdGhhdCBzcGxpdCBFYXN0IGFuZCBXZXN0IGluIEdlcm1hbnkncyBjYXBpdGFsIHVudGlsIDE5ODkuIl19LCB7ImNhdGVnb3J5IjogIlNheWluZyIsICJhbnN3ZXIiOiAiQUNUSU9OUyBTUEVBSyBMT1VERVIgVEhBTiBXT1JEUyIsICJoaW50cyI6IFsiVGhlIGlkZWEgZ29lcyBiYWNrIGF0IGxlYXN0IHRvIHRoZSBhbmNpZW50IEdyZWVrcywgYW5kIEFicmFoYW0gTGluY29sbiB1c2VkIHRoaXMgZXhhY3Qgd29yZGluZyBpbiBhIHNwZWVjaCBpbiAxODU2LiIsICJJdCdzIHRoZSBzYW1lIGlkZWEgYmVoaW5kICdzaG93LCBkb24ndCB0ZWxsJyBhbmQgJ3B1dCB5b3VyIG1vbmV5IHdoZXJlIHlvdXIgbW91dGggaXMnLiIsICJXaGF0IHlvdSBkbyBtYXR0ZXJzIG1vcmUgdGhhbiB3aGF0IHlvdSBzYXkuIl19XSwgInJvdW5kMiI6IFt7ImNhdGVnb3J5IjogIk1vdmllIiwgImFuc3dlciI6ICJUSEUgVFJVTUFOIFNIT1ciLCAiaGludHMiOiBbIkl0cyBmaXJzdCBkcmFmdCB3YXMgYSBtdWNoIGRhcmtlciB0aHJpbGxlciBzZXQgaW4gTmV3IFlvcmsuIFRoZSBmaW5pc2hlZCBmaWxtIHdhcyBzaG90IGluIFNlYXNpZGUsIGEgcmVhbCBwbGFubmVkIHRvd24gb24gdGhlIEZsb3JpZGEgUGFuaGFuZGxlLiIsICJSZWxlYXNlZCBpbiAxOTk4LCBpdCdzIGFib3V0IHRoZSBmaXJzdCBwZXJzb24gZXZlciBsZWdhbGx5IGFkb3B0ZWQgYnkgYSBjb3Jwb3JhdGlvbi4iLCAiSmltIENhcnJleSBkaXNjb3ZlcnMgaGlzIHdob2xlIGxpZmUgaXMgYSBUViBzaG93LiJdfSwgeyJjYXRlZ29yeSI6ICJTYXlpbmciLCAiYW5zd2VyIjogIlRIRSBCRVNUIFRISU5HIFNJTkNFIFNMSUNFRCBCUkVBRCIsICJoaW50cyI6IFsiVGhlIHByb2R1Y3QgaXQgcmVmZXJzIHRvIGZpcnN0IHdlbnQgb24gc2FsZSBpbiAxOTI4IGluIENoaWxsaWNvdGhlLCBNaXNzb3VyaSwgYW5kIHRoZSBVUyBicmllZmx5IGJhbm5lZCBpdCBpbiAxOTQzIGFzIGEgd2FydGltZSBtZWFzdXJlLiIsICJXb25kZXIgYnJhbmQgaGVscGVkIG1ha2UgdGhlIG9yaWdpbmFsIHByb2R1Y3QgZmFtb3VzIGluIHRoZSAxOTMwcy4iLCAiQSB3YXkgb2Ygc2F5aW5nIGEgbmV3IGludmVudGlvbiBpcyBmYW50YXN0aWMuIl19LCB7ImNhdGVnb3J5IjogIlBsYWNlIiwgImFuc3dlciI6ICJBTkdLT1IgV0FUIiwgImhpbnRzIjogWyJPcmlnaW5hbGx5IGEgSGluZHUgdGVtcGxlIGRlZGljYXRlZCB0byBWaXNobnUsIGl0IGdyYWR1YWxseSBiZWNhbWUgQnVkZGhpc3QsIGFuZCB1bmxpa2UgbW9zdCB0ZW1wbGVzIG9mIGl0cyBraW5kIGl0IGZhY2VzIHdlc3QuIiwgIkl0J3MgdGhlIGxhcmdlc3QgcmVsaWdpb3VzIG1vbnVtZW50IGluIHRoZSB3b3JsZCwgYW5kIGl0IGFwcGVhcnMgb24gaXRzIGNvdW50cnkncyBuYXRpb25hbCBmbGFnLiIsICJBIGdpYW50IDEydGgtY2VudHVyeSB0ZW1wbGUgY29tcGxleCBpbiBDYW1ib2RpYS4iXX0sIHsiY2F0ZWdvcnkiOiAiU29uZyIsICJhbnN3ZXIiOiAiU1RBSVJXQVkgVE8gSEVBVkVOIiwgImhpbnRzIjogWyJBIDIwMTYganVyeSBydWxlZCB0aGF0IGl0cyBvcGVuaW5nIGRpZCBub3QgY29weSBhIHNvbmcgY2FsbGVkICdUYXVydXMnLCBhbmQgdGhlIGJhbmQgZmFtb3VzbHkgbmV2ZXIgcmVsZWFzZWQgaXQgYXMgYSBzaW5nbGUuIiwgIlJlY29yZGVkIGluIDE5NzEgZm9yIGFuIGFsYnVtIHdpdGggbm8gdGl0bGUgb24gdGhlIGNvdmVyLCBpdCBvcGVucyB3aXRoIGFjb3VzdGljIGd1aXRhciBhbmQgcmVjb3JkZXJzIGJlZm9yZSBidWlsZGluZyB0byBhIGd1aXRhciBzb2xvLiIsICJMZWQgWmVwcGVsaW4ncyBlcGljIGFib3V0IGEgbGFkeSB3aG8ncyBidXlpbmcgb25lLiJdfV0sICJzcGVlZCI6IHsidGhlbWUiOiAiV2VhdGhlciIsICJ3b3JkcyI6IFsiVE9STkFETyIsICJCTElaWkFSRCIsICJIVVJSSUNBTkUiLCAiRFJJWlpMRSIsICJSQUlOQk9XIiwgIkxJR0hUTklORyIsICJIRUFUIFdBVkUiLCAiTU9OU09PTiJdfX1dfQ==</script>
 <script>
 /* =========================================================
    CONFIG
    ========================================================= */
 const CONFIG = {
-  roundSeconds: 90,          // length of each round
-  pointsPerRound: 100,       // fixed points for a correct guess
-  hintAt: [0, 1/3, 2/3],     // when each hint unlocks (fraction of round)
-  revealStart: 6,            // seconds before the first letter locks in
-  revealMaxFrac: 0.75,       // fraction of letters locked by the end of the timer
-  intenseAt: 15,             // seconds left when music speeds up
+  points: [100, 150, 200],          // per correct answer in round 1, round 2, speed round
+  speedSeconds: 150,                // speed round clock (2:30)
+  intenseAt: 15,                    // speed round: seconds left when the music speeds up
+  hintAt: [0, 1/3, 2/3],            // rounds 1-2: when each hint unlocks, as a fraction of the full unscramble
+  holdAfter: 1.6,                   // speed round: seconds a finished word stays up before the next one drops
+  longOver: 18,                     // answers with more letters than this use the 'long' timing
+  timing: {                         // seconds
+    normal: { fall: 2, fallDur: .8, settle: 1, move: 4, pop: .35, back: 4, gap: .5 },
+    long:   { fall: 2, fallDur: .8, settle: 1, move: 3, pop: .3,  back: 3, gap: .4 },
+  },
 };
 const PLAYERS = [
-  {name:'Red',    c:'var(--red)'},
-  {name:'Blue',   c:'var(--blue)'},
-  {name:'Green',  c:'var(--green)'},
-  {name:'Yellow', c:'var(--yellow)'},
+  {name:'Red', c:'var(--red)'}, {name:'Blue', c:'var(--blue)'},
+  {name:'Green', c:'var(--green)'}, {name:'Yellow', c:'var(--yellow)'},
 ];
+const ROUND_NAMES = ['Round 1', 'Round 2', 'Speed Round'];
 const PEER_PREFIX = 'heyalexgold-scramble-v1-';
 
-/* ---------- data ---------- */
 const GAMES = (() => {
   const b64 = document.getElementById('gamesData').textContent.trim();
   const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
@@ -236,95 +226,121 @@ const GAMES = (() => {
 
 /* ---------- utils ---------- */
 const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const store = {
   get(k, d){ try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } },
   set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
 };
 function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 function shuffle(arr, rnd){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
-const isLetter = ch => /[A-Z0-9]/.test(ch);
+const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
+const lerp = (a,b,f) => a + (b-a)*f;
+const easeIO = x => x<.5 ? 4*x*x*x : 1-Math.pow(-2*x+2,3)/2;
+const easeOut = x => 1-Math.pow(1-x,3);
+function bounce(x){ const n=7.5625,d=2.75; if(x<1/d) return n*x*x; if(x<2/d) return n*(x-=1.5/d)*x+.75; if(x<2.5/d) return n*(x-=2.25/d)*x+.9375; return n*(x-=2.625/d)*x+.984375; }
+const fmtClock = s => { s = Math.max(0, Math.ceil(s)); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); };
 
 /* =========================================================
-   PUZZLE ENGINE (deterministic: same inputs -> same board on every device)
+   GAME DATA ACCESS
    ========================================================= */
-function buildPuzzle(gameIdx, roundIdx){
-  const p = GAMES[gameIdx].puzzles[roundIdx];
-  const answer = p.answer.toUpperCase();
-  const words = answer.split(/\s+/);
-  const letters = words.join('').split('');               // slot i holds letters[i] when solved
-  const n = letters.length;
-  const rnd = mulberry32((gameIdx+1)*1000 + roundIdx*17 + 7);
-  // initial arrangement: perm[slot] = tile index shown in that slot. Pick the shuffle
-  // with the fewest letters accidentally already in the right place.
-  let best = null, bestScore = Infinity;
-  for(let a=0;a<300 && bestScore>0;a++){
-    const perm = shuffle([...Array(n).keys()], rnd);
-    const score = perm.reduce((s,t,i)=> s + (letters[t]===letters[i] ? 1 : 0), 0);
-    if(score < bestScore){ best = perm; bestScore = score; }
-  }
-  const order = shuffle([...Array(n).keys()], rnd);       // order in which slots lock
-  return { ...p, answer, words, letters, n, initial: best, order };
-}
-function lockCount(pz, elapsedSec){
-  const T = CONFIG.roundSeconds, t0 = CONFIG.revealStart;
-  const f = Math.max(0, Math.min(1, (elapsedSec - t0) / (T - t0)));
-  return Math.floor(pz.n * CONFIG.revealMaxFrac * f);
-}
-function hintCount(elapsedSec){
-  const f = elapsedSec / CONFIG.roundSeconds;
-  return CONFIG.hintAt.filter(h => f >= h - 1e-9).length;
-}
-function arrangement(pz, k){
-  const perm = pz.initial.slice();
-  for(let i=0;i<k;i++){
-    const s = pz.order[i];
-    const j = perm.indexOf(s);
-    [perm[s], perm[j]] = [perm[j], perm[s]];
-  }
-  return { perm, locked: new Set(pz.order.slice(0,k)) };
+function roundItems(g, r){ const G = GAMES[g]; return r===0 ? G.round1 : r===1 ? G.round2 : G.speed.words.map(w => ({answer:w})); }
+function itemCount(g, r){ return roundItems(g, r).length; }
+const puzzleCache = {};
+function getPuzzle(g, r, q){
+  const key = g+':'+r+':'+q;
+  if(!puzzleCache[key]) puzzleCache[key] = buildPuzzle(roundItems(g,r)[q].answer, (g+1)*1000 + r*100 + q*7 + 3);
+  return puzzleCache[key];
 }
 
 /* =========================================================
-   SHARED STATE SHAPE
-   { game: null|idx, round: 0..2, phase: 'pick'|'ready'|'running'|'paused'|'solved'|'timeup'|'over',
-     elapsed: ms (at send time), scores:[4], winner: null|idx, music: bool, showHints: bool }
-   The host owns the state; the TV renders it.
+   PUZZLE ENGINE — everything is a pure function of (puzzle, elapsed seconds),
+   so the TV and phone always agree and a reloaded TV picks up mid-animation.
+
+   The scramble is a set of disjoint swaps: every tile is paired with the tile
+   sitting in its home slot. Each swap: tile A glides to its home (move), lands
+   and turns red; tile B pops out from under it (pop) and glides to the slot A
+   left (back), turning red. Odd letter count -> one tile starts in place.
    ========================================================= */
+function buildPuzzle(answer, seed){
+  answer = answer.toUpperCase();
+  const words = answer.split(/\s+/), letters = words.join('').split(''), n = letters.length;
+  const tm = CONFIG.timing[n > CONFIG.longOver ? 'long' : 'normal'], rnd = mulberry32(seed);
+  let best = null, bestBad = Infinity;
+  for(let a=0; a<300 && bestBad>0; a++){
+    const idx = shuffle([...Array(n).keys()], rnd);
+    const fixed = n % 2 ? idx.pop() : -1;
+    const pairs = []; for(let i=0;i<idx.length;i+=2) pairs.push([idx[i], idx[i+1]]);
+    const bad = pairs.filter(([p,q]) => letters[p]===letters[q]).length;   // identical-letter swaps look like nothing happens
+    if(bad < bestBad){ best = {pairs, fixed}; bestBad = bad; }
+  }
+  const swaps = best.pairs.map(([p,q]) => rnd() < .5 ? {A:p, B:q} : {A:q, B:p});
+  const startSlot = [...Array(n).keys()];
+  swaps.forEach(({A,B}) => { startSlot[A] = B; startSlot[B] = A; });
+  const color = letters.map(() => Math.floor(rnd()*4));
+  const fallDelay = letters.map(() => rnd()*(tm.fall - tm.fallDur));
+  const P = tm.move + tm.pop + tm.back + tm.gap;
+  const start = tm.fall + tm.settle;
+  const duration = start + swaps.length*P - (swaps.length ? tm.gap : 0);
+  return { answer, words, letters, n, swaps, fixed: best.fixed, startSlot, color, fallDelay, tm, P, start, duration };
+}
+// per-tile state at time t: interpolate between slots `from`→`to` by f, plus vertical offset dy (in tile heights)
+function tileStates(pz, t){
+  const {tm, P, start} = pz;
+  const out = pz.letters.map((_, tile) => ({from: pz.startSlot[tile], to: pz.startSlot[tile], f: 0, dy: 0, red: false, lift: false,
+    fall: clamp((t - pz.fallDelay[tile]) / tm.fallDur, 0, 1)}));
+  pz.swaps.forEach(({A, B}, i) => {
+    const u = t - start - i*P; if(u < 0) return;
+    const a = out[A], b = out[B];
+    if(u < tm.move){ a.from = B; a.to = A; a.f = easeIO(u/tm.move); a.lift = true; return; }
+    a.from = a.to = A; a.red = true;
+    const v = u - tm.move;
+    if(v < tm.pop){ b.from = b.to = A; b.dy = .6*easeOut(v/tm.pop); b.lift = true; }
+    else if(v < tm.pop + tm.back){ const f = easeIO((v - tm.pop)/tm.back); b.from = A; b.to = B; b.f = f; b.dy = .6*(1-f); b.lift = true; }
+    else { b.from = b.to = B; b.red = true; }
+  });
+  if(pz.fixed >= 0 && t >= pz.duration) out[pz.fixed].red = true;
+  return out;
+}
+// counts of discrete moments (for sound effects)
+function eventCounts(pz, t){
+  const {tm, P, start} = pz; let landed = 0, popped = 0, fell = 0;
+  pz.fallDelay.forEach(d => { if(t >= d + tm.fallDur*.55) fell++; });
+  pz.swaps.forEach((_, i) => { const a = start + i*P + tm.move; if(t >= a) { landed++; popped++; } if(t >= a + tm.pop + tm.back) landed++; });
+  return {fell, landed, popped};
+}
+function hintsUnlocked(pz, t){ return CONFIG.hintAt.filter(h => t >= h*pz.duration - 1e-6).length; }
 
 /* =========================================================
    TRANSPORT: PeerJS (cross-device) + BroadcastChannel (same browser, for testing)
    ========================================================= */
 function makeChannel(code, onMsg){
   let bc = null;
-  try{ bc = new BroadcastChannel('scramble-' + code); bc.onmessage = e => onMsg(e.data, 'bc'); }catch(e){}
-  return {
-    send(m){ try{ bc && bc.postMessage(m); }catch(e){} },
-    close(){ try{ bc && bc.close(); }catch(e){} },
-  };
+  try{ bc = new BroadcastChannel('scramble-' + code); bc.onmessage = e => onMsg(e.data); }catch(e){}
+  return { send(m){ try{ bc && bc.postMessage(m); }catch(e){} }, close(){ try{ bc && bc.close(); }catch(e){} } };
 }
 
 /* =========================================================
-   AUDIO (TV only) — all synthesized with Web Audio, no files
+   AUDIO (TV only) — synthesized with Web Audio, no files
    ========================================================= */
-const Audio_ = {
-  ctx:null, master:null, sfx:null, mus:null, timer:null, step:0, next:0, bpm:104, on:false, seed:1,
+const Sfx = {
+  ctx:null, master:null, sfx:null, mus:null, timer:null, step:0, next:0, on:false, seed:1, intense:false,
   init(){
     if(this.ctx) return;
     const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
     this.ctx = new AC();
-    this.master = this.ctx.createGain(); this.master.gain.value = 0.9; this.master.connect(this.ctx.destination);
-    this.sfx = this.ctx.createGain(); this.sfx.gain.value = 0.8; this.sfx.connect(this.master);
-    this.mus = this.ctx.createGain(); this.mus.gain.value = 0.32; this.mus.connect(this.master);
+    this.master = this.ctx.createGain(); this.master.gain.value = .9; this.master.connect(this.ctx.destination);
+    this.sfx = this.ctx.createGain(); this.sfx.gain.value = .8; this.sfx.connect(this.master);
+    this.mus = this.ctx.createGain(); this.mus.gain.value = .3; this.mus.connect(this.master);
     this.noiseBuf = this.ctx.createBuffer(1, this.ctx.sampleRate, this.ctx.sampleRate);
     const d = this.noiseBuf.getChannelData(0); for(let i=0;i<d.length;i++) d[i] = Math.random()*2-1;
   },
+  now(){ return this.ctx ? this.ctx.currentTime : 0; },
   tone(freq, start, dur, {type='sine', vol=.3, attack=.005, dest=null, glide=null}={}){
     const c = this.ctx; if(!c) return;
     const o = c.createOscillator(), g = c.createGain();
     o.type = type; o.frequency.setValueAtTime(freq, start);
     if(glide) o.frequency.exponentialRampToValueAtTime(glide, start+dur);
-    g.gain.setValueAtTime(0, start); g.gain.linearRampToValueAtTime(vol, start+attack);
-    g.gain.exponentialRampToValueAtTime(0.0001, start+dur);
+    g.gain.setValueAtTime(0, start); g.gain.linearRampToValueAtTime(vol, start+attack); g.gain.exponentialRampToValueAtTime(.0001, start+dur);
     o.connect(g); g.connect(dest || this.sfx); o.start(start); o.stop(start+dur+.05);
   },
   noise(start, dur, {vol=.2, freq=8000, q=1, type='highpass', dest=null, sweepTo=null}={}){
@@ -332,43 +348,41 @@ const Audio_ = {
     const s = c.createBufferSource(); s.buffer = this.noiseBuf;
     const f = c.createBiquadFilter(); f.type = type; f.frequency.setValueAtTime(freq, start); f.Q.value = q;
     if(sweepTo) f.frequency.exponentialRampToValueAtTime(sweepTo, start+dur);
-    const g = c.createGain(); g.gain.setValueAtTime(vol, start); g.gain.exponentialRampToValueAtTime(0.0001, start+dur);
+    const g = c.createGain(); g.gain.setValueAtTime(vol, start); g.gain.exponentialRampToValueAtTime(.0001, start+dur);
     s.connect(f); f.connect(g); g.connect(dest || this.sfx); s.start(start); s.stop(start+dur+.05);
   },
-  now(){ return this.ctx ? this.ctx.currentTime : 0; },
-  tick(k){ const t=this.now(); const f = 520 * Math.pow(2, (k%12)/12); this.tone(f, t, .12, {type:'triangle', vol:.28}); this.tone(f*2, t+.02, .08, {vol:.08}); },
-  chime(){ const t=this.now(); [784, 1175, 1568].forEach((f,i)=>{ this.tone(f, t+i*.09, .9, {vol:.18}); this.tone(f*2.01, t+i*.09, .5, {vol:.05}); }); },
-  whoosh(){ const t=this.now(); this.noise(t, .7, {vol:.25, freq:400, sweepTo:6000, type:'bandpass', q:.8}); },
+  thud(){ const t=this.now(); this.tone(140+Math.random()*60, t, .12, {vol:.35, glide:60}); this.noise(t, .05, {vol:.06, freq:2500, type:'bandpass'}); },
+  land(k){ const t=this.now(); const f = 440*Math.pow(2, (k%12)/12); this.tone(f, t, .25, {type:'triangle', vol:.3}); this.tone(f*1.5, t+.04, .2, {vol:.1}); },
+  swish(){ const t=this.now(); this.noise(t, .3, {vol:.12, freq:800, sweepTo:4000, type:'bandpass', q:1.2}); },
+  chime(){ const t=this.now(); [784,1175,1568].forEach((f,i)=>{ this.tone(f, t+i*.09, .9, {vol:.18}); this.tone(f*2.01, t+i*.09, .5, {vol:.05}); }); },
   win(){ const t=this.now(); [523,659,784,1047,1319].forEach((f,i)=>this.tone(f, t+i*.08, .5, {type:'square', vol:.09}));
     [1047,1319,1568].forEach(f=>this.tone(f, t+.5, 1.4, {type:'triangle', vol:.12})); this.noise(t+.45, 1.2, {vol:.08, freq:9000}); },
-  buzz(){ const t=this.now(); this.tone(146, t, .9, {type:'sawtooth', vol:.22}); this.tone(138, t, .9, {type:'sawtooth', vol:.22}); },
-  fanfare(){ const t=this.now(); const seq=[[392,.0],[523,.15],[659,.3],[784,.45],[659,.62],[784,.75]];
-    seq.forEach(([f,d])=>this.tone(f, t+d, .35, {type:'square', vol:.1})); [523,659,784,1047].forEach(f=>this.tone(f, t+.9, 2, {type:'triangle', vol:.1})); },
-
-  // ---- procedural background loop (16th-note step sequencer with lookahead) ----
+  ding(){ const t=this.now(); [880,1320].forEach((f,i)=>this.tone(f, t+i*.07, .5, {type:'triangle', vol:.2})); },
+  womp(){ const t=this.now(); this.tone(330, t, .35, {type:'triangle', vol:.2, glide:300}); this.tone(262, t+.3, .6, {type:'triangle', vol:.2, glide:200}); },
+  buzz(){ const t=this.now(); this.tone(146, t, .9, {type:'sawtooth', vol:.2}); this.tone(138, t, .9, {type:'sawtooth', vol:.2}); },
+  fanfare(){ const t=this.now(); [[392,0],[523,.15],[659,.3],[784,.45],[659,.62],[784,.75]].forEach(([f,d])=>this.tone(f, t+d, .35, {type:'square', vol:.1}));
+    [523,659,784,1047].forEach(f=>this.tone(f, t+.9, 2, {type:'triangle', vol:.1})); },
   startMusic(seed){
     if(!this.ctx || this.on) return;
     this.on = true; this.seed = seed; this.step = 0; this.next = this.now() + .05;
-    this.mus.gain.cancelScheduledValues(this.now()); this.mus.gain.setValueAtTime(.32, this.now());
-    this.timer = setInterval(()=>this.schedule(), 25);
+    this.mus.gain.cancelScheduledValues(this.now()); this.mus.gain.setValueAtTime(.3, this.now());
+    this.timer = setInterval(() => this.schedule(), 25);
   },
   stopMusic(){
     if(!this.on) return; this.on = false; clearInterval(this.timer);
-    const t=this.now(); this.mus.gain.cancelScheduledValues(t); this.mus.gain.setValueAtTime(this.mus.gain.value, t); this.mus.gain.linearRampToValueAtTime(0.0001, t+.4);
-    setTimeout(()=>{ if(!this.on) this.mus.gain.value=.32; }, 500);
+    const t = this.now(); this.mus.gain.cancelScheduledValues(t); this.mus.gain.setValueAtTime(this.mus.gain.value, t); this.mus.gain.linearRampToValueAtTime(.0001, t+.4);
   },
-  intense:false,
   schedule(){
-    const prog = [[57,60,64],[53,57,60],[48,52,55],[55,59,62]]; // Am F C G
+    const prog = [[57,60,64],[53,57,60],[48,52,55],[55,59,62]];   // Am F C G
     const mtof = m => 440*Math.pow(2,(m-69)/12);
     while(this.next < this.now() + .12){
-      const s = this.step, t = this.next, bar = Math.floor(s/16)%4, pos = s%16, chord = prog[bar];
-      const bpm = this.intense ? 138 : 104;
-      if(pos%4===0) { this.tone(mtof(chord[0]-24), t, .28, {type:'triangle', vol:.5, dest:this.mus}); this.tone(60, t, .12, {vol:.6, dest:this.mus, glide:40}); }
-      if(pos%4===2 || (this.intense && pos%2===1)) this.noise(t, .05, {vol: this.intense?.14:.09, freq:7000, dest:this.mus});
-      if(pos===4 || pos===12) this.noise(t, .14, {vol:.12, freq:1800, type:'bandpass', q:.7, dest:this.mus});
+      const s = this.step, t = this.next, pos = s%16, chord = prog[Math.floor(s/16)%4];
+      const bpm = this.intense ? 138 : 100;
+      if(pos%4===0){ this.tone(mtof(chord[0]-24), t, .28, {type:'triangle', vol:.5, dest:this.mus}); this.tone(60, t, .12, {vol:.6, dest:this.mus, glide:40}); }
+      if(pos%4===2 || (this.intense && pos%2===1)) this.noise(t, .05, {vol: this.intense ? .14 : .08, freq:7000, dest:this.mus});
+      if(pos===4 || pos===12) this.noise(t, .14, {vol:.11, freq:1800, type:'bandpass', q:.7, dest:this.mus});
       if(pos%2===0){ const r = mulberry32(this.seed*131 + s)(); const note = chord[Math.floor(r*3)] + (r>.6?12:0) + 12;
-        this.tone(mtof(note), t, .18, {type:'square', vol:.045, dest:this.mus}); }
+        this.tone(mtof(note), t, .18, {type:'square', vol:.04, dest:this.mus}); }
       this.next += 60/bpm/4; this.step++;
     }
   },
@@ -376,30 +390,32 @@ const Audio_ = {
 
 /* =========================================================
    TV
+   State from the host:
+   { game, round, q, phase, pe (ms, puzzle time), ce (ms, speed clock), clockRunning,
+     scores[4], winner, music, showHints }
+   phases: pick | ready | running | paused | solved | missed | speedEnd | over
    ========================================================= */
 const TV = {
   code:null, peer:null, conns:new Set(), chan:null, state:null, recvAt:0, pz:null, pzKey:'',
-  lastK:-1, lastHints:-1, lastPhase:null, tileEls:[], soundOn:false, buzzed:false,
+  tileEls:[], slotXY:[], tileH:0, soundOn:false, lastPhase:null, ev:null, lastHints:-1, snap:null,
   start(){
     $('tv').classList.remove('hidden');
-    this.code = store.get('tvCode', null) || this.newCode();
-    store.set('tvCode', this.code);
+    this.code = store.get('tvCode', null) || this.newCode(); store.set('tvCode', this.code);
     $('roomCode').textContent = this.code;
     $('hostUrl').textContent = location.href.split('#')[0].replace(/^https?:\/\//,'') + '#host';
-    this.buildScoreBar();
+    $('scoreBar').innerHTML = PLAYERS.map((p,i)=>`<div class="score" id="sc${i}" style="--c:${p.c}"><span class="nm">${p.name}</span><span class="pts" id="scp${i}">0</span></div>`).join('');
     this.chan = makeChannel(this.code, m => this.onMsg(m));
     this.chan.send({type:'hello', from:'tv'});
     this.connectPeer(0);
-    $('gateBtn').onclick = () => { Audio_.init(); try{ Audio_.ctx.resume(); }catch(e){} this.soundOn = true; $('soundGate').classList.add('hidden'); Audio_.chime(); };
+    $('gateBtn').onclick = () => { Sfx.init(); try{ Sfx.ctx.resume(); }catch(e){} this.soundOn = true; $('soundGate').classList.add('hidden'); Sfx.chime(); if(this.state) this.render(); };
     document.addEventListener('keydown', e => { if(e.key==='f' || e.key==='F'){ if(!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(()=>{}); else document.exitFullscreen?.(); } });
-    window.addEventListener('resize', () => { this.layout(); this.place(true); });
-    const loop = () => { this.frame(); requestAnimationFrame(loop); }; requestAnimationFrame(loop);
+    window.addEventListener('resize', () => { this.layout(); });
+    const loop = () => { try{ this.frame(); }catch(e){ console.error(e); } requestAnimationFrame(loop); }; requestAnimationFrame(loop);
   },
   newCode(){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ'; let s=''; for(let i=0;i<4;i++) s+=A[Math.floor(Math.random()*A.length)]; return s; },
   connectPeer(tries){
-    if(typeof Peer === 'undefined'){ $('tvStatus').textContent = 'Phone link unavailable (couldn’t load PeerJS). Same-browser test mode only.'; return; }
-    const peer = new Peer(PEER_PREFIX + this.code);
-    this.peer = peer;
+    if(typeof Peer === 'undefined'){ $('tvStatus').textContent = 'Phone link unavailable (couldn’t load PeerJS).'; return; }
+    const peer = new Peer(PEER_PREFIX + this.code); this.peer = peer;
     peer.on('open', () => { $('tvStatus').textContent = 'Waiting for host…'; });
     peer.on('connection', conn => {
       conn.on('open', () => { this.conns.add(conn); conn.send({type:'hello', from:'tv'}); $('tvStatus').textContent = 'Host connected'; });
@@ -410,13 +426,12 @@ const TV = {
     peer.on('disconnected', () => { setTimeout(()=>{ if(this.peer===peer && !peer.destroyed) try{ peer.reconnect(); }catch(e){} }, 1500); });
     peer.on('error', err => {
       if(err.type === 'unavailable-id'){
-        // id still held from a previous session (e.g. page refresh) — retry, then pick a new code
         peer.destroy();
         if(tries < 5){ $('tvStatus').textContent = 'Reclaiming code…'; setTimeout(()=>this.connectPeer(tries+1), 3000); }
         else { this.code = this.newCode(); store.set('tvCode', this.code); $('roomCode').textContent = this.code; this.chan.close(); this.chan = makeChannel(this.code, m=>this.onMsg(m)); this.connectPeer(0); }
       } else if(['network','server-error','socket-error','socket-closed'].includes(err.type)){
         $('tvStatus').textContent = 'Network hiccup, retrying…';
-        if(this.peer!==peer) return; try{ peer.destroy(); }catch(e){} this.peer=null;
+        if(this.peer!==peer) return; try{ peer.destroy(); }catch(e){} this.peer = null;
         setTimeout(()=>this.connectPeer(tries), 4000);
       }
     });
@@ -427,134 +442,150 @@ const TV = {
     this.state = m.state; this.recvAt = performance.now();
     this.render();
   },
-  elapsed(){
-    const s = this.state; if(!s) return 0;
-    let e = s.elapsed + (s.phase==='running' ? performance.now() - this.recvAt : 0);
-    return Math.min(e, CONFIG.roundSeconds*1000);
-  },
-  buildScoreBar(){
-    $('scoreBar').innerHTML = PLAYERS.map((p,i)=>`<div class="score" id="sc${i}" style="--c:${p.c}"><span class="nm">${p.name}</span><span class="pts" id="scp${i}">0</span></div>`).join('');
-  },
+  pe(){ const s=this.state; return (s.pe + (s.phase==='running' ? performance.now()-this.recvAt : 0)) / 1000; },
+  ce(){ const s=this.state; return Math.min(CONFIG.speedSeconds, (s.ce + (s.clockRunning ? performance.now()-this.recvAt : 0)) / 1000); },
+
   setupPuzzle(){
-    const s = this.state;
-    const key = s.game + ':' + s.round;
+    const s = this.state, key = s.game+':'+s.round+':'+s.q;
     if(key === this.pzKey) return false;
-    this.pzKey = key; this.pz = buildPuzzle(s.game, s.round);
-    this.lastK = -1; this.lastHints = -1; this.buzzed = false;
-    // slots
+    this.pzKey = key; this.pz = getPuzzle(s.game, s.round, s.q); this.ev = null; this.lastHints = -1; this.snap = null;
     let i = 0;
     $('slots').innerHTML = this.pz.words.map(w => '<div class="word">' + w.split('').map(()=>`<div class="slot" data-s="${i++}"></div>`).join('') + '</div>').join('');
-    // tiles
-    $('tiles').className = '';
-    $('tiles').innerHTML = this.pz.letters.map((ch,t)=>`<div class="tile nofx" data-t="${t}">${ch}</div>`).join('');
+    $('tiles').innerHTML = this.pz.letters.map((ch,t)=>`<div class="tile c${this.pz.color[t]}">${ch}</div>`).join('');
     this.tileEls = [...$('tiles').children];
     this.layout();
     return true;
   },
   layout(){
     if(!this.pz) return;
-    const st = $('stage'); const W = st.clientWidth*0.94, H = st.clientHeight*0.62;
+    const st = $('stage'); const W = st.clientWidth*.94, H = st.clientHeight*.58;
     const lens = this.pz.words.map(w=>w.length);
     let chosen = 24;
     for(let t=200; t>=24; t-=2){
-      const gap=t*.1, wgap=t*.6, lineH=t*1.12+t*.25;
+      const gap=t*.1, wgap=t*.6, lineH=t*1.12+t*.3;
       let lines=1, x=0, ok=true;
       for(const L of lens){ const w = L*t + (L-1)*gap; if(w > W){ ok=false; break; }
         if(x===0) x=w; else if(x + wgap + w <= W) x += wgap + w; else { lines++; x=w; } }
       if(ok && lines*lineH <= H){ chosen = t; break; }
     }
     document.documentElement.style.setProperty('--t', chosen + 'px');
+    const base = st.getBoundingClientRect();
+    this.slotXY = [...$('slots').querySelectorAll('.slot')].map(el => { const r = el.getBoundingClientRect(); return [r.left-base.left, r.top-base.top]; });
+    this.tileH = chosen*1.12;
   },
-  place(instant){
-    if(!this.pz) return;
-    const s = this.state, solved = ['solved','timeup','over'].includes(s.phase);
-    const k = solved ? this.pz.n : lockCount(this.pz, this.elapsed()/1000);
-    const {perm, locked} = solved ? {perm:[...Array(this.pz.n).keys()], locked:new Set()} : arrangement(this.pz, k);
-    const base = $('stage').getBoundingClientRect();
-    const slots = $('slots').children; const slotEls = [];
-    for(const w of slots) for(const sEl of w.children) slotEls.push(sEl);
-    perm.forEach((t, slot) => {
-      const r = slotEls[slot].getBoundingClientRect();
-      const el = this.tileEls[t];
-      const tr = `translate(${r.left-base.left}px, ${r.top-base.top}px)`;
-      if(el.style.transform !== tr){
-        if(instant) el.classList.add('nofx'); else { el.classList.remove('nofx'); el.classList.add('moving'); setTimeout(()=>el.classList.remove('moving'), 800); }
-        el.style.transform = tr;
-      }
-      el.classList.toggle('locked', locked.has(slot));
-      if(solved && s.phase==='solved' && s.winner!=null){ el.style.background = PLAYERS[s.winner].c; el.style.boxShadow='none'; }
-      else if(solved){ el.style.background = '#cfc7e8'; el.style.boxShadow='none'; }
-      else { el.style.background=''; el.style.boxShadow=''; }
+  // pixel position of every tile for the current moment
+  positions(t){
+    const pz = this.pz, H = this.tileH;
+    return tileStates(pz, t).map(st => {
+      const a = this.slotXY[st.from], b = this.slotXY[st.to];
+      let x = lerp(a[0], b[0], st.f), y = lerp(a[1], b[1], st.f) + st.dy*H;
+      if(st.fall < 1) y = lerp(-H*1.4 - 20, y, bounce(st.fall));
+      return {x, y, red: st.red, lift: st.lift};
     });
-    if(instant) requestAnimationFrame(()=>this.tileEls.forEach(el=>el.classList.remove('nofx')));
-    return k;
   },
+  draw(ps){
+    ps.forEach((p, i) => {
+      const el = this.tileEls[i];
+      el.style.transform = `translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px)`;
+      el.classList.toggle('red', p.red); el.classList.toggle('lift', !!p.lift);
+    });
+  },
+
   render(){
     const s = this.state;
-    // scores always
-    s.scores.forEach((v,i)=>{ const el=$('scp'+i); if(+el.textContent !== v) this.bump(i, v); });
+    s.scores.forEach((v,i)=>{ if(+$('scp'+i).textContent !== v) this.bump(i, v); });
     const lead = Math.max(...s.scores);
     PLAYERS.forEach((p,i)=>$('sc'+i).classList.toggle('win', s.phase==='over' && s.scores[i]===lead && lead>0));
     $('lobby').classList.toggle('hidden', s.game != null);
-    if(s.game == null){ Audio_.stopMusic(); this.lastPhase = s.phase; return; }
+    if(s.game == null){ Sfx.stopMusic(); this.lastPhase = s.phase; return; }
 
-    const fresh = this.setupPuzzle();
-    const pz = this.pz;
-    $('tvRound').innerHTML = `Round ${s.round+1}/3 <small>· ${pz.theme}</small>`;
-    const showTiles = ['running','solved','timeup'].includes(s.phase);
-    $('tiles').style.opacity = showTiles ? 1 : 0;
-    $('tiles').classList.toggle('solve', ['solved','timeup'].includes(s.phase));
-    this.place(fresh || this.lastPhase==null);
+    this.setupPuzzle();
+    const pz = this.pz, n = itemCount(s.game, s.round), speed = s.round === 2;
+    $('tvRound').innerHTML = speed ? `Speed Round <small>· ${esc(GAMES[s.game].speed.theme)} · word ${s.q+1}</small>`
+                                   : `${ROUND_NAMES[s.round]} <small>· Question ${s.q+1} of ${n} · ${CONFIG.points[s.round]} pts</small>`;
+    $('hintPips').style.visibility = speed ? 'hidden' : 'visible';
+    $('tiles').style.opacity = ['running','solved','missed'].includes(s.phase) ? 1 : 0;
 
-    // banners
-    const b = $('banner'); b.className = ''; let html = '';
-    if(s.phase==='ready'){ b.className='overlay'; html = `<div class="big pop">Round ${s.round+1}</div><div class="sub">${pz.theme} · ${pz.words.length} word${pz.words.length>1?'s':''}</div>`; }
-    else if(s.phase==='paused'){ b.className='overlay'; html = `<div class="big">Paused</div>`; }
+    // full-screen cards
+    const b = $('banner'); let html = '', overlay = true;
+    if(s.phase==='ready'){
+      if(speed) html = `<div class="big pop">Speed Round</div><div class="theme">${esc(GAMES[s.game].speed.theme)}</div><div class="sub">No hints · ${fmtClock(CONFIG.speedSeconds)} on the clock · ${CONFIG.points[2]} points each</div>`;
+      else if(s.q===0) html = `<div class="big pop">${ROUND_NAMES[s.round]}</div><div class="sub">${n} questions · ${CONFIG.points[s.round]} points each</div>`;
+      else html = `<div class="big pop">Question ${s.q+1}</div><div class="sub">of ${n}</div>`;
+    }
+    else if(s.phase==='paused') html = `<div class="big">Paused</div>`;
+    else if(s.phase==='speedEnd') html = `<div class="big pop">Time!</div><div class="sub">That’s the speed round</div>`;
     else if(s.phase==='over'){
-      b.className='overlay';
       const winners = PLAYERS.filter((p,i)=>s.scores[i]===lead && lead>0);
       html = `<div class="sub">Final scores</div><div class="big pop">${winners.length===1 ? `<span style="color:${winners[0].c}">${winners[0].name} wins!</span>` : winners.length ? 'It’s a tie!' : 'Game over'}</div>`;
-    }
+    } else overlay = false;
+    b.className = overlay ? 'overlay' : '';
     if(b.dataset.html !== html){ b.innerHTML = html; b.dataset.html = html; }
 
-    // phase-change sounds + music
+    // phase changes: snap animation + sounds
     if(s.phase !== this.lastPhase){
-      if(this.soundOn){
-        if(s.phase==='running' && this.lastPhase==='ready') Audio_.whoosh();
-        if(s.phase==='solved') { Audio_.win(); this.confetti(PLAYERS[s.winner]?.c); }
-        if(s.phase==='timeup' && !this.buzzed) Audio_.buzz();
-        if(s.phase==='over') { Audio_.fanfare(); this.confetti(); }
+      if(['solved','missed'].includes(s.phase) && this.lastPhase === 'running'){
+        this.snap = {from: this.positions(this.pe()), t0: performance.now()};
       }
-      if(s.phase==='timeup') this.buzzed = true;
+      if(this.soundOn){
+        if(s.phase==='solved') { s.round===2 ? Sfx.ding() : Sfx.win(); if(s.round!==2) this.confetti(PLAYERS[s.winner]?.c); }
+        if(s.phase==='missed' && this.lastPhase==='running') Sfx.womp();
+        if(s.phase==='speedEnd') Sfx.buzz();
+        if(s.phase==='over') { Sfx.fanfare(); this.confetti(); }
+      }
       this.lastPhase = s.phase;
     }
     if(this.soundOn){
-      if(s.phase==='running' && s.music && this.elapsed() < CONFIG.roundSeconds*1000) Audio_.startMusic((s.game+1)*10 + s.round); else Audio_.stopMusic();
+      const musicOn = s.music && (s.phase==='running' || (speed && ['solved','missed'].includes(s.phase)));
+      if(musicOn) Sfx.startMusic((s.game+1)*10 + s.round); else Sfx.stopMusic();
     }
   },
+
   frame(){
     const s = this.state; if(!s || s.game==null || !this.pz) return;
-    const e = this.elapsed()/1000, T = CONFIG.roundSeconds;
-    const left = ['solved','timeup','over'].includes(s.phase) ? (s.phase==='timeup'?0:T-e) : T - e;
-    const showLeft = s.phase==='ready' ? T : Math.max(0, left);
-    $('timerNum').textContent = s.phase==='over' ? '' : Math.ceil(showLeft);
-    $('timerWrap').style.visibility = s.phase==='over' ? 'hidden' : 'visible';
-    $('timerBar').style.transform = `scaleX(${showLeft/T})`;
-    $('timerBar').classList.toggle('low', showLeft <= CONFIG.intenseAt && s.phase==='running');
-    Audio_.intense = showLeft <= CONFIG.intenseAt;
-    const hc = s.phase==='ready' ? 0 : (['solved','timeup','over'].includes(s.phase) ? 3 : hintCount(e));
-    [...$('hintPips').children].forEach((p,i)=>p.classList.toggle('on', i < hc));
-    if(s.phase==='running'){
-      const k = lockCount(this.pz, e);
-      if(k !== this.lastK){ if(this.lastK >= 0 && k > this.lastK && this.soundOn) Audio_.tick(k); this.lastK = k; this.place(false); }
-      if(hc !== this.lastHints){ if(this.lastHints >= 0 && hc > this.lastHints && this.soundOn) Audio_.chime(); this.lastHints = hc; }
-      // TV-side time-up so the display is right even if the phone went to sleep
-      if(e >= T && !this.buzzed){ this.buzzed = true; if(this.soundOn) Audio_.buzz(); Audio_.stopMusic(); }
+    const pz = this.pz, speed = s.round===2;
+    const t = ['ready'].includes(s.phase) ? 0 : this.pe();
+
+    // tiles
+    if(['solved','missed'].includes(s.phase)){
+      const home = this.pz.letters.map((_,i) => ({x:this.slotXY[i][0], y:this.slotXY[i][1], red:true}));
+      if(this.snap){ const f = easeIO(clamp((performance.now()-this.snap.t0)/900, 0, 1));
+        this.draw(home.map((h,i) => ({x: lerp(this.snap.from[i].x, h.x, f), y: lerp(this.snap.from[i].y, h.y, f), red: true, lift: f<1}))); }
+      else this.draw(home);
+    } else if(s.phase==='running' || s.phase==='paused'){
+      this.draw(this.positions(t));
+      if(s.phase==='running'){
+        const ev = eventCounts(pz, t);
+        if(this.ev && this.soundOn){
+          if(ev.fell > this.ev.fell) Sfx.thud();
+          if(ev.popped > this.ev.popped) Sfx.swish();
+          if(ev.landed > this.ev.landed) Sfx.land(ev.landed);
+        }
+        this.ev = ev;
+      }
     }
-    let ht = s.showHints && s.phase==='running' ? this.pz.hints.slice(0, hc).map(h=>`<div>${h}</div>`).join('') : '';
-    if(s.phase==='solved' && s.winner!=null) ht = `<div class="ann pop" style="color:${PLAYERS[s.winner].c}">+${CONFIG.pointsPerRound} ${PLAYERS[s.winner].name}!</div>`;
-    if(s.phase==='timeup' || (s.phase==='running' && e >= T)) ht = `<div class="ann pop">Time’s up!</div>`;
-    if($('hintText').dataset.h !== ht){ $('hintText').innerHTML = ht; $('hintText').dataset.h = ht; }
+
+    // top bar: speed clock / hint pips
+    if(speed && !['over'].includes(s.phase)){
+      const left = CONFIG.speedSeconds - (s.phase==='ready' ? 0 : this.ce());
+      $('clock').textContent = fmtClock(left);
+      $('clock').classList.toggle('low', left <= CONFIG.intenseAt && s.phase!=='ready');
+      Sfx.intense = left <= CONFIG.intenseAt;
+    } else { $('clock').textContent = ''; Sfx.intense = false; }
+    const hc = speed ? 0 : (s.phase==='ready' ? 0 : ['solved','missed','over','speedEnd'].includes(s.phase) ? 3 : hintsUnlocked(pz, t));
+    [...$('hintPips').children].forEach((p,i)=>p.classList.toggle('on', i < hc));
+    if(!speed && s.phase==='running'){
+      if(this.lastHints >= 0 && hc > this.lastHints && this.soundOn) Sfx.chime();
+      this.lastHints = hc;
+    }
+
+    // text under the tiles
+    let below = '';
+    if(s.phase==='solved' && s.winner!=null) below = `<div class="ann pop" style="color:${PLAYERS[s.winner].c}">+${CONFIG.points[s.round]} ${PLAYERS[s.winner].name}!</div>`;
+    else if(s.phase==='missed') below = `<div class="ann pop" style="color:var(--muted)">${speed ? 'Next!' : 'Nobody got it'}</div>`;
+    else if(speed && s.phase==='running') below = `<div class="theme"><small>Theme</small>${esc(GAMES[s.game].speed.theme)}</div>`;
+    else if(s.showHints && s.phase==='running') below = pz && GAMES[s.game][s.round===0?'round1':'round2'][s.q].hints.slice(0, hc).map(h=>`<div class="h">${esc(h)}</div>`).join('');
+    if($('below').dataset.h !== below){ $('below').innerHTML = below; $('below').dataset.h = below; }
   },
   bump(i, v){
     const el = $('scp'+i); const from = +el.textContent || 0; const t0 = performance.now();
@@ -563,10 +594,10 @@ const TV = {
   },
   confetti(color){
     const cv = $('confetti'), ctx = cv.getContext('2d'); cv.width = innerWidth; cv.height = innerHeight;
-    const cols = color ? [color, '#fff3d6', '#ffffff'] : ['#ff4d6d','#3d8bff','#2ecc71','#ffc93c','#fff3d6'];
-    const resolve = c => c.startsWith('var(') ? getComputedStyle(document.documentElement).getPropertyValue(c.slice(4,-1)).trim() : c;
+    const resolve = c => c && c.startsWith('var(') ? getComputedStyle(document.documentElement).getPropertyValue(c.slice(4,-1)).trim() : c;
+    const cols = color ? [resolve(color), '#ffffff', '#e8322f'] : ['#ff8a1f','#8e4dff','#1fb86f','#2f7dff','#e8322f'];
     const P = Array.from({length:160}, () => ({x:Math.random()*cv.width, y:-20-Math.random()*cv.height*.5, vx:(Math.random()-.5)*4, vy:2+Math.random()*4,
-      r:6+Math.random()*8, a:Math.random()*6, va:(Math.random()-.5)*.3, c:resolve(cols[Math.floor(Math.random()*cols.length)])}));
+      r:6+Math.random()*8, a:Math.random()*6, va:(Math.random()-.5)*.3, c:cols[Math.floor(Math.random()*cols.length)]}));
     const t0 = performance.now();
     const draw = now => { ctx.clearRect(0,0,cv.width,cv.height);
       P.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=.05; p.a+=p.va; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a); ctx.fillStyle=p.c; ctx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2); ctx.restore(); });
@@ -576,42 +607,58 @@ const TV = {
 };
 
 /* =========================================================
-   HOST
+   HOST — owns the game state
    ========================================================= */
 const Host = {
-  code:null, peer:null, conn:null, chan:null, connected:false, retry:null,
-  // persistent state (survives phone refresh): runStart is wall-clock ms when the timer last resumed
-  s: null,
+  code:null, peer:null, conn:null, chan:null, connected:false, bcOk:false, retry:null, s:null,
   start(){
     $('host').classList.remove('hidden');
     document.body.style.overflow = 'auto';
-    this.s = store.get('hostState', null) || this.blank();
+    this.s = store.get('hostState2', null) || this.blank();
     this.code = store.get('hostCode', '');
     $('codeInput').value = this.code;
     $('connectBtn').onclick = () => this.connect($('codeInput').value.trim().toUpperCase());
     $('codeInput').addEventListener('keydown', e => { if(e.key==='Enter') $('connectBtn').click(); });
     $('tMusic').onchange = e => { this.s.music = e.target.checked; this.commit(); };
     $('tHints').onchange = e => { this.s.showHints = e.target.checked; this.commit(); };
-    $('endGameBtn').onclick = () => { if(this.confirmEnd()) { this.s = {...this.blank(), music:this.s.music, showHints:this.s.showHints}; this.commit(); } };
-    $('ptsLbl').textContent = CONFIG.pointsPerRound;
+    $('endGameBtn').onclick = () => this.armedEnd();
     $('awardBtns').innerHTML = PLAYERS.map((p,i)=>`<button style="--c:${p.c}" data-i="${i}">${p.name}</button>`).join('');
     $('awardBtns').onclick = e => { const b = e.target.closest('button'); if(b && !b.disabled) this.award(+b.dataset.i); };
     if(this.code) this.connect(this.code);
-    setInterval(()=>this.tick(), 250);
-    setInterval(()=>this.broadcast(), 2000);                  // heartbeat keeps the TV in sync
+    setInterval(() => this.tick(), 200);
+    setInterval(() => this.broadcast(), 2000);           // heartbeat keeps the TV in sync
     document.addEventListener('visibilitychange', () => { if(!document.hidden){ this.ensureConnected(); this.wake(); } });
     this.wake();
     this.renderUI();
   },
-  confirmEnd(){ return this.s.phase==='over' || this.s.game==null || this._endArmed || (this._endArmed = true, $('endGameBtn').textContent='Tap again to end this game', setTimeout(()=>{this._endArmed=false; $('endGameBtn').textContent='End game / pick another';}, 3000), false); },
-  blank(){ return {game:null, round:0, phase:'pick', accum:0, runStart:null, scores:[0,0,0,0], winner:null, music:true, showHints:false, lastAward:null}; },
+  blank(){ return {game:null, round:0, q:0, phase:'pick', accum:0, runStart:null, cAccum:0, cStart:null, holdStart:null,
+    scores:[0,0,0,0], winner:null, results:[], music:true, showHints:false, lastAward:null}; },
   async wake(){ try{ this.wl = await navigator.wakeLock?.request('screen'); }catch(e){} },
-  elapsedMs(){ const s=this.s; return Math.min(CONFIG.roundSeconds*1000, s.accum + (s.phase==='running' && s.runStart ? Date.now()-s.runStart : 0)); },
-  wire(){ const s=this.s; return {type:'state', state:{game:s.game, round:s.round, phase:s.phase, elapsed:this.elapsedMs(), scores:s.scores, winner:s.winner, music:s.music, showHints:s.showHints}}; },
-  broadcast(){ const m = this.wire(); this.chan && this.chan.send(m); if(this.conn && this.conn.open) try{ this.conn.send(m); }catch(e){} },
-  commit(){ store.set('hostState', this.s); this.broadcast(); this.renderUI(); },
-  setStatus(txt, cls){ if(this.bcOk && cls!=='ok') return; const el=$('hostStatus'); el.textContent=txt; el.className='status-pill ' + (cls||''); },
+  armedEnd(){
+    const s = this.s;
+    if(s.phase==='over' || s.game==null || this._armed){ this.s = {...this.blank(), music:s.music, showHints:s.showHints}; this._armed=false; $('endGameBtn').textContent='End game / pick another'; this.commit(); return; }
+    this._armed = true; $('endGameBtn').textContent = 'Tap again to end this game';
+    setTimeout(()=>{ this._armed=false; $('endGameBtn').textContent='End game / pick another'; }, 3000);
+  },
 
+  // ---- clocks ----
+  clockRuns(s){ return s.round===2 && ['running','solved','missed'].includes(s.phase); },
+  pe(){ const s=this.s; return s.accum + (s.phase==='running' && s.runStart ? Date.now()-s.runStart : 0); },
+  ce(){ const s=this.s; return Math.min(CONFIG.speedSeconds*1000, s.cAccum + (s.cStart ? Date.now()-s.cStart : 0)); },
+  setPhase(p, resetPe){
+    const s = this.s, now = Date.now(), pe = this.pe(), ce = this.ce();
+    s.phase = p; s.accum = resetPe ? 0 : pe; s.runStart = p==='running' ? now : null;
+    s.cAccum = ce; s.cStart = this.clockRuns(s) ? now : null;
+    if(p==='solved' || p==='missed') s.holdStart = now;
+  },
+  pz(){ const s=this.s; return getPuzzle(s.game, s.round, s.q); },
+
+  // ---- sync ----
+  wire(){ const s=this.s; return {type:'state', state:{game:s.game, round:s.round, q:s.q, phase:s.phase, pe:this.pe(), ce:this.ce(),
+    clockRunning: !!s.cStart, scores:s.scores, winner:s.winner, music:s.music, showHints:s.showHints}}; },
+  broadcast(){ const m = this.wire(); this.chan && this.chan.send(m); if(this.conn && this.conn.open) try{ this.conn.send(m); }catch(e){} },
+  commit(){ store.set('hostState2', this.s); this.broadcast(); this.renderUI(); },
+  setStatus(txt, cls){ if(this.bcOk && cls!=='ok') return; const el=$('hostStatus'); el.textContent=txt; el.className='status-pill ' + (cls||''); },
   connect(code){
     if(!/^[A-Z]{4}$/.test(code)){ this.setStatus('Enter the 4-letter code', 'bad'); return; }
     this.code = code; store.set('hostCode', code);
@@ -626,19 +673,14 @@ const Host = {
     if(!this.peer || this.peer.destroyed){
       this.peer = new Peer();
       this.peer.on('open', () => this.dial());
-      this.peer.on('error', err => {
-        if(err.type==='peer-unavailable') this.setStatus('TV not found, check code', 'bad');
-        else this.setStatus('Reconnecting…', 'bad');
-        this.scheduleRetry();
-      });
+      this.peer.on('error', err => { this.setStatus(err.type==='peer-unavailable' ? 'TV not found, check code' : 'Reconnecting…', 'bad'); this.scheduleRetry(); });
       this.peer.on('disconnected', () => { try{ this.peer.reconnect(); }catch(e){} });
     } else if(this.peer.open) this.dial();
     this.setStatus('Connecting…');
   },
   dial(){
     try{ this.conn && this.conn.close(); }catch(e){}
-    const conn = this.peer.connect(PEER_PREFIX + this.code, {reliable:true});
-    this.conn = conn;
+    const conn = this.peer.connect(PEER_PREFIX + this.code, {reliable:true}); this.conn = conn;
     conn.on('open', () => { this.markConnected(true, 'Connected'); this.broadcast(); });
     conn.on('data', m => { if(m && m.type==='hello') this.broadcast(); });
     conn.on('close', () => { if(this.conn===conn){ this.markConnected(false); this.scheduleRetry(); } });
@@ -650,87 +692,135 @@ const Host = {
 
   // ---- game actions ----
   pick(g){
-    this.s = {...this.blank(), music:this.s.music, showHints:this.s.showHints, game:g, round:0, phase:'ready'};
-    const played = store.get('played', []); if(!played.includes(g)) { played.push(g); store.set('played', played); }
+    this.s = {...this.blank(), music:this.s.music, showHints:this.s.showHints, game:g, phase:'ready'};
+    const played = store.get('played2', []); if(!played.includes(g)) { played.push(g); store.set('played2', played); }
     this.commit();
   },
-  startRound(){ this.s.phase='running'; this.s.runStart=Date.now(); this.commit(); },
-  pause(){ this.s.accum = this.elapsedMs(); this.s.runStart=null; this.s.phase='paused'; this.commit(); },
-  resume(){ this.s.runStart=Date.now(); this.s.phase='running'; this.commit(); },
+  startQ(){ this.setPhase('running', true); this.commit(); },
+  pause(){ this.setPhase('paused'); this.commit(); },
+  resume(){ this.setPhase('running'); this.commit(); },
   award(i){
-    const s=this.s; if(!['running','paused','timeup'].includes(s.phase)) return;
-    s.lastAward = {player:i, prevPhase: s.phase==='timeup' ? 'timeup' : 'paused', elapsed:this.elapsedMs()};
-    s.accum = this.elapsedMs(); s.runStart=null; s.scores[i] += CONFIG.pointsPerRound; s.winner=i; s.phase='solved';
-    this.commit();
+    const s = this.s; if(!['running','paused'].includes(s.phase)) return;
+    s.lastAward = {player:i, pe:this.pe()};
+    s.scores[i] += CONFIG.points[s.round]; s.winner = i;
+    if(s.round===2) s.results[s.q] = i;
+    this.setPhase('solved'); this.commit();
   },
+  pass(){ const s=this.s; if(s.phase!=='running') return; s.results[s.q] = -1; s.winner = null; this.setPhase('missed'); this.commit(); },
   undoAward(){
-    const s=this.s, a=s.lastAward; if(!a || s.phase!=='solved') return;
-    s.scores[a.player] -= CONFIG.pointsPerRound; s.winner=null; s.phase=a.prevPhase; s.accum=a.elapsed; s.lastAward=null; this.commit();
+    const s = this.s, a = s.lastAward; if(!a || s.phase!=='solved' || s.round===2) return;
+    s.scores[a.player] -= CONFIG.points[s.round]; s.winner = null; s.lastAward = null;
+    this.setPhase('paused'); s.accum = a.pe; this.commit();
   },
-  reveal(){ const s=this.s; s.accum=this.elapsedMs(); s.runStart=null; s.phase='timeup'; s.winner=null; this.commit(); },
-  nextRound(){ const s=this.s; if(s.round>=2){ s.phase='over'; } else { s.round++; s.phase='ready'; s.accum=0; s.runStart=null; s.winner=null; s.lastAward=null; } this.commit(); },
-  adjust(i, d){ this.s.scores[i] = Math.max(0, this.s.scores[i] + d*CONFIG.pointsPerRound); this.commit(); },
+  reveal(){ this.s.winner = null; this.setPhase('missed'); this.commit(); },
+  nextQ(){
+    const s = this.s;
+    if(s.q + 1 < itemCount(s.game, s.round)){ s.q++; }
+    else { s.round++; s.q = 0; s.cAccum = 0; s.cStart = null; s.results = []; }
+    s.winner = null; s.lastAward = null; this.setPhase('ready', true); this.commit();
+  },
+  finish(){ this.setPhase('over'); this.commit(); },
+  adjust(i, d){ this.s.scores[i] = Math.max(0, this.s.scores[i] + d*50); this.commit(); },
 
   tick(){
-    const s=this.s;
-    if(s.phase==='running' && this.elapsedMs() >= CONFIG.roundSeconds*1000){ s.accum = CONFIG.roundSeconds*1000; s.runStart=null; s.phase='timeup'; this.commit(); return; }
-    if(s.game!=null) this.renderTimer();
+    const s = this.s; if(s.game == null) return;
+    const now = Date.now();
+    if(s.round === 2){
+      if(this.clockRuns(s) && this.ce() >= CONFIG.speedSeconds*1000){ this.setPhase('speedEnd'); this.commit(); return; }
+      if(s.phase==='running' && this.pe()/1000 >= this.pz().duration + .4){ s.results[s.q] = -1; s.winner = null; this.setPhase('missed'); this.commit(); return; }
+      if(['solved','missed'].includes(s.phase) && now - s.holdStart >= CONFIG.holdAfter*1000){
+        if(s.q + 1 >= itemCount(s.game, 2)){ this.setPhase('speedEnd'); }
+        else { s.q++; s.winner = null; this.setPhase('running', true); }
+        this.commit(); return;
+      }
+    } else if(s.phase==='running' && this.pe()/1000 >= this.pz().duration + .4){
+      s.winner = null; this.setPhase('missed'); this.commit(); return;
+    }
+    this.renderLive();
   },
-  renderTimer(){
-    const e = this.elapsedMs()/1000, T = CONFIG.roundSeconds;
-    $('hTime').textContent = Math.ceil(Math.max(0, T - e));
-    $('hBar').style.width = (100*Math.max(0, T-e)/T) + '%';
-    const hc = this.s.phase==='ready' ? 0 : hintCount(e);
-    [...$('hHints').children].forEach((el,i)=>{
-      const unlocked = i < hc || ['solved','timeup','over'].includes(this.s.phase);
-      el.classList.toggle('locked', !unlocked); el.classList.toggle('live', unlocked && i===hc-1 && this.s.phase==='running');
-      const lbl = el.querySelector('.lbl'); const at = CONFIG.hintAt[i]*T;
-      lbl.textContent = `Hint ${i+1}` + (unlocked ? '' : ` · unlocks in ${Math.ceil(at - e)}s`);
-    });
-  },
+
+  // ---- UI ----
   renderUI(){
     const s = this.s;
     $('tMusic').checked = s.music; $('tHints').checked = s.showHints;
     $('hConnect').classList.toggle('hidden', !!(this.code && this.connected) || s.game != null);
     const inGame = s.game != null;
     $('hPick').classList.toggle('hidden', inGame);
-    $('hRound').classList.toggle('hidden', !inGame);
+    $('hGame').classList.toggle('hidden', !inGame);
     if(!inGame){
-      const played = store.get('played', []);
+      const played = store.get('played2', []);
       $('gameGrid').innerHTML = GAMES.map((g,i)=>`<button class="gnum ${played.includes(i)?'played':''}" data-g="${i}">${i+1}</button>`).join('');
       $('gameGrid').onclick = e => { const b=e.target.closest('button'); if(b) this.pick(+b.dataset.g); };
       return;
     }
-    const pz = GAMES[s.game].puzzles[s.round];
-    $('hRoundHdr').textContent = `Game ${s.game+1} · Round ${s.round+1}/3 · ${pz.theme}`;
-    $('hAnswer').textContent = pz.answer;
-    $('hHints').innerHTML = pz.hints.map(h=>`<div class="hint"><span class="lbl"></span>${h}</div>`).join('');
-    // controls
-    const C = $('hControls'); let html='';
-    if(s.phase==='ready') html = `<button class="btn" data-a="startRound">▶ Start round ${s.round+1}</button>`;
-    if(s.phase==='running') html = `<button class="btn secondary" data-a="pause">Pause</button><button class="btn secondary" data-a="reveal">Reveal answer (no points)</button>`;
-    if(s.phase==='paused') html = `<button class="btn" data-a="resume">▶ Resume</button><button class="btn secondary" data-a="reveal">Reveal answer (no points)</button>`;
-    if(s.phase==='timeup') html = `<div class="result">Time’s up</div><button class="btn" data-a="nextRound">${s.round>=2?'Show final scores':'Next round →'}</button>`;
-    if(s.phase==='solved') html = `<div class="result" style="color:${PLAYERS[s.winner].c}">${PLAYERS[s.winner].name} got it!</div><button class="btn" data-a="nextRound">${s.round>=2?'Show final scores':'Next round →'}</button><button class="btn secondary" data-a="undoAward">Undo</button>`;
-    if(s.phase==='over') html = `<div class="result">Game over</div><button class="btn" data-a="endNow">Pick another game</button>`;
-    C.innerHTML = html;
-    C.onclick = e => { const b=e.target.closest('button'); if(!b) return; const a=b.dataset.a; if(a==='endNow'){ this.s={...this.blank(), music:s.music, showHints:s.showHints}; this.commit(); } else this[a](); };
-    [...$('awardBtns').children].forEach(b=>b.disabled = !['running','paused','timeup'].includes(s.phase));
-    $('scoreEdit').innerHTML = '<div class="hdr">Scores</div>' + PLAYERS.map((p,i)=>`<div class="srow" style="--c:${p.c}"><span class="dot"></span><span class="nm">${p.name}</span><button data-i="${i}" data-d="-1">−</button><span class="pts">${s.scores[i]}</span><button data-i="${i}" data-d="1">+</button></div>`).join('');
+    const speed = s.round===2, n = itemCount(s.game, s.round), G = GAMES[s.game];
+    let main = '';
+    if(s.phase==='over') main = `<div class="hdr">Game ${s.game+1}</div><div class="answer">Game over</div>`;
+    else if(speed){
+      main = `<div class="hdr">Game ${s.game+1} · Speed Round · theme: ${esc(G.speed.theme)}</div>
+        <div class="answer">${s.phase==='ready' ? '—' : esc(G.speed.words[s.q])}</div>
+        <div class="prog"><div class="bar"><i id="hBar"></i></div><b id="hTime"></b></div>
+        <div class="bank">${G.speed.words.map((w,i)=>{ const r=s.results[i]; const cls = i===s.q && s.phase!=='speedEnd' ? 'cur' : r>=0 && r!=null ? 'got' : r===-1 ? 'miss' : '';
+          return `<span class="${cls}" ${r>=0&&r!=null?`style="--c:${PLAYERS[r].c}"`:''}>${esc(w)}</span>`; }).join('')}</div>`;
+    } else {
+      const it = roundItems(s.game, s.round)[s.q];
+      main = `<div class="hdr">Game ${s.game+1} · ${ROUND_NAMES[s.round]} · Q${s.q+1}/${n} · ${esc(it.category||'')}</div>
+        <div class="answer">${esc(it.answer)}</div>
+        <div class="prog"><div class="bar"><i id="hBar"></i></div><b id="hTime"></b></div>
+        <div id="hHints">${it.hints.map(h=>`<div class="hint"><span class="lbl"></span>${esc(h)}</div>`).join('')}</div>`;
+    }
+    $('hMain').innerHTML = main;
+
+    const last = s.q + 1 >= n;
+    const nextLbl = last ? (s.round===0 ? 'Start round 2 →' : 'Go to speed round →') : `Next question →`;
+    let c = '';
+    if(s.phase==='ready') c = speed ? `<button class="btn" data-a="startQ">▶ Start speed round (${fmtClock(CONFIG.speedSeconds)})</button>`
+                                   : `<button class="btn" data-a="startQ">▶ Start question ${s.q+1}</button>`;
+    if(s.phase==='running') c = speed ? `<button class="btn secondary" data-a="pass">Pass / skip word</button><button class="btn secondary" data-a="pause">Pause</button>`
+                                     : `<button class="btn secondary" data-a="pause">Pause</button><button class="btn secondary" data-a="reveal">Reveal answer (no points)</button>`;
+    if(s.phase==='paused') c = `<button class="btn" data-a="resume">▶ Resume</button>`;
+    if(!speed && s.phase==='solved') c = `<div class="result" style="color:${PLAYERS[s.winner].c}">${PLAYERS[s.winner].name} got it!</div><button class="btn" data-a="nextQ">${nextLbl}</button><button class="btn secondary" data-a="undoAward">Undo</button>`;
+    if(!speed && s.phase==='missed') c = `<div class="result">Nobody got it</div><button class="btn" data-a="nextQ">${nextLbl}</button>`;
+    if(speed && ['solved','missed'].includes(s.phase)) c = `<div class="result">Next word coming…</div>`;
+    if(s.phase==='speedEnd') c = `<div class="result">Speed round over</div><button class="btn" data-a="finish">Show final scores</button>`;
+    if(s.phase==='over') c = `<button class="btn" data-a="endNow">Pick another game</button>`;
+    $('hControls').innerHTML = c;
+    $('hControls').onclick = e => { const b=e.target.closest('button'); if(!b) return; const a=b.dataset.a;
+      if(a==='endNow'){ this.s = {...this.blank(), music:s.music, showHints:s.showHints}; this.commit(); } else this[a](); };
+
+    $('ptsLbl').textContent = CONFIG.points[Math.min(s.round,2)];
+    $('hAwardCard').classList.toggle('hidden', ['over','speedEnd'].includes(s.phase));
+    [...$('awardBtns').children].forEach(b => b.disabled = !['running','paused'].includes(s.phase));
+    $('scoreEdit').innerHTML = '<div class="hdr">Scores (± 50 to fix mistakes)</div>' + PLAYERS.map((p,i)=>`<div class="srow" style="--c:${p.c}"><span class="dot"></span><span class="nm">${p.name}</span><button data-i="${i}" data-d="-1">−</button><span class="pts">${s.scores[i]}</span><button data-i="${i}" data-d="1">+</button></div>`).join('');
     $('scoreEdit').onclick = e => { const b=e.target.closest('button'); if(b) this.adjust(+b.dataset.i, +b.dataset.d); };
-    this.renderTimer();
+    this.renderLive();
+  },
+  renderLive(){
+    const s = this.s; if(s.game==null || !$('hBar')) return;
+    if(s.round===2){
+      const left = CONFIG.speedSeconds - this.ce()/1000;
+      $('hTime').textContent = fmtClock(left);
+      $('hBar').style.width = (100*left/CONFIG.speedSeconds) + '%';
+      return;
+    }
+    const pz = this.pz(), t = s.phase==='ready' ? 0 : this.pe()/1000, done = ['solved','missed'].includes(s.phase);
+    const frac = done ? 1 : clamp(t / pz.duration, 0, 1);
+    $('hBar').style.width = (100*frac) + '%';
+    $('hTime').textContent = done ? 'done' : Math.round(frac*100) + '%';
+    const hc = s.phase==='ready' ? 0 : hintsUnlocked(pz, t);
+    [...document.querySelectorAll('#hHints .hint')].forEach((el,i)=>{
+      const unlocked = i < hc || done;
+      el.classList.toggle('locked', !unlocked); el.classList.toggle('live', unlocked && i===hc-1 && s.phase==='running');
+      el.querySelector('.lbl').textContent = `Hint ${i+1}` + (unlocked ? '' : s.phase==='ready' ? '' : ` · unlocks in ${Math.ceil(CONFIG.hintAt[i]*pz.duration - t)}s`);
+    });
   },
 };
 
-/* =========================================================
-   ROUTING
-   ========================================================= */
+/* ---------- routing ---------- */
 function go(mode){ location.hash = mode; location.reload(); }
 (function boot(){
   const h = location.hash.replace('#','');
-  if(h === 'tv') TV.start();
-  else if(h === 'host') Host.start();
-  else $('landing').classList.remove('hidden');
+  if(h === 'tv') TV.start(); else if(h === 'host') Host.start(); else $('landing').classList.remove('hidden');
 })();
 </script>
 </body>
