@@ -48,7 +48,7 @@ button,input{font-family:inherit;font-weight:700;cursor:pointer;border:0}
   font-size:calc(var(--t)*.84);line-height:1;padding-top:calc(var(--t)*.02);border:calc(var(--t)*.055) solid var(--gold);transition:background-color .35s;will-change:transform}
 .tile.c0{background:var(--t0)} .tile.c1{background:var(--t1)} .tile.c2{background:var(--t2)} .tile.c3{background:var(--t3)}
 .tile.red{background:var(--tred)}
-.tile.front{z-index:4}
+.tile.front{z-index:6}
 .tile.lift{z-index:5;box-shadow:0 calc(var(--t)*.12) calc(var(--t)*.25) rgba(0,0,0,.4)}
 #below{margin-top:5vh;height:17vh;overflow:hidden;font-size:2.2vw;max-width:82%;text-align:center;line-height:1.3}
 #below .h{font-weight:400;margin-top:.6vh}
@@ -279,13 +279,27 @@ function buildPuzzle(answer, seed){
     const idx = shuffle([...Array(n).keys()], rnd);
     const fixed = n % 2 ? idx.pop() : -1;
     const pairs = []; for(let i=0;i<idx.length;i+=2) pairs.push([idx[i], idx[i+1]]);
-    const bad = pairs.filter(([p,q]) => letters[p]===letters[q]).length;   // identical-letter swaps look like nothing happens
+    const bad = pairs.filter(([p,q]) => letters[p]===letters[q] || Math.abs(p-q)===1).length;   // identical-letter swaps look like nothing happens; neighbours never swap
     if(bad < bestBad){ best = {pairs, fixed}; bestBad = bad; }
   }
   const swaps = best.pairs.map(([p,q]) => rnd() < .5 ? {A:p, B:q} : {A:q, B:p});
   const startSlot = [...Array(n).keys()];
   swaps.forEach(({A,B}) => { startSlot[A] = B; startSlot[B] = A; });
-  const color = letters.map(() => Math.floor(rnd()*4));
+  // colours: no two tiles of the same colour side by side, either in the scrambled row or the solved row
+  const nbrs = letters.map(() => []);
+  const link = (x, y) => { nbrs[x].push(y); nbrs[y].push(x); };
+  for(let i=0; i<n-1; i++) link(i, i+1);                                   // solved neighbours
+  const atSlot = []; startSlot.forEach((sl, tile) => { atSlot[sl] = tile; });
+  for(let sl=0; sl<n-1; sl++) link(atSlot[sl], atSlot[sl+1]);              // scrambled neighbours
+  let color = null, colorBad = Infinity;
+  for(let a=0; a<200 && colorBad>0; a++){
+    const c = new Array(n).fill(-1); let bad = 0;
+    for(let t=0; t<n; t++){
+      const used = new Set(nbrs[t].map(x => c[x])), ok = [0,1,2,3].filter(k => !used.has(k));
+      if(ok.length) c[t] = ok[Math.floor(rnd()*ok.length)]; else { c[t] = Math.floor(rnd()*4); bad++; }
+    }
+    if(bad < colorBad){ color = c; colorBad = bad; }
+  }
   const fallDelay = letters.map(() => rnd()*(tm.fall - tm.fallDur));
   const P = tm.move + tm.pop + tm.back + tm.gap;
   const start = tm.fall + tm.settle;
@@ -304,7 +318,7 @@ function tileStates(pz, t){
     a.from = a.to = A; a.red = true;
     const v = u - tm.move;
     if(v < tm.pop){ b.from = b.to = A; a.front = true; }                       // beat: B sits under A
-    else if(v < tm.pop + tm.back){ b.from = A; b.to = B; b.f = easeGlide((v - tm.pop)/tm.back); a.front = true; }   // B glides straight out from behind A
+    else if(v < tm.pop + tm.back){ b.from = A; b.to = B; b.f = easeGlide((v - tm.pop)/tm.back); b.lift = true; a.front = true; }   // B glides straight out from behind A
     else { b.from = b.to = B; b.red = true; }
   });
   if(pz.fixed >= 0 && t >= pz.duration) out[pz.fixed].red = true;
