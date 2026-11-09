@@ -48,6 +48,7 @@ button,input{font-family:inherit;font-weight:700;cursor:pointer;border:0}
   font-size:calc(var(--t)*.84);line-height:1;padding-top:calc(var(--t)*.02);border:calc(var(--t)*.055) solid var(--gold);transition:background-color .35s;will-change:transform}
 .tile.c0{background:var(--t0)} .tile.c1{background:var(--t1)} .tile.c2{background:var(--t2)} .tile.c3{background:var(--t3)}
 .tile.red{background:var(--tred)}
+.tile.front{z-index:4}
 .tile.lift{z-index:5;box-shadow:0 calc(var(--t)*.12) calc(var(--t)*.25) rgba(0,0,0,.4)}
 #below{margin-top:5vh;height:17vh;overflow:hidden;font-size:2.2vw;max-width:82%;text-align:center;line-height:1.3}
 #below .h{font-weight:400;margin-top:.6vh}
@@ -237,6 +238,14 @@ const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
 const lerp = (a,b,f) => a + (b-a)*f;
 const easeIO = x => x<.5 ? 4*x*x*x : 1-Math.pow(-2*x+2,3)/2;
 const easeOut = x => 1-Math.pow(1-x,3);
+// unscramble glide: a slight ramp up, then fast, then a long decay into place (cubic-bezier(.08,0,.1,1))
+const easeGlide = (() => {
+  const x1=.08, y1=0, x2=.1, y2=1;
+  const bz = (a,b,t) => 3*a*t*(1-t)*(1-t) + 3*b*t*t*(1-t) + t*t*t;
+  return x => { if(x<=0) return 0; if(x>=1) return 1;
+    let lo=0, hi=1, t=x; for(let i=0;i<30;i++){ t=(lo+hi)/2; if(bz(x1,x2,t) < x) lo=t; else hi=t; }
+    return bz(y1,y2,t); };
+})();
 function bounce(x){ const n=7.5625,d=2.75; if(x<1/d) return n*x*x; if(x<2/d) return n*(x-=1.5/d)*x+.75; if(x<2.5/d) return n*(x-=2.25/d)*x+.9375; return n*(x-=2.625/d)*x+.984375; }
 const fmtClock = s => { s = Math.max(0, Math.ceil(s)); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); };
 
@@ -258,8 +267,8 @@ function getPuzzle(g, r, q){
 
    The scramble is a set of disjoint swaps: every tile is paired with the tile
    sitting in its home slot. Each swap: tile A glides to its home (move), lands
-   and turns red; tile B pops out from under it (pop) and glides to the slot A
-   left (back), turning red. Odd letter count -> one tile starts in place.
+   and turns red; tile B waits under it a beat (pop), then glides straight out to the slot A
+   left (back), staying behind A, turning red. Odd letter count -> one tile starts in place.
    ========================================================= */
 function buildPuzzle(answer, seed){
   answer = answer.toUpperCase();
@@ -286,16 +295,16 @@ function buildPuzzle(answer, seed){
 // per-tile state at time t: interpolate between slots `from`→`to` by f, plus vertical offset dy (in tile heights)
 function tileStates(pz, t){
   const {tm, P, start} = pz;
-  const out = pz.letters.map((_, tile) => ({from: pz.startSlot[tile], to: pz.startSlot[tile], f: 0, dy: 0, red: false, lift: false,
+  const out = pz.letters.map((_, tile) => ({from: pz.startSlot[tile], to: pz.startSlot[tile], f: 0, dy: 0, red: false, lift: false, front: false,
     fall: clamp((t - pz.fallDelay[tile]) / tm.fallDur, 0, 1)}));
   pz.swaps.forEach(({A, B}, i) => {
     const u = t - start - i*P; if(u < 0) return;
     const a = out[A], b = out[B];
-    if(u < tm.move){ a.from = B; a.to = A; a.f = easeIO(u/tm.move); a.lift = true; return; }
+    if(u < tm.move){ a.from = B; a.to = A; a.f = easeGlide(u/tm.move); a.lift = true; return; }
     a.from = a.to = A; a.red = true;
     const v = u - tm.move;
-    if(v < tm.pop){ b.from = b.to = A; b.dy = .6*easeOut(v/tm.pop); b.lift = true; }
-    else if(v < tm.pop + tm.back){ const f = easeIO((v - tm.pop)/tm.back); b.from = A; b.to = B; b.f = f; b.dy = .6*(1-f); b.lift = true; }
+    if(v < tm.pop){ b.from = b.to = A; a.front = true; }                       // beat: B sits under A
+    else if(v < tm.pop + tm.back){ b.from = A; b.to = B; b.f = easeGlide((v - tm.pop)/tm.back); a.front = true; }   // B glides straight out from behind A
     else { b.from = b.to = B; b.red = true; }
   });
   if(pz.fixed >= 0 && t >= pz.duration) out[pz.fixed].red = true;
@@ -480,14 +489,14 @@ const TV = {
       const a = this.slotXY[st.from], b = this.slotXY[st.to];
       let x = lerp(a[0], b[0], st.f), y = lerp(a[1], b[1], st.f) + st.dy*H;
       if(st.fall < 1) y = lerp(-H*1.4 - 20, y, bounce(st.fall));
-      return {x, y, red: st.red, lift: st.lift};
+      return {x, y, red: st.red, lift: st.lift, front: st.front};
     });
   },
   draw(ps){
     ps.forEach((p, i) => {
       const el = this.tileEls[i];
       el.style.transform = `translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px)`;
-      el.classList.toggle('red', p.red); el.classList.toggle('lift', !!p.lift);
+      el.classList.toggle('red', p.red); el.classList.toggle('lift', !!p.lift); el.classList.toggle('front', !!p.front);
     });
   },
 
